@@ -5,6 +5,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/WidgetComponent.h"
+#include "HUD/OverheadWidget.h"
 
 APBCharacter::APBCharacter()
 {
@@ -21,6 +23,9 @@ APBCharacter::APBCharacter()
 
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
+
+	OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
+	OverheadWidget->SetupAttachment(RootComponent);
 }
 
 void APBCharacter::BeginPlay()
@@ -78,4 +83,15 @@ void APBCharacter::Turn(float Value)
 void APBCharacter::LookUp(float Value)
 {
 	AddControllerPitchInput(Value);
+}
+
+void APBCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	UOverheadWidget* PlayerOverheadWidget = Cast<UOverheadWidget>(OverheadWidget);
+	if (PlayerOverheadWidget)
+	{
+		PlayerOverheadWidget->ShowPlayerName(this);
+	}
 }
