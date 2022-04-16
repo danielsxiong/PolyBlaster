@@ -84,14 +84,3 @@ void APBCharacter::LookUp(float Value)
 {
 	AddControllerPitchInput(Value);
 }
-
-void APBCharacter::OnRep_PlayerState()
-{
-	Super::OnRep_PlayerState();
-
-	UOverheadWidget* PlayerOverheadWidget = Cast<UOverheadWidget>(OverheadWidget);
-	if (PlayerOverheadWidget)
-	{
-		PlayerOverheadWidget->ShowPlayerName(this);
-	}
-}

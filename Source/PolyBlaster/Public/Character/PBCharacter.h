@@ -46,5 +46,4 @@ private:
 
 public:	
 	
-	virtual void OnRep_PlayerState() override;
 };
