@@ -7,6 +7,8 @@
 #include "Camera/CameraComponent.h"
 #include "Components/WidgetComponent.h"
 #include "HUD/OverheadWidget.h"
+#include "Net/UnrealNetwork.h"
+#include "Weapon/Weapon.h"
 
 APBCharacter::APBCharacter()
 {
@@ -28,10 +30,53 @@ APBCharacter::APBCharacter()
 	OverheadWidget->SetupAttachment(RootComponent);
 }
 
+void APBCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
+{
+	if (OverlappingWeapon)
+	{
+		OverlappingWeapon->ShowPickupWidget(true);
+	}
+
+	if (LastWeapon)
+	{
+		LastWeapon->ShowPickupWidget(false);
+	}
+}
+
+void APBCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION(APBCharacter, OverlappingWeapon, COND_OwnerOnly);
+}
+
+void APBCharacter::SetOverlappingWeapon(AWeapon* InWeapon)
+{
+	if (OverlappingWeapon)
+	{
+		OverlappingWeapon->ShowPickupWidget(false);
+	}
+
+	OverlappingWeapon = InWeapon;
+
+	if (IsLocallyControlled())
+	{
+		if (OverlappingWeapon)
+		{
+			OverlappingWeapon->ShowPickupWidget(true);
+		}
+	}
+}
+
 void APBCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void APBCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -47,12 +92,6 @@ void APBCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAxis("LookUpMouse", this, &APBCharacter::LookUp);
 	PlayerInputComponent->BindAxis("TurnGamepad", this, &APBCharacter::Turn);
 	PlayerInputComponent->BindAxis("LookUpGamepad", this, &APBCharacter::LookUp);
-}
-
-void APBCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
 }
 
 void APBCharacter::MoveForward(float Value)
