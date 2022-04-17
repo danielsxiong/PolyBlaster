@@ -9,6 +9,7 @@
 #include "HUD/OverheadWidget.h"
 #include "Net/UnrealNetwork.h"
 #include "Weapon/Weapon.h"
+#include "PBComponents/CombatComponent.h"
 
 APBCharacter::APBCharacter()
 {
@@ -28,19 +29,10 @@ APBCharacter::APBCharacter()
 
 	OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
 	OverheadWidget->SetupAttachment(RootComponent);
-}
 
-void APBCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
-{
-	if (OverlappingWeapon)
-	{
-		OverlappingWeapon->ShowPickupWidget(true);
-	}
-
-	if (LastWeapon)
-	{
-		LastWeapon->ShowPickupWidget(false);
-	}
+	// Components doesn't need to be registered to GetLifetimeReplicatedProps
+	Combat = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
+	Combat->SetIsReplicated(true);
 }
 
 void APBCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -50,21 +42,13 @@ void APBCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME_CONDITION(APBCharacter, OverlappingWeapon, COND_OwnerOnly);
 }
 
-void APBCharacter::SetOverlappingWeapon(AWeapon* InWeapon)
+void APBCharacter::PostInitializeComponents()
 {
-	if (OverlappingWeapon)
-	{
-		OverlappingWeapon->ShowPickupWidget(false);
-	}
+	Super::PostInitializeComponents();
 
-	OverlappingWeapon = InWeapon;
-
-	if (IsLocallyControlled())
+	if (Combat)
 	{
-		if (OverlappingWeapon)
-		{
-			OverlappingWeapon->ShowPickupWidget(true);
-		}
+		Combat->Character = this;
 	}
 }
 
@@ -85,6 +69,7 @@ void APBCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &APBCharacter::Jump);
+	PlayerInputComponent->BindAction("Equip", IE_Pressed, this, &APBCharacter::EquipButtonPressed);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &APBCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &APBCharacter::MoveRight);
@@ -122,4 +107,44 @@ void APBCharacter::Turn(float Value)
 void APBCharacter::LookUp(float Value)
 {
 	AddControllerPitchInput(Value);
+}
+
+void APBCharacter::EquipButtonPressed()
+{
+	// Must only be done on server (Role Authority)
+	if (Combat && HasAuthority())
+	{
+		Combat->EquipWeapon(OverlappingWeapon);
+	}
+}
+
+void APBCharacter::SetOverlappingWeapon(AWeapon* InWeapon)
+{
+	if (OverlappingWeapon)
+	{
+		OverlappingWeapon->ShowPickupWidget(false);
+	}
+
+	OverlappingWeapon = InWeapon;
+
+	if (IsLocallyControlled())
+	{
+		if (OverlappingWeapon)
+		{
+			OverlappingWeapon->ShowPickupWidget(true);
+		}
+	}
+}
+
+void APBCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
+{
+	if (OverlappingWeapon)
+	{
+		OverlappingWeapon->ShowPickupWidget(true);
+	}
+
+	if (LastWeapon)
+	{
+		LastWeapon->ShowPickupWidget(false);
+	}
 }

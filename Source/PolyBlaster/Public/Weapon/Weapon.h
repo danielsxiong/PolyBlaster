@@ -59,4 +59,6 @@ public:
 
 	void ShowPickupWidget(bool bShowPickupWidget);
 
+	FORCEINLINE void SetWeaponState(EWeaponState InState) { WeaponState = InState; }
+
 };
