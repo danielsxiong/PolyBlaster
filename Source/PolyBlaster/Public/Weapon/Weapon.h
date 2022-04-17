@@ -29,6 +29,8 @@ protected:
 
 	virtual void BeginPlay() override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 public:	
 
 	virtual void Tick(float DeltaTime) override;
@@ -41,8 +43,19 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	class USphereComponent* AreaSphere;
 
-	UPROPERTY(VisibleAnywhere)
+	/*
+	* Weapon State Replication
+	* 
+	* On Equip:
+	* - Server: Set weapon state to equipped and will call OnRep_WeaponState to client
+	* - Client: Receive OnRep_WeaponState and disable pickup (hide pickup widget and disable area sphere)
+	*/
+	UPROPERTY(ReplicatedUsing = OnRep_WeaponState, VisibleAnywhere, Category = "Weapon Properties")
 	EWeaponState WeaponState;
+
+	UFUNCTION()
+	void OnRep_WeaponState();
+
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	class UWidgetComponent* PickupWidget;
@@ -59,6 +72,8 @@ public:
 
 	void ShowPickupWidget(bool bShowPickupWidget);
 
-	FORCEINLINE void SetWeaponState(EWeaponState InState) { WeaponState = InState; }
+	void SetWeaponState(EWeaponState InState);
+
+	FORCEINLINE USphereComponent* GetAreaSphere() { return AreaSphere; }
 
 };

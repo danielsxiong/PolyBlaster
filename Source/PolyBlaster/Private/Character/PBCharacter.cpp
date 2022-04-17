@@ -112,7 +112,23 @@ void APBCharacter::LookUp(float Value)
 void APBCharacter::EquipButtonPressed()
 {
 	// Must only be done on server (Role Authority)
-	if (Combat && HasAuthority())
+	if (Combat)
+	{
+		if (HasAuthority())
+		{
+			Combat->EquipWeapon(OverlappingWeapon);
+		}
+		else
+		{
+			ServerEquipButtonPressed();
+		}
+	}
+}
+
+void APBCharacter::ServerEquipButtonPressed_Implementation()
+{
+	// Must only be done on server (Role Authority)
+	if (Combat)
 	{
 		Combat->EquipWeapon(OverlappingWeapon);
 	}

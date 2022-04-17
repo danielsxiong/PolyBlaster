@@ -3,6 +3,7 @@
 
 #include "PBComponents/CombatComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "Components/SphereComponent.h"
 #include "Weapon/Weapon.h"
 #include "Character/PBCharacter.h"
 
@@ -41,6 +42,6 @@ void UCombatComponent::EquipWeapon(AWeapon* InWeapon)
 		HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
 	}
 
+	// Owner is replicated, so when we set it on the server, it will be replicated to client
 	EquippedWeapon->SetOwner(Character);
-	EquippedWeapon->ShowPickupWidget(false);
 }

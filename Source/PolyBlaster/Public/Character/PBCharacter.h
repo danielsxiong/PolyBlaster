@@ -35,6 +35,18 @@ protected:
 
 	void LookUp(float Value);
 
+	/*
+	* Flow for equipping weapon
+	*
+	* On Server:
+	* - Player on server will call EquipButtonPressed as usual, then call Combat->EquipWeapon()
+	* - Server will receive call ServerEquipButtonPressed() from client, and will call Combat->EquipWeapon() for the player that calls the function
+	*
+	* On Client:
+	* - Player on client doesn't have the authority, so it will call ServerEquipButtonPressed() to request the server for equipping the weapon
+	* - Player will receive the replicated Combat component that already have the equipped weapon from the server
+	*
+	*/
 	void EquipButtonPressed();
 
 private:
@@ -48,6 +60,7 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UWidgetComponent* OverheadWidget;
 
+	// bIsReplicated - true
 	UPROPERTY(VisibleAnywhere)
 	class UCombatComponent* Combat;
 
@@ -69,6 +82,9 @@ private:
 
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(AWeapon* LastWeapon);
+
+	UFUNCTION(Server, Reliable)
+	void ServerEquipButtonPressed();
 
 public:	
 
