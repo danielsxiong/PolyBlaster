@@ -33,4 +33,8 @@ void UPBAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	bIsInAir = PBCharacter->GetCharacterMovement()->IsFalling();
 
 	bIsAccelerating = PBCharacter->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.f ? true : false;
+
+	bWeaponEquipped = PBCharacter->IsWeaponEquipped();
+
+	bIsCrouched = PBCharacter->bIsCrouched;
 }

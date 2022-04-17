@@ -33,6 +33,8 @@ APBCharacter::APBCharacter()
 	// Components doesn't need to be registered to GetLifetimeReplicatedProps
 	Combat = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
 	Combat->SetIsReplicated(true);
+
+	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 }
 
 void APBCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -70,6 +72,7 @@ void APBCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &APBCharacter::Jump);
 	PlayerInputComponent->BindAction("Equip", IE_Pressed, this, &APBCharacter::EquipButtonPressed);
+	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &APBCharacter::CrouchButtonPressed);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &APBCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &APBCharacter::MoveRight);
@@ -125,6 +128,18 @@ void APBCharacter::EquipButtonPressed()
 	}
 }
 
+void APBCharacter::CrouchButtonPressed()
+{
+	if (bIsCrouched)
+	{
+		UnCrouch();
+	}
+	else
+	{
+		Crouch();
+	}
+}
+
 void APBCharacter::ServerEquipButtonPressed_Implementation()
 {
 	// Must only be done on server (Role Authority)
@@ -163,4 +178,9 @@ void APBCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 	{
 		LastWeapon->ShowPickupWidget(false);
 	}
+}
+
+bool APBCharacter::IsWeaponEquipped()
+{
+	return Combat && Combat->EquippedWeapon;
 }
