@@ -25,12 +25,29 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UCombatComponent, EquippedWeapon);
+	DOREPLIFETIME(UCombatComponent, bAiming);
 }
 
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+}
+
+void UCombatComponent::SetAiming(bool bIsAiming)
+{
+	/*
+	* On server, ServerSetAiming will just be repeated, bAiming will be replicated to all client
+	* On client, set bAiming to true first so that there's no delay on the client side, then it will call ServerSetAiming to set the server character bAiming to true, hence it will replicate to all clients
+	*/ 
+	bAiming = bIsAiming;
+
+	ServerSetAiming(bIsAiming);
+}
+
+void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)
+{
+	bAiming = bIsAiming;
 }
 
 void UCombatComponent::EquipWeapon(AWeapon* InWeapon)

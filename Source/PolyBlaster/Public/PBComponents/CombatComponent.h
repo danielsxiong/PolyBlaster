@@ -35,6 +35,16 @@ private:
 	UPROPERTY(Replicated)
 	class AWeapon* EquippedWeapon;
 
+	UPROPERTY(Replicated)
+	bool bAiming;
+
+protected:
+
+	void SetAiming(bool bIsAiming);
+
+	UFUNCTION(Server, Reliable)
+	void ServerSetAiming(bool bIsAiming);
+
 public:
 
 	void EquipWeapon(AWeapon* InWeapon);

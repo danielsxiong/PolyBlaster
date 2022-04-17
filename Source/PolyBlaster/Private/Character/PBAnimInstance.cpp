@@ -37,4 +37,6 @@ void UPBAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	bWeaponEquipped = PBCharacter->IsWeaponEquipped();
 
 	bIsCrouched = PBCharacter->bIsCrouched;
+
+	bAiming = PBCharacter->IsAiming();
 }

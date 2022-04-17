@@ -73,6 +73,8 @@ void APBCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &APBCharacter::Jump);
 	PlayerInputComponent->BindAction("Equip", IE_Pressed, this, &APBCharacter::EquipButtonPressed);
 	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &APBCharacter::CrouchButtonPressed);
+	PlayerInputComponent->BindAction("Aim", IE_Pressed, this, &APBCharacter::AimButtonPressed);
+	PlayerInputComponent->BindAction("Aim", IE_Released, this, &APBCharacter::AimButtonReleased);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &APBCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &APBCharacter::MoveRight);
@@ -140,6 +142,26 @@ void APBCharacter::CrouchButtonPressed()
 	}
 }
 
+void APBCharacter::AimButtonPressed()
+{
+	if (!Combat)
+	{
+		return;
+	}
+
+	Combat->SetAiming(true);
+}
+
+void APBCharacter::AimButtonReleased()
+{
+	if (!Combat)
+	{
+		return;
+	}
+
+	Combat->SetAiming(false);
+}
+
 void APBCharacter::ServerEquipButtonPressed_Implementation()
 {
 	// Must only be done on server (Role Authority)
@@ -183,4 +205,9 @@ void APBCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 bool APBCharacter::IsWeaponEquipped()
 {
 	return Combat && Combat->EquippedWeapon;
+}
+
+bool APBCharacter::IsAiming()
+{
+	return Combat && Combat->bAiming;
 }
