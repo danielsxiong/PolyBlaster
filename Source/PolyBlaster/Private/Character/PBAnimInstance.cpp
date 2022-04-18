@@ -4,6 +4,7 @@
 #include "Character/PBAnimInstance.h"
 #include "Character/PBCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 void UPBAnimInstance::NativeInitializeAnimation()
 {
@@ -39,4 +40,19 @@ void UPBAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	bIsCrouched = PBCharacter->bIsCrouched;
 
 	bAiming = PBCharacter->IsAiming();
+
+	// Offset Yaw for strafing, this count the delta between movement rotation and aim rotation, then use RInterp to get a smooth yaw offset
+	FRotator AimRotation = PBCharacter->GetBaseAimRotation();
+	FRotator MovementRotation = UKismetMathLibrary::MakeRotFromX(PBCharacter->GetVelocity());
+	FRotator DeltaRot = UKismetMathLibrary::NormalizedDeltaRotator(MovementRotation, AimRotation);
+	DeltaRotation = FMath::RInterpTo(DeltaRotation, DeltaRot, DeltaTime, 15.f);
+	YawOffset = DeltaRotation.Yaw;
+
+	// Lean, basically this calculates how fast our character is rotating and interpolate them to Lean
+	CharacterRotationLastFrame = CharacterRotation;
+	CharacterRotation = PBCharacter->GetActorRotation();
+	const FRotator Delta = UKismetMathLibrary::NormalizedDeltaRotator(CharacterRotation, CharacterRotationLastFrame);
+	const float Target = Delta.Yaw / DeltaTime;
+	const float Interp = FMath::FInterpTo(Lean, Target, DeltaTime, 6.f);
+	Lean = FMath::Clamp(Interp, -90.f, 90.f);
 }

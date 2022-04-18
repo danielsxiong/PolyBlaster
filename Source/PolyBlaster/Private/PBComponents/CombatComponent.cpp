@@ -4,6 +4,7 @@
 #include "PBComponents/CombatComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Components/SphereComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Weapon/Weapon.h"
 #include "Character/PBCharacter.h"
@@ -50,6 +51,15 @@ void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)
 	bAiming = bIsAiming;
 }
 
+void UCombatComponent::OnRep_EquippedWeapon()
+{
+	if (EquippedWeapon && Character)
+	{
+		Character->GetCharacterMovement()->bOrientRotationToMovement = false;
+		Character->bUseControllerRotationYaw = true;
+	}
+}
+
 void UCombatComponent::EquipWeapon(AWeapon* InWeapon)
 {
 	if (!Character || !InWeapon)
@@ -68,4 +78,7 @@ void UCombatComponent::EquipWeapon(AWeapon* InWeapon)
 
 	// Owner is replicated, so when we set it on the server, it will be replicated to client
 	EquippedWeapon->SetOwner(Character);
+
+	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
+	Character->bUseControllerRotationYaw = true;
 }
