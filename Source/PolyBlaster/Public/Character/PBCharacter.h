@@ -55,6 +55,8 @@ protected:
 
 	void AimButtonReleased();
 
+	void AimOffset(float DeltaTime);
+
 private:
 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -86,6 +88,12 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_OverlappingWeapon)
 	class AWeapon* OverlappingWeapon;
 
+	float AO_Yaw;
+
+	float AO_Pitch;
+
+	FRotator StartingAimRotation;
+
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(AWeapon* LastWeapon);
 
@@ -99,5 +107,9 @@ public:
 	bool IsWeaponEquipped();
 
 	bool IsAiming();
+
+	FORCEINLINE float GetAO_Yaw() { return AO_Yaw; }
+
+	FORCEINLINE float GetAO_Pitch() { return AO_Pitch; }
 	
 };

@@ -9,6 +9,7 @@
 #include "Components/CapsuleComponent.h"
 #include "HUD/OverheadWidget.h"
 #include "Net/UnrealNetwork.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Weapon/Weapon.h"
 #include "PBComponents/CombatComponent.h"
 
@@ -66,6 +67,8 @@ void APBCharacter::BeginPlay()
 void APBCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	AimOffset(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -163,6 +166,38 @@ void APBCharacter::AimButtonReleased()
 	}
 
 	Combat->SetAiming(false);
+}
+
+void APBCharacter::AimOffset(float DeltaTime)
+{
+	if (Combat && !Combat->EquippedWeapon)
+	{
+		return;
+	}
+
+	FVector Velocity = GetVelocity();
+	Velocity.Z = 0.f;
+	float Speed = Velocity.Size();
+	bool bIsInAir = GetCharacterMovement()->IsFalling();
+
+	if (Speed == 0.f && !bIsInAir) // Standing still, not jumping
+	{
+		FRotator CurrentAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
+		FRotator DeltaAimRotation = UKismetMathLibrary::NormalizedDeltaRotator(CurrentAimRotation, StartingAimRotation);
+
+		AO_Yaw = DeltaAimRotation.Yaw;
+		bUseControllerRotationYaw = false;
+	}
+
+	if (Speed > 0.f || bIsInAir) // Running, not jumping
+	{
+		StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
+		
+		AO_Yaw = 0.f;
+		bUseControllerRotationYaw = true;
+	}
+
+	AO_Pitch = GetBaseAimRotation().Pitch;
 }
 
 void APBCharacter::ServerEquipButtonPressed_Implementation()
