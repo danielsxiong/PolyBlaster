@@ -108,6 +108,8 @@ public:
 
 	bool IsAiming();
 
+	AWeapon* GetEquippedWeapon();
+
 	FORCEINLINE float GetAO_Yaw() { return AO_Yaw; }
 
 	FORCEINLINE float GetAO_Pitch() { return AO_Pitch; }

@@ -256,3 +256,13 @@ bool APBCharacter::IsAiming()
 {
 	return Combat && Combat->bAiming;
 }
+
+AWeapon* APBCharacter::GetEquippedWeapon()
+{
+	if (!Combat)
+	{
+		return nullptr;
+	}
+
+	return Combat->EquippedWeapon;
+}

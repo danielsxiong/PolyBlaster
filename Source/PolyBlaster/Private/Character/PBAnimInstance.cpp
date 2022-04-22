@@ -3,6 +3,7 @@
 
 #include "Character/PBAnimInstance.h"
 #include "Character/PBCharacter.h"
+#include "Weapon/Weapon.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -37,6 +38,8 @@ void UPBAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 	bWeaponEquipped = PBCharacter->IsWeaponEquipped();
 
+	EquippedWeapon = PBCharacter->GetEquippedWeapon();
+
 	bIsCrouched = PBCharacter->bIsCrouched;
 
 	bAiming = PBCharacter->IsAiming();
@@ -58,4 +61,16 @@ void UPBAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 	AO_Yaw = PBCharacter->GetAO_Yaw();
 	AO_Pitch = PBCharacter->GetAO_Pitch();
+
+	if (bWeaponEquipped && EquippedWeapon && EquippedWeapon->GetWeaponMesh() && PBCharacter->GetMesh())
+	{
+		LeftHandTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(FName("LeftHandSocket"), ERelativeTransformSpace::RTS_World);
+
+		FVector OutPosition;
+		FRotator OutRotation;
+		PBCharacter->GetMesh()->TransformToBoneSpace(FName("Hand_R"), LeftHandTransform.GetLocation(), FRotator::ZeroRotator, OutPosition, OutRotation);
+
+		LeftHandTransform.SetLocation(OutPosition);
+		LeftHandTransform.SetRotation(FQuat(OutRotation));
+	}
 }
