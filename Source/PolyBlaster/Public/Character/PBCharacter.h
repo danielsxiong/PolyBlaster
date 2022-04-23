@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "PBTypes/TurningInPlace.h"
 #include "PBCharacter.generated.h"
 
 UCLASS()
@@ -94,6 +95,10 @@ private:
 
 	FRotator StartingAimRotation;
 
+	ETurningInPlace TurningInPlace;
+
+	void TurnInPlace(float DeltaTime);
+
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(AWeapon* LastWeapon);
 
@@ -114,4 +119,6 @@ public:
 
 	FORCEINLINE float GetAO_Pitch() { return AO_Pitch; }
 	
+	FORCEINLINE ETurningInPlace GetTurningInPlace() { return TurningInPlace; }
+
 };
