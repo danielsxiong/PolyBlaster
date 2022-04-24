@@ -2,6 +2,7 @@
 
 
 #include "Character/PBCharacter.h"
+#include "Character/PBAnimInstance.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
@@ -98,6 +99,8 @@ void APBCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &APBCharacter::CrouchButtonPressed);
 	PlayerInputComponent->BindAction("Aim", IE_Pressed, this, &APBCharacter::AimButtonPressed);
 	PlayerInputComponent->BindAction("Aim", IE_Released, this, &APBCharacter::AimButtonReleased);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APBCharacter::FireButtonPressed);
+	PlayerInputComponent->BindAction("Fire", IE_Released, this, &APBCharacter::FireButtonReleased);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &APBCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &APBCharacter::MoveRight);
@@ -185,6 +188,26 @@ void APBCharacter::AimButtonReleased()
 	Combat->SetAiming(false);
 }
 
+void APBCharacter::FireButtonPressed()
+{
+	if (!Combat)
+	{
+		return;
+	}
+
+	Combat->FireButtonPressed(true);
+}
+
+void APBCharacter::FireButtonReleased()
+{
+	if (!Combat)
+	{
+		return;
+	}
+
+	Combat->FireButtonPressed(false);
+}
+
 void APBCharacter::AimOffset(float DeltaTime)
 {
 	if (Combat && !Combat->EquippedWeapon)
@@ -263,6 +286,23 @@ void APBCharacter::ServerEquipButtonPressed_Implementation()
 	if (Combat)
 	{
 		Combat->EquipWeapon(OverlappingWeapon);
+	}
+}
+
+void APBCharacter::PlayFireMontage(bool bAiming)
+{
+	if (!Combat || !Combat->EquippedWeapon)
+	{
+		return;
+	}
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && FireWeaponMontage)
+	{
+		AnimInstance->Montage_Play(FireWeaponMontage);
+		FName SectionName;
+		SectionName = bAiming ? FName("RifleAim") : FName("RifleHip");
+		AnimInstance->Montage_JumpToSection(SectionName);
 	}
 }
 

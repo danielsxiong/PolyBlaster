@@ -58,6 +58,10 @@ protected:
 
 	void AimButtonReleased();
 
+	void FireButtonPressed();
+
+	void FireButtonReleased();
+
 	void AimOffset(float DeltaTime);
 
 private:
@@ -101,6 +105,9 @@ private:
 
 	ETurningInPlace TurningInPlace;
 
+	UPROPERTY(EditAnywhere, Category = Combat)
+	class UAnimMontage* FireWeaponMontage;
+
 	void TurnInPlace(float DeltaTime);
 
 	UFUNCTION()
@@ -110,6 +117,8 @@ private:
 	void ServerEquipButtonPressed();
 
 public:	
+
+	void PlayFireMontage(bool bAiming);
 
 	void SetOverlappingWeapon(AWeapon* InWeapon);
 
