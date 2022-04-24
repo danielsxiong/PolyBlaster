@@ -4,8 +4,10 @@
 #include "Weapon/Weapon.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
-#include "Character/PBCharacter.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "Animation/AnimationAsset.h"
+#include "Character/PBCharacter.h"
 
 AWeapon::AWeapon()
 {
@@ -84,6 +86,14 @@ void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 	if (PBCharacter && PickupWidget)
 	{
 		PBCharacter->SetOverlappingWeapon(nullptr);
+	}
+}
+
+void AWeapon::Fire()
+{
+	if (FireAnimation)
+	{
+		WeaponMesh->PlayAnimation(FireAnimation, false);
 	}
 }
 
