@@ -235,6 +235,8 @@ void APBCharacter::AimOffset(float DeltaTime)
 		bUseControllerRotationYaw = true;
 
 		TurnInPlace(DeltaTime);
+
+		// UE_LOG(LogTemp, Warning, TEXT("AO_Yaw: %f"), AO_Yaw);
 	}
 
 	if (Speed > 0.f || bIsInAir) // Running, or jumping

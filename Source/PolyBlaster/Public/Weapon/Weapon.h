@@ -35,6 +35,8 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	void Fire();
+
 private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
@@ -72,8 +74,6 @@ protected:
 	void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 public:
-
-	void Fire();
 
 	void ShowPickupWidget(bool bShowPickupWidget);
 

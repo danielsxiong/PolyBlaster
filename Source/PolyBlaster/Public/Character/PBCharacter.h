@@ -24,6 +24,8 @@ public:
 
 	virtual void PostInitializeComponents() override;
 
+	void PlayFireMontage(bool bAiming);
+
 protected:
 
 	virtual void BeginPlay() override;
@@ -117,8 +119,6 @@ private:
 	void ServerEquipButtonPressed();
 
 public:	
-
-	void PlayFireMontage(bool bAiming);
 
 	void SetOverlappingWeapon(AWeapon* InWeapon);
 
