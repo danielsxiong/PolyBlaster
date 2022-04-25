@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "CombatComponent.generated.h"
 
+#define TRACE_LENGTH 80000.f
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class POLYBLASTER_API UCombatComponent : public UActorComponent
@@ -46,6 +47,8 @@ private:
 
 	bool bFireButtonPressed;
 
+	FVector HitTarget;
+
 protected:
 
 	void SetAiming(bool bIsAiming);
@@ -59,13 +62,22 @@ protected:
 	void FireButtonPressed(bool bPressed);
 
 	/*
+	* Flow on replicating weapon fire
 	* 
+	* On Server:
+	* - Player will call ServerFire() from FireButtonPressed
+	* - ServerFire will call MulticastFire() where all the fire effects are being called, MulticastFire will be called on Server and Client
+	* 
+	* On Client:
+	* - Same with server, the difference is that it will let the server run the ServerFire()
 	*/
 	UFUNCTION(Server, Reliable)
 	void ServerFire();
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastFire();
+
+	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
 
 public:
 
