@@ -47,8 +47,6 @@ private:
 
 	bool bFireButtonPressed;
 
-	FVector HitTarget;
-
 protected:
 
 	void SetAiming(bool bIsAiming);
@@ -72,10 +70,10 @@ protected:
 	* - Same with server, the difference is that it will let the server run the ServerFire()
 	*/
 	UFUNCTION(Server, Reliable)
-	void ServerFire();
+	void ServerFire(const FVector_NetQuantize& TraceHitTarget);
 
 	UFUNCTION(NetMulticast, Reliable)
-	void MulticastFire();
+	void MulticastFire(const FVector_NetQuantize& TraceHitTarget);
 
 	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
 
