@@ -101,6 +101,11 @@ void UCombatComponent::MulticastFire_Implementation(const FVector_NetQuantize& T
 	{
 		Character->PlayFireMontage(bAiming);
 		EquippedWeapon->Fire(TraceHitTarget);
+
+		/*if (!Character->HasAuthority() && Character->IsLocallyControlled())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Trace hit target: %s"), *TraceHitTarget.ToString());
+		}*/
 	}
 }
 

@@ -23,4 +23,15 @@ private:
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* CasingMesh;
 
+	UPROPERTY(EditAnywhere)
+	float ShellEjectionImpulse;
+
+	UPROPERTY(EditAnywhere)
+	class USoundCue* ShellSound;
+
+protected:
+
+	UFUNCTION()
+	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
 };
