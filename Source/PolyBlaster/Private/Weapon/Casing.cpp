@@ -4,6 +4,8 @@
 #include "Weapon/Casing.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
+#include "Engine/SkeletalMeshSocket.h"
+#include "Weapon/Weapon.h"
 
 ACasing::ACasing()
 {
@@ -24,9 +26,21 @@ ACasing::ACasing()
 void ACasing::BeginPlay()
 {
 	Super::BeginPlay();
+
+	FVector ForwardVector = GetActorForwardVector();
+	AWeapon* OwningWeapon = Cast<AWeapon>(GetOwner());
+	if (OwningWeapon)
+	{
+		const USkeletalMeshSocket* AmmoEjectSocket = OwningWeapon->GetWeaponMesh()->GetSocketByName(FName("AmmoEject"));
+		if (AmmoEjectSocket)
+		{
+			FTransform SocketTransform = AmmoEjectSocket->GetSocketTransform(OwningWeapon->GetWeaponMesh());
+			ForwardVector = SocketTransform.GetRotation().GetForwardVector();
+		}
+	}
 	
 	CasingMesh->OnComponentHit.AddDynamic(this, &ACasing::OnHit);
-	CasingMesh->AddImpulse(GetActorForwardVector() * ShellEjectionImpulse);
+	CasingMesh->AddImpulse(ForwardVector * ShellEjectionImpulse);
 }
 
 void ACasing::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

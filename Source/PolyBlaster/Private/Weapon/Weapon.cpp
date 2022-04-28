@@ -105,10 +105,14 @@ void AWeapon::Fire(const FVector& HitTarget)
 		{
 			FTransform SocketTransform = AmmoEjectSocket->GetSocketTransform(GetWeaponMesh());
 
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.Owner = this;
+
 			UWorld* World = GetWorld();
 			if (World)
 			{
-				World->SpawnActor<ACasing>(CasingClass, SocketTransform.GetLocation(), SocketTransform.GetRotation().Rotator());
+				FRotator RandomShellRotator = FRotator(FMath::RandRange(0.f, 359.f), FMath::RandRange(0.f, 359.f), FMath::RandRange(0.f, 359.f));
+				World->SpawnActor<ACasing>(CasingClass, SocketTransform.GetLocation(), RandomShellRotator, SpawnParams);
 			}
 		}
 	}

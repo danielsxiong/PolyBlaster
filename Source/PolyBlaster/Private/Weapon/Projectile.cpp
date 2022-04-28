@@ -8,6 +8,7 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "Particles/ParticleSystem.h"
 #include "Sound/SoundCue.h"
+#include "GameFramework/Character.h"
 
 // Sets default values
 AProjectile::AProjectile()
@@ -41,6 +42,11 @@ void AProjectile::BeginPlay()
 	{
 		CollisionBox->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
 	}
+
+	/*if (!HasAuthority() && Cast<ACharacter>(GetOwner())->IsLocallyControlled())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Projectile: %s"), *GetName());
+	}*/
 }
 
 void AProjectile::Tick(float DeltaTime)

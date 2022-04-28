@@ -33,6 +33,10 @@ private:
 
 	class APBCharacter* Character;
 
+	class APBPlayerController* Controller;
+
+	class APBHUD* HUD;
+
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
 	class AWeapon* EquippedWeapon;
 
@@ -76,6 +80,8 @@ protected:
 	void MulticastFire(const FVector_NetQuantize& TraceHitTarget);
 
 	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
+
+	void SetHUDCrosshairs(float DeltaTime);
 
 public:
 
