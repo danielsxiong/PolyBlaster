@@ -135,10 +135,10 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 
 		GetWorld()->LineTraceSingleByChannel(TraceHitResult, Start, End, ECollisionChannel::ECC_Visibility);
 
-		/*if (!TraceHitResult.bBlockingHit)
+		if (!TraceHitResult.bBlockingHit)
 		{
 			TraceHitResult.ImpactPoint = End;
-		}*/
+		}
 	}
 }
 
@@ -152,7 +152,7 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 	Controller = Controller == nullptr ? Cast<APBPlayerController>(Character->Controller) : Controller;
 	if (Controller)
 	{
-		HUD = HUD ? Cast<APBHUD>(Controller->GetHUD()) : HUD;
+		HUD = HUD == nullptr ? Cast<APBHUD>(Controller->GetHUD()) : HUD;
 		if (HUD)
 		{
 			FHUDPackage HUDPackage;
