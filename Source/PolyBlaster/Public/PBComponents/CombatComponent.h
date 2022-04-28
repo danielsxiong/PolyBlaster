@@ -51,6 +51,14 @@ private:
 
 	bool bFireButtonPressed;
 
+	/**
+	* HUD and Crosshairs
+	*/
+
+	float CrosshairVelocityFactor;
+
+	float CrosshairInAirFactor;
+
 protected:
 
 	void SetAiming(bool bIsAiming);
@@ -86,5 +94,7 @@ protected:
 public:
 
 	void EquipWeapon(AWeapon* InWeapon);
+
+	FORCEINLINE float GetMaxWalkSpeed() { return BaseWalkSpeed; }
 		
 };
