@@ -59,6 +59,9 @@ private:
 
 	float CrosshairInAirFactor;
 
+	UPROPERTY(Replicated)
+	FVector HitTarget;
+
 protected:
 
 	void SetAiming(bool bIsAiming);
@@ -89,6 +92,9 @@ protected:
 
 	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
 
+	UFUNCTION(Server, Unreliable)
+	void ServerSetHitTarget(const FVector_NetQuantize& InHitTarget);
+
 	void SetHUDCrosshairs(float DeltaTime);
 
 public:
@@ -96,5 +102,5 @@ public:
 	void EquipWeapon(AWeapon* InWeapon);
 
 	FORCEINLINE float GetMaxWalkSpeed() { return BaseWalkSpeed; }
-		
+
 };

@@ -358,3 +358,13 @@ AWeapon* APBCharacter::GetEquippedWeapon()
 
 	return Combat->EquippedWeapon;
 }
+
+FVector APBCharacter::GetHitTarget() const
+{
+	if (!Combat)
+	{
+		return FVector();
+	}
+
+	return Combat->HitTarget;
+}

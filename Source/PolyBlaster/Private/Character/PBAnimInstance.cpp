@@ -46,6 +46,8 @@ void UPBAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 	TurningInPlace = PBCharacter->GetTurningInPlace();
 
+	bLocallyControlled = PBCharacter->IsLocallyControlled();
+
 	// Offset Yaw for strafing, this count the delta between movement rotation and aim rotation, then use RInterp to get a smooth yaw offset
 	FRotator AimRotation = PBCharacter->GetBaseAimRotation();
 	FRotator MovementRotation = UKismetMathLibrary::MakeRotFromX(PBCharacter->GetVelocity());
@@ -74,5 +76,21 @@ void UPBAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 		LeftHandTransform.SetLocation(OutPosition);
 		LeftHandTransform.SetRotation(FQuat(OutRotation));
+
+		//if (bLocallyControlled)
+		//{
+			FTransform RightHandTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(FName("Hand_R"), ERelativeTransformSpace::RTS_World);
+			// RightHandTransform.GetLocation() + (RightHandTransform.GetLocation() - PBCharacter->GetHitTarget())
+			// This adds the right hand starting location to a vector directed to the hit target
+			RightHandRotation = UKismetMathLibrary::FindLookAtRotation(RightHandTransform.GetLocation(), RightHandTransform.GetLocation() + (RightHandTransform.GetLocation() - PBCharacter->GetHitTarget()));
+			RightHandRotation.Roll += 180.f;
+			//UE_LOG(LogTemp, Warning, TEXT("Right Hand Rotation: %s"), *RightHandRotation.ToString());
+		//}
+
+		// Debug weapon aim
+		FTransform MuzzleTipTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(FName("MuzzleFlash"), ERelativeTransformSpace::RTS_World);
+		const FVector MuzzleX(FRotationMatrix(MuzzleTipTransform.GetRotation().Rotator()).GetUnitAxis(EAxis::X));
+		DrawDebugLine(GetWorld(), MuzzleTipTransform.GetLocation(), MuzzleTipTransform.GetLocation() + MuzzleX * 1000.f, FColor::Red);
+		DrawDebugLine(GetWorld(), MuzzleTipTransform.GetLocation(), PBCharacter->GetHitTarget(), FColor::Orange);
 	}
 }

@@ -37,6 +37,7 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 	DOREPLIFETIME(UCombatComponent, EquippedWeapon);
 	DOREPLIFETIME(UCombatComponent, bAiming);
+	DOREPLIFETIME(UCombatComponent, HitTarget);
 }
 
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -44,6 +45,15 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	SetHUDCrosshairs(DeltaTime);
+
+	if (Character && Character->IsLocallyControlled())
+	{
+		FHitResult HitResult;
+		TraceUnderCrosshairs(HitResult);
+		HitTarget = HitResult.ImpactPoint;
+
+		ServerSetHitTarget(HitTarget);
+	}
 }
 
 void UCombatComponent::SetAiming(bool bIsAiming)
@@ -140,6 +150,11 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 			TraceHitResult.ImpactPoint = End;
 		}
 	}
+}
+
+void UCombatComponent::ServerSetHitTarget_Implementation(const FVector_NetQuantize& InHitTarget)
+{
+	HitTarget = InHitTarget;
 }
 
 void UCombatComponent::SetHUDCrosshairs(float DeltaTime)

@@ -134,4 +134,6 @@ public:
 	
 	FORCEINLINE ETurningInPlace GetTurningInPlace() { return TurningInPlace; }
 
+	FVector GetHitTarget() const;
+
 };
