@@ -62,6 +62,23 @@ private:
 	UPROPERTY(Replicated)
 	FVector HitTarget;
 
+	/*
+	* Aiming and FOV
+	*/
+
+	// Field of view when not aiming, set in the BeginPlay to the camera base FOV
+	float DefaultFOV;
+
+	float CurrentFOV;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	float ZoomedFOV = 30.f;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	float ZoomInterpSpeed = 20.f;
+
+	void InterpFOV(float DeltaTime);
+
 protected:
 
 	void SetAiming(bool bIsAiming);
