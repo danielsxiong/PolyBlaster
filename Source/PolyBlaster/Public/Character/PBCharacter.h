@@ -5,10 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "PBTypes/TurningInPlace.h"
+#include "Interfaces/InteractWithCrosshairsInterface.h"
 #include "PBCharacter.generated.h"
 
 UCLASS()
-class POLYBLASTER_API APBCharacter : public ACharacter
+class POLYBLASTER_API APBCharacter : public ACharacter, public IInteractWithCrosshairsInterface
 {
 	GENERATED_BODY()
 

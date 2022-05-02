@@ -82,8 +82,10 @@ void UPBAnimInstance::NativeUpdateAnimation(float DeltaTime)
 			FTransform RightHandTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(FName("Hand_R"), ERelativeTransformSpace::RTS_World);
 			// RightHandTransform.GetLocation() + (RightHandTransform.GetLocation() - PBCharacter->GetHitTarget())
 			// This adds the right hand starting location to a vector directed to the hit target
-			RightHandRotation = UKismetMathLibrary::FindLookAtRotation(RightHandTransform.GetLocation(), RightHandTransform.GetLocation() + (RightHandTransform.GetLocation() - PBCharacter->GetHitTarget()));
-			RightHandRotation.Roll += 180.f;
+			FRotator LookAtRotator = UKismetMathLibrary::FindLookAtRotation(RightHandTransform.GetLocation(), RightHandTransform.GetLocation() + (RightHandTransform.GetLocation() - PBCharacter->GetHitTarget()));
+			LookAtRotator.Roll += 180.f;
+			RightHandRotation = FMath::RInterpTo(RightHandRotation, LookAtRotator, DeltaTime, 20.f);
+			
 			//UE_LOG(LogTemp, Warning, TEXT("Right Hand Rotation: %s"), *RightHandRotation.ToString());
 		//}
 

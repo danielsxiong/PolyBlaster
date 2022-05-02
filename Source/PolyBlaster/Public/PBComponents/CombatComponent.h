@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "HUD/PBHUD.h"
 #include "CombatComponent.generated.h"
 
 #define TRACE_LENGTH 10000.f
@@ -65,6 +66,8 @@ private:
 
 	UPROPERTY(Replicated)
 	FVector HitTarget;
+
+	FHUDPackage HUDPackage;
 
 	/*
 	* Aiming and FOV
