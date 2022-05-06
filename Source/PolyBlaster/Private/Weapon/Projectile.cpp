@@ -2,6 +2,7 @@
 
 
 #include "Weapon/Projectile.h"
+#include "../PolyBlaster.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -9,6 +10,7 @@
 #include "Particles/ParticleSystem.h"
 #include "Sound/SoundCue.h"
 #include "GameFramework/Character.h"
+#include "Character/PBCharacter.h"
 
 // Sets default values
 AProjectile::AProjectile()
@@ -24,6 +26,7 @@ AProjectile::AProjectile()
 	CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
+	CollisionBox->SetCollisionResponseToChannel(ECC_SkeletalMesh, ECollisionResponse::ECR_Block);
 
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
 	ProjectileMovementComponent->bRotationFollowsVelocity = true;
@@ -57,6 +60,13 @@ void AProjectile::Tick(float DeltaTime)
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+	APBCharacter* PBCharacter = Cast<APBCharacter>(OtherActor);
+
+	if (PBCharacter)
+	{
+		PBCharacter->MulticastHit();
+	}
+
 	Destroy();
 }
 
