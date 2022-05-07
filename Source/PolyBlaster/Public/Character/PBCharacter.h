@@ -25,6 +25,8 @@ public:
 
 	virtual void PostInitializeComponents() override;
 
+	virtual void OnRep_ReplicatedMovement() override;
+
 	void PlayFireMontage(bool bAiming);
 
 	UFUNCTION(NetMulticast, Unreliable)
@@ -69,6 +71,10 @@ protected:
 	void FireButtonReleased();
 
 	void AimOffset(float DeltaTime);
+
+	void CalculateAO_Pitch();
+
+	void SimProxiesTurn();
 
 	void PlayHitReactMontage();
 
@@ -122,6 +128,18 @@ private:
 	UPROPERTY(EditAnywhere)
 	float CameraThreshold = 200.f;
 
+	bool bRotateRootBone;
+
+	float TurnThreshold = 0.5f;
+
+	FRotator ProxyRotationLastFrame;
+
+	FRotator ProxyRotation;
+
+	float ProxyYaw;
+
+	float TimeSinceLastMovementReplication;
+
 	void TurnInPlace(float DeltaTime);
 
 	void HideCameraIfCharacterClose();
@@ -131,6 +149,8 @@ private:
 
 	UFUNCTION(Server, Reliable)
 	void ServerEquipButtonPressed();
+
+	float CalculateSpeed();
 
 public:	
 
@@ -149,6 +169,8 @@ public:
 	FORCEINLINE ETurningInPlace GetTurningInPlace() { return TurningInPlace; }
 
 	FORCEINLINE UCameraComponent* GetFollowCamera() { return FollowCamera; }
+
+	FORCEINLINE bool ShouldRotateRootBone() { return bRotateRootBone; }
 
 	FVector GetHitTarget() const;
 
