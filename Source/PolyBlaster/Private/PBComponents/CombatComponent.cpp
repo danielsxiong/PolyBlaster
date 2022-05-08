@@ -9,6 +9,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 #include "Camera/CameraComponent.h"
+#include "TimerManager.h"
+
 #include "Weapon/Weapon.h"
 #include "Character/PBCharacter.h"
 #include "PlayerController/PBPlayerController.h"
@@ -105,18 +107,28 @@ void UCombatComponent::FireButtonPressed(bool bPressed)
 {
 	bFireButtonPressed = bPressed;
 
-	if (bFireButtonPressed)
+	if (EquippedWeapon && bFireButtonPressed)
 	{
-		FHitResult HitResult;
-		TraceUnderCrosshairs(HitResult);
-
-		ServerFire(HitResult.ImpactPoint);
-
-		if (EquippedWeapon)
-		{
-			CrosshairShootingFactor = 0.75f;
-		}
+		Fire();
 	}
+}
+
+void UCombatComponent::Fire()
+{
+	if (!bCanFire)
+	{
+		return;
+	}
+
+	bCanFire = false;
+	ServerFire(HitTarget);
+
+	if (EquippedWeapon)
+	{
+		CrosshairShootingFactor = 0.75f;
+	}
+
+	StartFireTimer();
 }
 
 void UCombatComponent::ServerFire_Implementation(const FVector_NetQuantize& TraceHitTarget)
@@ -161,7 +173,7 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 		{
 			float DistanceToCharacter = (Character->GetActorLocation() - Start).Size();
 			Start += CrosshairWorldDirection * (DistanceToCharacter + 50.f);
-			DrawDebugSphere(GetWorld(), Start, 16.f, 12, FColor::Red, false);
+			// DrawDebugSphere(GetWorld(), Start, 16.f, 12, FColor::Red, false);
 		}
 
 		FVector End = Start + (CrosshairWorldDirection * TRACE_LENGTH);
@@ -311,5 +323,30 @@ void UCombatComponent::InterpFOV(float DeltaTime)
 	if (Character && Character->GetFollowCamera())
 	{
 		Character->GetFollowCamera()->SetFieldOfView(CurrentFOV);
+	}
+}
+
+void UCombatComponent::StartFireTimer()
+{
+	if (!EquippedWeapon || !Character)
+	{
+		return;
+	}
+
+	Character->GetWorldTimerManager().SetTimer(FireTimer, this, &UCombatComponent::FireTimerFinished, EquippedWeapon->FireDelay);
+}
+
+void UCombatComponent::FireTimerFinished()
+{
+	if (!EquippedWeapon)
+	{
+		return;
+	}
+
+	bCanFire = true;
+
+	if (bFireButtonPressed && EquippedWeapon->bAutomatic)
+	{
+		Fire();
 	}
 }

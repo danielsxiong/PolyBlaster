@@ -86,6 +86,18 @@ private:
 
 	void InterpFOV(float DeltaTime);
 
+	/*
+	* Automatic Fire
+	*/
+
+	FTimerHandle FireTimer;
+
+	bool bCanFire = true;
+
+	void StartFireTimer();
+
+	void FireTimerFinished();
+
 protected:
 
 	void SetAiming(bool bIsAiming);
@@ -97,6 +109,8 @@ protected:
 	void OnRep_EquippedWeapon();
 
 	void FireButtonPressed(bool bPressed);
+
+	void Fire();
 
 	/*
 	* Flow on replicating weapon fire
