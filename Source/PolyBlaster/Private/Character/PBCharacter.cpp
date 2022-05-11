@@ -54,7 +54,10 @@ void APBCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	// Should be replicated only to the owner, will cause everybody to see the pickup widget if it's replicated to everyone
 	DOREPLIFETIME_CONDITION(APBCharacter, OverlappingWeapon, COND_OwnerOnly);
+	//DOREPLIFETIME(APBCharacter, OverlappingWeapon);
+	DOREPLIFETIME(APBCharacter, Health);
 }
 
 void APBCharacter::PostInitializeComponents()
@@ -428,15 +431,22 @@ void APBCharacter::MulticastHit_Implementation()
 	PlayHitReactMontage();
 }
 
+void APBCharacter::OnRep_Health()
+{
+}
+
 void APBCharacter::SetOverlappingWeapon(AWeapon* InWeapon)
 {
+	// Remove the pickup widget from the previous overlapping weapon, if exist
 	if (OverlappingWeapon)
 	{
 		OverlappingWeapon->ShowPickupWidget(false);
 	}
 
+	// Set the new overlapping weapon, it will call OnRep_OverlappingWeapon
 	OverlappingWeapon = InWeapon;
 
+	// Only show pickup widget if it's on player's local machine
 	if (IsLocallyControlled())
 	{
 		if (OverlappingWeapon)
@@ -448,6 +458,7 @@ void APBCharacter::SetOverlappingWeapon(AWeapon* InWeapon)
 
 void APBCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 {
+	// 
 	if (OverlappingWeapon)
 	{
 		OverlappingWeapon->ShowPickupWidget(true);
