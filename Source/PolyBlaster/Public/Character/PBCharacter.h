@@ -165,6 +165,8 @@ private:
 	UFUNCTION()
 	void OnRep_Health();
 
+	class APBPlayerController* PBPlayerController;
+
 public:	
 
 	void SetOverlappingWeapon(AWeapon* InWeapon);

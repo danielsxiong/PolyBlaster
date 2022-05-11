@@ -2,8 +2,7 @@
 
 
 #include "Character/PBCharacter.h"
-#include "../PolyBlaster.h"
-#include "Character/PBAnimInstance.h"
+
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
@@ -12,8 +11,12 @@
 #include "HUD/OverheadWidget.h"
 #include "Net/UnrealNetwork.h"
 #include "Kismet/KismetMathLibrary.h"
+
 #include "Weapon/Weapon.h"
 #include "PBComponents/CombatComponent.h"
+#include "../PolyBlaster.h"
+#include "Character/PBAnimInstance.h"
+#include "PlayerController/PBPlayerController.h"
 
 APBCharacter::APBCharacter()
 {
@@ -74,6 +77,11 @@ void APBCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	PBPlayerController = Cast<APBPlayerController>(Controller);
+	if (PBPlayerController)
+	{
+		PBPlayerController->SetHUDHealth(Health, MaxHealth);
+	}
 }
 
 // Called to bind functionality to input
