@@ -29,6 +29,8 @@ public:
 
 	void PlayFireMontage(bool bAiming);
 
+	void Eliminated();
+
 	/*UFUNCTION(NetMulticast, Unreliable)
 	void MulticastHit();*/
 

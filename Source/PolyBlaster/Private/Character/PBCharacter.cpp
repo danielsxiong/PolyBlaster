@@ -17,6 +17,7 @@
 #include "../PolyBlaster.h"
 #include "Character/PBAnimInstance.h"
 #include "PlayerController/PBPlayerController.h"
+#include "GameMode/PBGameMode.h"
 
 APBCharacter::APBCharacter()
 {
@@ -418,6 +419,11 @@ void APBCharacter::PlayFireMontage(bool bAiming)
 	}
 }
 
+void APBCharacter::Eliminated()
+{
+
+}
+
 void APBCharacter::PlayHitReactMontage()
 {
 	if (!Combat || !Combat->EquippedWeapon)
@@ -440,6 +446,17 @@ void APBCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDama
 	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
 	PlayHitReactMontage();
 	UpdateHUDHealth();
+
+	if (Health == 0.f)
+	{
+		APBGameMode* PBGameMode = GetWorld()->GetAuthGameMode<APBGameMode>();
+		if (PBGameMode)
+		{
+			PBPlayerController = PBPlayerController == nullptr ? Cast<APBPlayerController>(Controller) : PBPlayerController;
+			APBPlayerController* AttackerController = Cast<APBPlayerController>(InstigatorController);
+			PBGameMode->PlayerEliminated(this, PBPlayerController, AttackerController);
+		}
+	}
 }
 
 //void APBCharacter::MulticastHit_Implementation()
