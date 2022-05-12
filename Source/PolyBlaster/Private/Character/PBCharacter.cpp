@@ -76,11 +76,12 @@ void APBCharacter::PostInitializeComponents()
 void APBCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	PBPlayerController = Cast<APBPlayerController>(Controller);
-	if (PBPlayerController)
+
+	UpdateHUDHealth();
+
+	if (HasAuthority())
 	{
-		PBPlayerController->SetHUDHealth(Health, MaxHealth);
+		OnTakeAnyDamage.AddDynamic(this, &APBCharacter::ReceiveDamage);
 	}
 }
 
@@ -434,14 +435,33 @@ void APBCharacter::PlayHitReactMontage()
 	}
 }
 
-void APBCharacter::MulticastHit_Implementation()
+void APBCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser)
 {
+	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
 	PlayHitReactMontage();
+	UpdateHUDHealth();
 }
+
+//void APBCharacter::MulticastHit_Implementation()
+//{
+//	PlayHitReactMontage();
+//}
 
 void APBCharacter::OnRep_Health()
 {
+	PlayHitReactMontage();
+	UpdateHUDHealth();
 }
+
+void APBCharacter::UpdateHUDHealth()
+{
+	PBPlayerController = PBPlayerController == nullptr ? Cast<APBPlayerController>(Controller) : PBPlayerController;
+	if (PBPlayerController)
+	{
+		PBPlayerController->SetHUDHealth(Health, MaxHealth);
+	}
+}
+
 
 void APBCharacter::SetOverlappingWeapon(AWeapon* InWeapon)
 {

@@ -60,12 +60,12 @@ void AProjectile::Tick(float DeltaTime)
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	APBCharacter* PBCharacter = Cast<APBCharacter>(OtherActor);
+	/*APBCharacter* PBCharacter = Cast<APBCharacter>(OtherActor);
 
 	if (PBCharacter)
 	{
 		PBCharacter->MulticastHit();
-	}
+	}*/
 
 	Destroy();
 }

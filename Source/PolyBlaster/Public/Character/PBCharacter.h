@@ -29,8 +29,8 @@ public:
 
 	void PlayFireMontage(bool bAiming);
 
-	UFUNCTION(NetMulticast, Unreliable)
-	void MulticastHit();
+	/*UFUNCTION(NetMulticast, Unreliable)
+	void MulticastHit();*/
 
 protected:
 
@@ -77,6 +77,11 @@ protected:
 	void SimProxiesTurn();
 
 	void PlayHitReactMontage();
+
+	UFUNCTION()
+	void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* InstigatorController, AActor* DamageCauser);
+
+	void UpdateHUDHealth();
 
 private:
 
