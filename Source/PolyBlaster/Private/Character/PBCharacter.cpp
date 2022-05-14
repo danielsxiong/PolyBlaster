@@ -419,9 +419,19 @@ void APBCharacter::PlayFireMontage(bool bAiming)
 	}
 }
 
-void APBCharacter::Eliminated()
+void APBCharacter::PlayEliminatedMontage()
 {
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && EliminatedMontage)
+	{
+		AnimInstance->Montage_Play(EliminatedMontage);
+	}
+}
 
+void APBCharacter::MulticastEliminated_Implementation()
+{
+	bEliminated = true;
+	PlayEliminatedMontage();
 }
 
 void APBCharacter::PlayHitReactMontage()

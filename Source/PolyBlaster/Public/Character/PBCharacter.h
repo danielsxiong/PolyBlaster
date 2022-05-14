@@ -29,7 +29,10 @@ public:
 
 	void PlayFireMontage(bool bAiming);
 
-	void Eliminated();
+	void PlayEliminatedMontage();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastEliminated();
 
 	/*UFUNCTION(NetMulticast, Unreliable)
 	void MulticastHit();*/
@@ -130,7 +133,10 @@ private:
 	class UAnimMontage* FireWeaponMontage;
 
 	UPROPERTY(EditAnywhere, Category = Combat)
-	class UAnimMontage* HitReactMontage;
+	UAnimMontage* HitReactMontage;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	UAnimMontage* EliminatedMontage;
 
 	UPROPERTY(EditAnywhere)
 	float CameraThreshold = 200.f;
@@ -174,6 +180,8 @@ private:
 
 	class APBPlayerController* PBPlayerController;
 
+	bool bEliminated = false;
+
 public:	
 
 	void SetOverlappingWeapon(AWeapon* InWeapon);
@@ -184,15 +192,17 @@ public:
 
 	AWeapon* GetEquippedWeapon();
 
-	FORCEINLINE float GetAO_Yaw() { return AO_Yaw; }
+	FORCEINLINE float GetAO_Yaw() const { return AO_Yaw; }
 
-	FORCEINLINE float GetAO_Pitch() { return AO_Pitch; }
+	FORCEINLINE float GetAO_Pitch() const { return AO_Pitch; }
 	
-	FORCEINLINE ETurningInPlace GetTurningInPlace() { return TurningInPlace; }
+	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace; }
 
-	FORCEINLINE UCameraComponent* GetFollowCamera() { return FollowCamera; }
+	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
-	FORCEINLINE bool ShouldRotateRootBone() { return bRotateRootBone; }
+	FORCEINLINE bool ShouldRotateRootBone() const { return bRotateRootBone; }
+
+	FORCEINLINE bool IsEliminated() const { return bEliminated; }
 
 	FVector GetHitTarget() const;
 

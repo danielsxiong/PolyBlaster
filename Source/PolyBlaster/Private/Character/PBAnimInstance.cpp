@@ -50,6 +50,8 @@ void UPBAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 	bRotateRootBone = PBCharacter->ShouldRotateRootBone();
 
+	bEliminated = PBCharacter->IsEliminated();
+
 	// Offset Yaw for strafing, this count the delta between movement rotation and aim rotation, then use RInterp to get a smooth yaw offset
 	FRotator AimRotation = PBCharacter->GetBaseAimRotation();
 	FRotator MovementRotation = UKismetMathLibrary::MakeRotFromX(PBCharacter->GetVelocity());

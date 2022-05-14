@@ -5,7 +5,10 @@
 #include "Character/PBCharacter.h"
 #include "PlayerController/PBPlayerController.h"
 
-void APBGameMode::PlayerEliminated(APBCharacter* EliminatedCharacter, class APBPlayerController* EliminatedController, APBPlayerController* AttackerController)
+void APBGameMode::PlayerEliminated(APBCharacter* EliminatedCharacter, APBPlayerController* EliminatedController, APBPlayerController* AttackerController)
 {
-
+	if (EliminatedCharacter)
+	{
+		EliminatedCharacter->MulticastEliminated();
+	}
 }
