@@ -17,4 +17,6 @@ class POLYBLASTER_API APBGameMode : public AGameMode
 public:
 
 	virtual void PlayerEliminated(class APBCharacter* EliminatedCharacter, class APBPlayerController* EliminatedController, APBPlayerController* AttackerController);
+
+	virtual void RequestRespawn(class ACharacter* EliminatedCharacter, AController* EliminatedController);
 };

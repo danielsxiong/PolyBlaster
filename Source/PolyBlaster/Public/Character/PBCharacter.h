@@ -34,6 +34,8 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastEliminated();
 
+	void Eliminated();
+
 	/*UFUNCTION(NetMulticast, Unreliable)
 	void MulticastHit();*/
 
@@ -180,7 +182,18 @@ private:
 
 	class APBPlayerController* PBPlayerController;
 
+	/**
+	* Player Elimination
+	*/
+
 	bool bEliminated = false;
+
+	FTimerHandle EliminatedTimer;
+
+	UPROPERTY(EditDefaultsOnly)
+	float EliminatedDelay = 3.f;
+
+	void EliminatedTimerFinished();
 
 public:	
 

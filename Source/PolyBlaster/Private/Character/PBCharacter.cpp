@@ -11,6 +11,7 @@
 #include "HUD/OverheadWidget.h"
 #include "Net/UnrealNetwork.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "TimerManager.h"
 
 #include "Weapon/Weapon.h"
 #include "PBComponents/CombatComponent.h"
@@ -52,6 +53,8 @@ APBCharacter::APBCharacter()
 	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 	NetUpdateFrequency = 66.f;
 	MinNetUpdateFrequency = 33.f;
+
+	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 }
 
 void APBCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -428,10 +431,27 @@ void APBCharacter::PlayEliminatedMontage()
 	}
 }
 
+
 void APBCharacter::MulticastEliminated_Implementation()
 {
 	bEliminated = true;
 	PlayEliminatedMontage();
+}
+
+void APBCharacter::Eliminated()
+{
+	MulticastEliminated();
+
+	GetWorldTimerManager().SetTimer(EliminatedTimer, this, &APBCharacter::EliminatedTimerFinished, EliminatedDelay);
+}
+
+void APBCharacter::EliminatedTimerFinished()
+{
+	APBGameMode* PBGameMode = GetWorld()->GetAuthGameMode<APBGameMode>();
+	if (PBGameMode)
+	{
+		PBGameMode->RequestRespawn(this, Controller);
+	}
 }
 
 void APBCharacter::PlayHitReactMontage()
@@ -488,7 +508,6 @@ void APBCharacter::UpdateHUDHealth()
 		PBPlayerController->SetHUDHealth(Health, MaxHealth);
 	}
 }
-
 
 void APBCharacter::SetOverlappingWeapon(AWeapon* InWeapon)
 {
