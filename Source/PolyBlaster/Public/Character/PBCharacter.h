@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Components/TimelineComponent.h"
+
 #include "PBTypes/TurningInPlace.h"
 #include "Interfaces/InteractWithCrosshairsInterface.h"
 #include "PBCharacter.generated.h"
@@ -194,6 +196,31 @@ private:
 	float EliminatedDelay = 3.f;
 
 	void EliminatedTimerFinished();
+
+	/**
+	* Player Dissolve Effect
+	*/
+
+	UPROPERTY(VisibleAnywhere)
+	UTimelineComponent* DissolveTimeline;
+
+	FOnTimelineFloat DissolveTrack;
+
+	UPROPERTY(EditAnywhere);
+	UCurveFloat* DissolveCurve;
+
+	// Dynamic Instance to change at runtime
+	UPROPERTY(VisibleAnywhere, Category = Eliminated)
+	UMaterialInstanceDynamic* DynamicDissolveMaterialInstance;
+
+	// Material Instance set on the BP, used with Dynamic Material Instance
+	UPROPERTY(EditAnywhere, Category = Eliminated)
+	UMaterialInstance* DissolveMaterialInstance;
+
+	UFUNCTION()
+	void UpdateDissolveMaterial(float DissolveValue);
+
+	void StartDissolve();
 
 public:	
 
