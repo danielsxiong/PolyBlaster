@@ -439,6 +439,7 @@ void APBCharacter::MulticastEliminated_Implementation()
 	bEliminated = true;
 	PlayEliminatedMontage();
 
+	// Start dissolve effect
 	if (DissolveMaterialInstance)
 	{
 		DynamicDissolveMaterialInstance = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
@@ -448,10 +449,29 @@ void APBCharacter::MulticastEliminated_Implementation()
 	}
 
 	StartDissolve();
+
+	// Disable character movement
+	GetCharacterMovement()->DisableMovement();
+	GetCharacterMovement()->StopMovementImmediately();
+
+	if (PBPlayerController)
+	{
+		DisableInput(PBPlayerController);
+	}
+
+	// Disable collision
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void APBCharacter::Eliminated()
 {
+	if (Combat && Combat->EquippedWeapon)
+	{
+		Combat->EquippedWeapon->Drop();
+		Combat->EquippedWeapon = nullptr;
+	}
+
 	MulticastEliminated();
 
 	GetWorldTimerManager().SetTimer(EliminatedTimer, this, &APBCharacter::EliminatedTimerFinished, EliminatedDelay);
