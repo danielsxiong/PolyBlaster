@@ -29,6 +29,8 @@ public:
 
 	virtual void OnRep_ReplicatedMovement() override;
 
+	virtual void Destroyed() override;
+
 	void PlayFireMontage(bool bAiming);
 
 	void PlayEliminatedMontage();
@@ -221,6 +223,19 @@ private:
 	void UpdateDissolveMaterial(float DissolveValue);
 
 	void StartDissolve();
+
+	/**
+	* Elimination Bot
+	*/
+
+	UPROPERTY(EditAnywhere);
+	UParticleSystem* ElimBotEffect;
+
+	UPROPERTY(VisibleAnywhere);
+	UParticleSystemComponent* ElimBotComponent;
+
+	UPROPERTY(EditAnywhere);
+	class USoundCue* ElimBotSound;
 
 public:	
 
