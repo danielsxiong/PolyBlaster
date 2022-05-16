@@ -94,6 +94,9 @@ protected:
 
 	void UpdateHUDHealth();
 
+	// Poll for any relevant classes and init HUD
+	void PollInit();
+
 private:
 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -237,6 +240,8 @@ private:
 	UPROPERTY(EditAnywhere);
 	class USoundCue* ElimBotSound;
 
+	class APBPlayerState* PBPlayerState;
+
 public:	
 
 	void SetOverlappingWeapon(AWeapon* InWeapon);
@@ -258,6 +263,10 @@ public:
 	FORCEINLINE bool ShouldRotateRootBone() const { return bRotateRootBone; }
 
 	FORCEINLINE bool IsEliminated() const { return bEliminated; }
+
+	FORCEINLINE float GetHealth() const { return Health; }
+
+	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
 
 	FVector GetHitTarget() const;
 

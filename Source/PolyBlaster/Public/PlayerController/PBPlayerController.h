@@ -16,7 +16,11 @@ class POLYBLASTER_API APBPlayerController : public APlayerController
 	
 public:
 
+	virtual void OnPossess(APawn* InPawn) override;
+
 	void SetHUDHealth(float Health, float MaxHealth);
+
+	void SetHUDScore(float Score);
 
 protected:
 

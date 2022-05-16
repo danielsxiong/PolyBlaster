@@ -7,9 +7,18 @@
 
 #include "Character/PBCharacter.h"
 #include "PlayerController/PBPlayerController.h"
+#include "PlayerState/PBPlayerState.h"
 
 void APBGameMode::PlayerEliminated(APBCharacter* EliminatedCharacter, APBPlayerController* EliminatedController, APBPlayerController* AttackerController)
 {
+	APBPlayerState* AttackerPlayerState = AttackerController ? Cast<APBPlayerState>(AttackerController->PlayerState) : nullptr;
+	APBPlayerState* VictimPlayerState = EliminatedController ? Cast<APBPlayerState>(EliminatedController->PlayerState) : nullptr;
+
+	if (AttackerPlayerState && AttackerPlayerState != VictimPlayerState)
+	{
+		AttackerPlayerState->AddToScore(1.f);
+	}
+
 	if (EliminatedCharacter)
 	{
 		EliminatedCharacter->Eliminated();

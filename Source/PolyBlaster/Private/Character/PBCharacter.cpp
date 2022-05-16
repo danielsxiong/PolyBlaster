@@ -21,6 +21,7 @@
 #include "../PolyBlaster.h"
 #include "Character/PBAnimInstance.h"
 #include "PlayerController/PBPlayerController.h"
+#include "PlayerState/PBPlayerState.h"
 #include "GameMode/PBGameMode.h"
 
 APBCharacter::APBCharacter()
@@ -134,6 +135,7 @@ void APBCharacter::Tick(float DeltaTime)
 	}
 
 	HideCameraIfCharacterClose();
+	PollInit();
 }
 
 void APBCharacter::Jump()
@@ -571,6 +573,18 @@ void APBCharacter::UpdateHUDHealth()
 	if (PBPlayerController)
 	{
 		PBPlayerController->SetHUDHealth(Health, MaxHealth);
+	}
+}
+
+void APBCharacter::PollInit()
+{
+	if (!PBPlayerState)
+	{
+		PBPlayerState = GetPlayerState<APBPlayerState>();
+		if (PBPlayerState)
+		{
+			PBPlayerState->AddToScore(0.f);
+		}
 	}
 }
 
