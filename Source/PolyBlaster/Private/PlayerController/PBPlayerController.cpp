@@ -59,3 +59,18 @@ void APBPlayerController::SetHUDScore(float Score)
 		PBHUD->CharacterOverlay->ScoreAmount->SetText(FText::FromString(ScoreText));
 	}
 }
+
+void APBPlayerController::SetHUDDefeats(int32 Defeats)
+{
+	if (!PBHUD)
+	{
+		PBHUD = Cast<APBHUD>(GetHUD());
+	}
+
+	bool bHUDValid = PBHUD && PBHUD->CharacterOverlay && PBHUD->CharacterOverlay->DefeatsAmount;
+	if (bHUDValid)
+	{
+		FString DefeatsText = FString::Printf(TEXT("%d"), Defeats);
+		PBHUD->CharacterOverlay->DefeatsAmount->SetText(FText::FromString(DefeatsText));
+	}
+}

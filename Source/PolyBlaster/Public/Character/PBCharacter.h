@@ -187,6 +187,7 @@ private:
 	UFUNCTION()
 	void OnRep_Health();
 
+	UPROPERTY()
 	class APBPlayerController* PBPlayerController;
 
 	/**
@@ -240,6 +241,7 @@ private:
 	UPROPERTY(EditAnywhere);
 	class USoundCue* ElimBotSound;
 
+	UPROPERTY()
 	class APBPlayerState* PBPlayerState;
 
 public:	

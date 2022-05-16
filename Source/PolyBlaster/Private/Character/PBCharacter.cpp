@@ -584,6 +584,7 @@ void APBCharacter::PollInit()
 		if (PBPlayerState)
 		{
 			PBPlayerState->AddToScore(0.f);
+			PBPlayerState->AddToDefeats(0);
 		}
 	}
 }

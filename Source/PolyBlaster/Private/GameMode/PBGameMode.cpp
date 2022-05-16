@@ -19,6 +19,11 @@ void APBGameMode::PlayerEliminated(APBCharacter* EliminatedCharacter, APBPlayerC
 		AttackerPlayerState->AddToScore(1.f);
 	}
 
+	if (VictimPlayerState)
+	{
+		VictimPlayerState->AddToDefeats(1);
+	}
+
 	if (EliminatedCharacter)
 	{
 		EliminatedCharacter->Eliminated();
