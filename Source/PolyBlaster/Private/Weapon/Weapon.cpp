@@ -194,7 +194,7 @@ void AWeapon::OnRep_Ammo()
 
 void AWeapon::SpendRound()
 {
-	--Ammo;
+	Ammo = FMath::Clamp(Ammo - 1, 0, MagCapacity);
 
 	SetHUDAmmo();
 }
@@ -221,4 +221,9 @@ void AWeapon::Drop()
 	SetOwner(nullptr);
 	OwnerPBCharacter = nullptr;
 	OwnerPBPlayerController = nullptr;
+}
+
+bool AWeapon::IsEmpty()
+{
+	return Ammo <= 0;
 }

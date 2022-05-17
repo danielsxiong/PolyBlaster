@@ -145,6 +145,8 @@ public:
 
 	void Drop();
 
+	bool IsEmpty();
+
 	FORCEINLINE USphereComponent* GetAreaSphere() const { return AreaSphere; }
 
 	FORCEINLINE USkeletalMeshComponent* GetWeaponMesh() const { return WeaponMesh; }

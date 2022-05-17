@@ -98,6 +98,8 @@ private:
 
 	void FireTimerFinished();
 
+	bool CanFire();
+
 protected:
 
 	void SetAiming(bool bIsAiming);

@@ -123,7 +123,7 @@ void UCombatComponent::FireButtonPressed(bool bPressed)
 
 void UCombatComponent::Fire()
 {
-	if (!bCanFire)
+	if (!CanFire())
 	{
 		return;
 	}
@@ -363,4 +363,14 @@ void UCombatComponent::FireTimerFinished()
 	{
 		Fire();
 	}
+}
+
+bool UCombatComponent::CanFire()
+{
+	if (!EquippedWeapon)
+	{
+		return false;
+	}
+
+	return !EquippedWeapon->IsEmpty() && bCanFire;
 }
