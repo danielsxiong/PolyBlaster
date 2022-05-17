@@ -153,9 +153,14 @@ protected:
 
 	void SetHUDCrosshairs(float DeltaTime);
 
+	UFUNCTION(Server, Reliable)
+	void ServerReload();
+
 public:
 
 	void EquipWeapon(AWeapon* InWeapon);
+
+	void Reload();
 
 	FORCEINLINE float GetMaxWalkSpeed() { return BaseWalkSpeed; }
 

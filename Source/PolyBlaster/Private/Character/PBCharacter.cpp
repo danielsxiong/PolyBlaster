@@ -17,6 +17,7 @@
 #include "Particles/ParticleSystemComponent.h"
 
 #include "Weapon/Weapon.h"
+#include "Weapon/WeaponTypes.h"
 #include "PBComponents/CombatComponent.h"
 #include "../PolyBlaster.h"
 #include "Character/PBAnimInstance.h"
@@ -107,6 +108,7 @@ void APBCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction("Aim", IE_Released, this, &APBCharacter::AimButtonReleased);
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APBCharacter::FireButtonPressed);
 	PlayerInputComponent->BindAction("Fire", IE_Released, this, &APBCharacter::FireButtonReleased);
+	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &APBCharacter::ReloadButtonPressed);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &APBCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &APBCharacter::MoveRight);
@@ -254,6 +256,16 @@ void APBCharacter::FireButtonReleased()
 	}
 
 	Combat->FireButtonPressed(false);
+}
+
+void APBCharacter::ReloadButtonPressed()
+{
+	if (!Combat)
+	{
+		return;
+	}
+
+	Combat->Reload();
 }
 
 void APBCharacter::AimOffset(float DeltaTime)
@@ -435,6 +447,30 @@ void APBCharacter::PlayEliminatedMontage()
 	if (AnimInstance && EliminatedMontage)
 	{
 		AnimInstance->Montage_Play(EliminatedMontage);
+	}
+}
+
+void APBCharacter::PlayReloadMontage()
+{
+	if (!Combat || !Combat->EquippedWeapon)
+	{
+		return;
+	}
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && FireWeaponMontage)
+	{
+		AnimInstance->Montage_Play(ReloadMontage);
+		FName SectionName;
+		switch (Combat->EquippedWeapon->GetWeaponType())
+		{
+		case EWeaponType::EWT_AssaultRifle:
+		{
+			SectionName = FName("Rifle");
+			break;
+		}
+		}
+		AnimInstance->Montage_JumpToSection(SectionName);
 	}
 }
 

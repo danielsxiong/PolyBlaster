@@ -336,6 +336,24 @@ void UCombatComponent::EquipWeapon(AWeapon* InWeapon)
 	Character->bUseControllerRotationYaw = true;
 }
 
+void UCombatComponent::Reload()
+{
+	if (CarriedAmmo > 0)
+	{
+		ServerReload();
+	}
+}
+
+void UCombatComponent::ServerReload_Implementation()
+{
+	if (!Character)
+	{
+		return;
+	}
+
+	Character->PlayReloadMontage();
+}
+
 void UCombatComponent::InterpFOV(float DeltaTime)
 {
 	if (!EquippedWeapon)
