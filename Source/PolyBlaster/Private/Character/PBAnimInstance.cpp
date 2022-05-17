@@ -96,7 +96,7 @@ void UPBAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		// Debug weapon aim
 		FTransform MuzzleTipTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(FName("MuzzleFlash"), ERelativeTransformSpace::RTS_World);
 		const FVector MuzzleX(FRotationMatrix(MuzzleTipTransform.GetRotation().Rotator()).GetUnitAxis(EAxis::X));
-		DrawDebugLine(GetWorld(), MuzzleTipTransform.GetLocation(), MuzzleTipTransform.GetLocation() + MuzzleX * 1000.f, FColor::Red);
-		DrawDebugLine(GetWorld(), MuzzleTipTransform.GetLocation(), PBCharacter->GetHitTarget(), FColor::Orange);
+		// DrawDebugLine(GetWorld(), MuzzleTipTransform.GetLocation(), MuzzleTipTransform.GetLocation() + MuzzleX * 1000.f, FColor::Red);
+		// DrawDebugLine(GetWorld(), MuzzleTipTransform.GetLocation(), PBCharacter->GetHitTarget(), FColor::Orange);
 	}
 }

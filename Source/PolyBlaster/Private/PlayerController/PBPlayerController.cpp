@@ -89,3 +89,18 @@ void APBPlayerController::SetHUDWeaponAmmo(int32 Ammo)
 		PBHUD->CharacterOverlay->WeaponAmmoAmmount->SetText(FText::FromString(AmmoText));
 	}
 }
+
+void APBPlayerController::SetHUDCarriedAmmo(int32 Ammo)
+{
+	if (!PBHUD)
+	{
+		PBHUD = Cast<APBHUD>(GetHUD());
+	}
+
+	bool bHUDValid = PBHUD && PBHUD->CharacterOverlay && PBHUD->CharacterOverlay->CarriedAmmoAmmount;
+	if (bHUDValid)
+	{
+		FString AmmoText = FString::Printf(TEXT("%d"), Ammo);
+		PBHUD->CharacterOverlay->CarriedAmmoAmmount->SetText(FText::FromString(AmmoText));
+	}
+}
