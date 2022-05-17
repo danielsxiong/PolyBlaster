@@ -2,14 +2,16 @@
 
 
 #include "Weapon/Weapon.h"
-#include "Weapon/Casing.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Net/UnrealNetwork.h"
 #include "Animation/AnimationAsset.h"
+
 #include "Character/PBCharacter.h"
+#include "PlayerController/PBPlayerController.h"
+#include "Weapon/Casing.h"
 
 AWeapon::AWeapon()
 {
@@ -53,12 +55,27 @@ void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AWeapon, WeaponState);
+	DOREPLIFETIME(AWeapon, Ammo);
 }
 
 void AWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AWeapon::OnRep_Owner()
+{
+	Super::OnRep_Owner();
+
+	if (!Owner)
+	{
+		OwnerPBCharacter = nullptr;
+		OwnerPBPlayerController = nullptr;
+		return;
+	}
+	
+	SetHUDAmmo();
 }
 
 void AWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& Sweep)
@@ -104,6 +121,8 @@ void AWeapon::Fire(const FVector& HitTarget)
 			}
 		}
 	}
+
+	SpendRound();
 }
 
 void AWeapon::ShowPickupWidget(bool bShowPickupWidget)
@@ -168,6 +187,31 @@ void AWeapon::OnRep_WeaponState()
 	}
 }
 
+void AWeapon::OnRep_Ammo()
+{
+	SetHUDAmmo();
+}
+
+void AWeapon::SpendRound()
+{
+	--Ammo;
+
+	SetHUDAmmo();
+}
+
+void AWeapon::SetHUDAmmo()
+{
+	OwnerPBCharacter = OwnerPBCharacter == nullptr ? Cast<APBCharacter>(GetOwner()) : OwnerPBCharacter;
+	if (OwnerPBCharacter)
+	{
+		OwnerPBPlayerController = OwnerPBPlayerController == nullptr ? Cast<APBPlayerController>(OwnerPBCharacter->Controller) : OwnerPBPlayerController;
+		if (OwnerPBPlayerController)
+		{
+			OwnerPBPlayerController->SetHUDWeaponAmmo(Ammo);
+		}
+	}
+}
+
 void AWeapon::Drop()
 {
 	SetWeaponState(EWeaponState::EWS_Dropped);
@@ -175,4 +219,6 @@ void AWeapon::Drop()
 	FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
 	WeaponMesh->DetachFromComponent(DetachRules);
 	SetOwner(nullptr);
+	OwnerPBCharacter = nullptr;
+	OwnerPBPlayerController = nullptr;
 }

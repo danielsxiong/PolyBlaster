@@ -35,9 +35,17 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void OnRep_Owner() override;
+
 	virtual void Fire(const FVector& HitTarget);
 
 private:
+
+	UPROPERTY()
+	class APBCharacter* OwnerPBCharacter;
+
+	UPROPERTY()
+	class APBPlayerController* OwnerPBPlayerController;
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	USkeletalMeshComponent* WeaponMesh;
@@ -67,6 +75,18 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ACasing> CasingClass;
+
+
+	UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_Ammo)
+	int32 Ammo;
+
+	UPROPERTY(EditAnywhere)
+	int32 MagCapacity;
+
+	UFUNCTION()
+	void OnRep_Ammo();
+
+	void SpendRound();
 
 protected:
 
@@ -120,6 +140,8 @@ public:
 	void ShowPickupWidget(bool bShowPickupWidget);
 
 	void SetWeaponState(EWeaponState InState);
+
+	void SetHUDAmmo();
 
 	void Drop();
 

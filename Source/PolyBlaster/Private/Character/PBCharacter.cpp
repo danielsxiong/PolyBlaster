@@ -462,6 +462,9 @@ void APBCharacter::MulticastEliminated_Implementation()
 	if (PBPlayerController)
 	{
 		DisableInput(PBPlayerController);
+
+		// Also set ammo HUD to 0
+		PBPlayerController->SetHUDWeaponAmmo(0);
 	}
 
 	// Disable collision

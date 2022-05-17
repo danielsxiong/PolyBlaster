@@ -291,9 +291,14 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 
 void UCombatComponent::EquipWeapon(AWeapon* InWeapon)
 {
-	if (!Character || !InWeapon || EquippedWeapon)
+	if (!Character || !InWeapon)
 	{
 		return;
+	}
+
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->Drop();
 	}
 
 	EquippedWeapon = InWeapon;
@@ -307,6 +312,7 @@ void UCombatComponent::EquipWeapon(AWeapon* InWeapon)
 
 	// Owner is replicated, so when we set it on the server, it will be replicated to client
 	EquippedWeapon->SetOwner(Character);
+	EquippedWeapon->SetHUDAmmo();
 
 	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 	Character->bUseControllerRotationYaw = true;
