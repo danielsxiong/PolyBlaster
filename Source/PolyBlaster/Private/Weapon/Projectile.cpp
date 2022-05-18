@@ -16,7 +16,7 @@
 AProjectile::AProjectile()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	bReplicates = true;
+	//bReplicates = true;
 
 	CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
 	SetRootComponent(CollisionBox);
@@ -41,10 +41,10 @@ void AProjectile::BeginPlay()
 		TracerComponent = UGameplayStatics::SpawnEmitterAttached(Tracer, CollisionBox, FName(), GetActorLocation(), GetActorRotation(), EAttachLocation::KeepWorldPosition);
 	}
 
-	if (HasAuthority())
-	{
+	//if (HasAuthority())
+	//{
 		CollisionBox->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
-	}
+	//}
 
 	/*if (!HasAuthority() && Cast<ACharacter>(GetOwner())->IsLocallyControlled())
 	{

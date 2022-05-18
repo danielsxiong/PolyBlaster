@@ -290,7 +290,7 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 
 			//UE_LOG(LogTemp, Warning, TEXT("CrosshairShootingFactor: %f"), CrosshairShootingFactor);
 
-			HUDPackage.CrosshairSpread = 0.5f + CrosshairVelocityFactor + CrosshairInAirFactor - CrosshairAimFactor - CrosshairAimedAtCharacterFactor + CrosshairShootingFactor;
+			HUDPackage.CrosshairSpread = FMath::Clamp(0.5f + CrosshairVelocityFactor + CrosshairInAirFactor - CrosshairAimFactor - CrosshairAimedAtCharacterFactor + CrosshairShootingFactor, 0.f, 3.f);
 
 			HUD->SetHUDPackage(HUDPackage);
 		}

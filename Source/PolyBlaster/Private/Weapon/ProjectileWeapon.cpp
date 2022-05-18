@@ -14,6 +14,11 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 		return;
 	}
 
+	MulticastSpawnProjectile(HitTarget);
+}
+
+void AProjectileWeapon::MulticastSpawnProjectile_Implementation(const FVector& HitTarget)
+{
 	APawn* InstigatorPawn = Cast<APawn>(GetOwner());
 
 	const USkeletalMeshSocket* MuzzleFlashSocket = GetWeaponMesh()->GetSocketByName(FName("MuzzleFlash"));
