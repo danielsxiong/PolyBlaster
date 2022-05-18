@@ -154,7 +154,7 @@ void UCombatComponent::ServerFire_Implementation(const FVector_NetQuantize& Trac
 
 void UCombatComponent::MulticastFire_Implementation(const FVector_NetQuantize& TraceHitTarget)
 {
-	if (Character && EquippedWeapon)
+	if (Character && EquippedWeapon && CombatState == ECombatState::ECS_Unoccupied)
 	{
 		Character->PlayFireMontage(bAiming);
 		EquippedWeapon->Fire(TraceHitTarget);
@@ -367,6 +367,11 @@ void UCombatComponent::FinishReload()
 	{
 		CombatState = ECombatState::ECS_Unoccupied;
 	}
+
+	if (bFireButtonPressed)
+	{
+		Fire();
+	}
 }
 
 void UCombatComponent::OnRep_CombatState()
@@ -376,6 +381,14 @@ void UCombatComponent::OnRep_CombatState()
 	case ECombatState::ECS_Reloading:
 	{
 		HandleReload();
+		break;
+	}
+	case ECombatState::ECS_Unoccupied:
+	{
+		if (bFireButtonPressed)
+		{
+			Fire();
+		}
 		break;
 	}
 	default:
