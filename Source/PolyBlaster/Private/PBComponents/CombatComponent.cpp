@@ -346,6 +346,11 @@ void UCombatComponent::EquipWeapon(AWeapon* InWeapon)
 
 	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 	Character->bUseControllerRotationYaw = true;
+
+	if (EquippedWeapon->IsEmpty())
+	{
+		Reload();
+	}
 }
 
 void UCombatComponent::Reload()
@@ -499,6 +504,11 @@ void UCombatComponent::FireTimerFinished()
 	if (bFireButtonPressed && EquippedWeapon->bAutomatic)
 	{
 		Fire();
+	}
+
+	if (EquippedWeapon->IsEmpty())
+	{
+		Reload();
 	}
 }
 
