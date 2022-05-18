@@ -144,6 +144,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	float ZoomInterpSpeed = 20.f;
 
+	UPROPERTY(EditAnywhere)
+	class USoundCue* EquipSound;
+
 	void ShowPickupWidget(bool bShowPickupWidget);
 
 	void SetWeaponState(EWeaponState InState);

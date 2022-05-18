@@ -53,6 +53,12 @@ void UPBAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 	bEliminated = PBCharacter->IsEliminated();
 
+	bUseFABRIK = PBCharacter->GetCombatState() != ECombatState::ECS_Reloading;
+
+	bUseAimOffsets = PBCharacter->GetCombatState() != ECombatState::ECS_Reloading;
+
+	bTransformRightHand = PBCharacter->GetCombatState() != ECombatState::ECS_Reloading;
+
 	// Offset Yaw for strafing, this count the delta between movement rotation and aim rotation, then use RInterp to get a smooth yaw offset
 	FRotator AimRotation = PBCharacter->GetBaseAimRotation();
 	FRotator MovementRotation = UKismetMathLibrary::MakeRotFromX(PBCharacter->GetVelocity());
@@ -100,6 +106,4 @@ void UPBAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		// DrawDebugLine(GetWorld(), MuzzleTipTransform.GetLocation(), MuzzleTipTransform.GetLocation() + MuzzleX * 1000.f, FColor::Red);
 		// DrawDebugLine(GetWorld(), MuzzleTipTransform.GetLocation(), PBCharacter->GetHitTarget(), FColor::Orange);
 	}
-
-	bUseFABRIK = PBCharacter->GetCombatState() != ECombatState::ECS_Reloading;
 }
