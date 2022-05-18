@@ -165,6 +165,10 @@ protected:
 
 	void HandleReload();
 
+	int32 AmountToReload();
+
+	void UpdateAmmoValues();
+
 public:
 
 	void EquipWeapon(AWeapon* InWeapon);

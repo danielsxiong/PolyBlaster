@@ -41,6 +41,8 @@ public:
 
 	virtual void Fire(const FVector& HitTarget);
 
+	void AddAmmo(int32 AmmoToAdd);
+
 private:
 
 	UPROPERTY()
@@ -161,5 +163,9 @@ public:
 	FORCEINLINE float GetZoomInterpSpeed() const { return ZoomInterpSpeed; }
 
 	FORCEINLINE EWeaponType GetWeaponType() const { return WeaponType; }
+
+	FORCEINLINE int32 GetAmmo() const { return Ammo; }
+
+	FORCEINLINE int32 GetMagCapacity() const { return MagCapacity; }
 		 
 };
