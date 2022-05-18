@@ -7,6 +7,7 @@
 
 #include "HUD/PBHUD.h"
 #include "Weapon/WeaponTypes.h"
+#include "PBTypes/CombatState.h"
 #include "CombatComponent.generated.h"
 
 #define TRACE_LENGTH 10000.f
@@ -116,6 +117,12 @@ private:
 
 	void InitializeCarriedAmmo();
 
+	UPROPERTY(ReplicatedUsing = OnRep_CombatState)
+	ECombatState CombatState = ECombatState::ECS_Unoccupied;
+
+	UFUNCTION()
+	void OnRep_CombatState();
+
 protected:
 
 	void SetAiming(bool bIsAiming);
@@ -156,11 +163,16 @@ protected:
 	UFUNCTION(Server, Reliable)
 	void ServerReload();
 
+	void HandleReload();
+
 public:
 
 	void EquipWeapon(AWeapon* InWeapon);
 
 	void Reload();
+
+	UFUNCTION(BlueprintCallable)
+	void FinishReload();
 
 	FORCEINLINE float GetMaxWalkSpeed() { return BaseWalkSpeed; }
 

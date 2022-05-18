@@ -4,6 +4,7 @@
 #include "Character/PBAnimInstance.h"
 #include "Character/PBCharacter.h"
 #include "Weapon/Weapon.h"
+#include "PBTypes/CombatState.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -99,4 +100,6 @@ void UPBAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		// DrawDebugLine(GetWorld(), MuzzleTipTransform.GetLocation(), MuzzleTipTransform.GetLocation() + MuzzleX * 1000.f, FColor::Red);
 		// DrawDebugLine(GetWorld(), MuzzleTipTransform.GetLocation(), PBCharacter->GetHitTarget(), FColor::Orange);
 	}
+
+	bUseFABRIK = PBCharacter->GetCombatState() != ECombatState::ECS_Reloading;
 }

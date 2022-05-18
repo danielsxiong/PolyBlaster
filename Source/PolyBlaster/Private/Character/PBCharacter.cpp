@@ -700,6 +700,16 @@ FVector APBCharacter::GetHitTarget() const
 	return Combat->HitTarget;
 }
 
+ECombatState APBCharacter::GetCombatState() const
+{
+	if (!Combat)
+	{
+		return ECombatState::ECS_MAX;
+	}
+
+	return Combat->CombatState;
+}
+
 void APBCharacter::Destroyed()
 {
 	Super::Destroyed();

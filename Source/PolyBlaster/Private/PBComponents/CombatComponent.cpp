@@ -51,6 +51,7 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(UCombatComponent, EquippedWeapon);
 	DOREPLIFETIME(UCombatComponent, bAiming);
 	DOREPLIFETIME(UCombatComponent, HitTarget);
+	DOREPLIFETIME(UCombatComponent, CombatState);
 	// Just replicate to owning client, since other don't need it
 	DOREPLIFETIME_CONDITION(UCombatComponent, CarriedAmmo, COND_OwnerOnly);
 }
@@ -338,7 +339,7 @@ void UCombatComponent::EquipWeapon(AWeapon* InWeapon)
 
 void UCombatComponent::Reload()
 {
-	if (CarriedAmmo > 0)
+	if (CarriedAmmo > 0 && CombatState != ECombatState::ECS_Reloading)
 	{
 		ServerReload();
 	}
@@ -351,6 +352,39 @@ void UCombatComponent::ServerReload_Implementation()
 		return;
 	}
 
+	CombatState = ECombatState::ECS_Reloading;
+	HandleReload();
+}
+
+void UCombatComponent::FinishReload()
+{
+	if (!Character)
+	{
+		return;
+	}
+
+	if (Character->HasAuthority())
+	{
+		CombatState = ECombatState::ECS_Unoccupied;
+	}
+}
+
+void UCombatComponent::OnRep_CombatState()
+{
+	switch (CombatState)
+	{
+	case ECombatState::ECS_Reloading:
+	{
+		HandleReload();
+		break;
+	}
+	default:
+		break;
+	}
+}
+
+void UCombatComponent::HandleReload()
+{
 	Character->PlayReloadMontage();
 }
 
@@ -408,7 +442,7 @@ bool UCombatComponent::CanFire()
 		return false;
 	}
 
-	return !EquippedWeapon->IsEmpty() && bCanFire;
+	return !EquippedWeapon->IsEmpty() && bCanFire && CombatState == ECombatState::ECS_Unoccupied;
 }
 
 void UCombatComponent::OnRep_CarriedAmmo()

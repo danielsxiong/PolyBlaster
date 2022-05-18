@@ -8,6 +8,7 @@
 
 #include "PBTypes/TurningInPlace.h"
 #include "Interfaces/InteractWithCrosshairsInterface.h"
+#include "PBTypes/CombatState.h"
 #include "PBCharacter.generated.h"
 
 UCLASS()
@@ -113,7 +114,7 @@ private:
 	class UWidgetComponent* OverheadWidget;
 
 	// bIsReplicated - true
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UCombatComponent* Combat;
 
 	/*
@@ -278,5 +279,7 @@ public:
 	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
 
 	FVector GetHitTarget() const;
+
+	ECombatState GetCombatState() const;
 
 };
