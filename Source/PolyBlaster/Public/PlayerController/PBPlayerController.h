@@ -23,8 +23,12 @@ public:
 	// Sync with server time as soon as possible
 	virtual void ReceivedPlayer() override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	// Sync with server world time
 	virtual float GetServerTime();
+
+	void OnMatchStateSet(FName State);
 
 	void SetHUDHealth(float Health, float MaxHealth);
 
@@ -43,6 +47,8 @@ protected:
 	virtual void BeginPlay() override;
 
 	void SetHUDTime();
+
+	void PollInit();
 
 	/**
 	* Sync time between client and server
@@ -71,7 +77,26 @@ private:
 	UPROPERTY()
 	class APBHUD* PBHUD;
 
+	UPROPERTY()
+	class UCharacterOverlay* CharacterOverlay;
+
+	bool bInitializeCharacterOverlay = false;
+
 	float MatchTime = 120.f;
 
 	uint32 CountdownInt = 0;
+
+	float HUDHealth;
+
+	float HUDMaxHealth;
+
+	float HUDScore;
+
+	int32 HUDDefeats;
+
+	UPROPERTY(ReplicatedUsing = OnRep_MatchState)
+	FName MatchState;
+
+	UFUNCTION()
+	void OnRep_MatchState();
 };

@@ -4,17 +4,26 @@
 #include "PlayerController/PBPlayerController.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
+#include "Net/UnrealNetwork.h"
 
 #include "HUD/PBHUD.h"
 #include "HUD/CharacterOverlay.h"
 #include "Character/PBCharacter.h"
 #include "PlayerState/PBPlayerState.h"
+#include "GameMode/PBGameMode.h"
 
 void APBPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
 	PBHUD = Cast<APBHUD>(GetHUD());
+}
+
+void APBPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(APBPlayerController, MatchState);
 }
 
 void APBPlayerController::ReceivedPlayer()
@@ -33,6 +42,26 @@ void APBPlayerController::Tick(float DeltaTime)
 	SetHUDTime();
 
 	CheckTimeSync(DeltaTime);
+
+	PollInit();
+}
+
+void APBPlayerController::PollInit()
+{
+	if (!CharacterOverlay)
+	{
+		if (PBHUD && PBHUD->CharacterOverlay)
+		{
+			CharacterOverlay = PBHUD->CharacterOverlay;
+
+			if (CharacterOverlay)
+			{
+				SetHUDHealth(HUDHealth, HUDMaxHealth);
+				SetHUDScore(HUDScore);
+				SetHUDDefeats(HUDDefeats);
+			}
+		}
+	}
 }
 
 void APBPlayerController::CheckTimeSync(float DeltaTime)
@@ -67,12 +96,35 @@ void APBPlayerController::OnPossess(APawn* InPawn)
 	}
 }
 
+void APBPlayerController::OnMatchStateSet(FName State)
+{
+	MatchState = State;
+
+	if (MatchState == MatchState::InProgress)
+	{
+		PBHUD = PBHUD == nullptr ? Cast<APBHUD>(GetHUD()) : PBHUD;
+		if (PBHUD)
+		{
+			PBHUD->AddCharacterOverlay();
+		}
+	}
+}
+
+void APBPlayerController::OnRep_MatchState()
+{
+	if (MatchState == MatchState::InProgress)
+	{
+		PBHUD = PBHUD == nullptr ? Cast<APBHUD>(GetHUD()) : PBHUD;
+		if (PBHUD)
+		{
+			PBHUD->AddCharacterOverlay();
+		}
+	}
+}
+
 void APBPlayerController::SetHUDHealth(float Health, float MaxHealth)
 {
-	if (!PBHUD)
-	{
-		PBHUD = Cast<APBHUD>(GetHUD());
-	}
+	PBHUD = PBHUD == nullptr ? Cast<APBHUD>(GetHUD()) : PBHUD;
 
 	bool bHUDValid = PBHUD && PBHUD->CharacterOverlay && PBHUD->CharacterOverlay->HealthBar && PBHUD->CharacterOverlay->HealthText;
 	if (bHUDValid)
@@ -82,14 +134,18 @@ void APBPlayerController::SetHUDHealth(float Health, float MaxHealth)
 		FString HealthText = FString::Printf(TEXT("%d/%d"), FMath::CeilToInt(Health), FMath::CeilToInt(MaxHealth));
 		PBHUD->CharacterOverlay->HealthText->SetText(FText::FromString(HealthText));
 	}
+	else
+	{
+		bInitializeCharacterOverlay = true;
+
+		HUDHealth = Health;
+		HUDMaxHealth = MaxHealth;
+	}
 }
 
 void APBPlayerController::SetHUDScore(float Score)
 {
-	if (!PBHUD)
-	{
-		PBHUD = Cast<APBHUD>(GetHUD());
-	}
+	PBHUD = PBHUD == nullptr ? Cast<APBHUD>(GetHUD()) : PBHUD;
 
 	bool bHUDValid = PBHUD && PBHUD->CharacterOverlay && PBHUD->CharacterOverlay->ScoreAmount;
 	if (bHUDValid)
@@ -97,14 +153,17 @@ void APBPlayerController::SetHUDScore(float Score)
 		FString ScoreText = FString::Printf(TEXT("%d"), FMath::FloorToInt(Score));
 		PBHUD->CharacterOverlay->ScoreAmount->SetText(FText::FromString(ScoreText));
 	}
+	else
+	{
+		bInitializeCharacterOverlay = true;
+
+		HUDScore = Score;
+	}
 }
 
 void APBPlayerController::SetHUDDefeats(int32 Defeats)
 {
-	if (!PBHUD)
-	{
-		PBHUD = Cast<APBHUD>(GetHUD());
-	}
+	PBHUD = PBHUD == nullptr ? Cast<APBHUD>(GetHUD()) : PBHUD;
 
 	bool bHUDValid = PBHUD && PBHUD->CharacterOverlay && PBHUD->CharacterOverlay->DefeatsAmount;
 	if (bHUDValid)
@@ -112,14 +171,17 @@ void APBPlayerController::SetHUDDefeats(int32 Defeats)
 		FString DefeatsText = FString::Printf(TEXT("%d"), Defeats);
 		PBHUD->CharacterOverlay->DefeatsAmount->SetText(FText::FromString(DefeatsText));
 	}
+	else
+	{
+		bInitializeCharacterOverlay = true;
+
+		HUDDefeats = Defeats;
+	}
 }
 
 void APBPlayerController::SetHUDWeaponAmmo(int32 Ammo)
 {
-	if (!PBHUD)
-	{
-		PBHUD = Cast<APBHUD>(GetHUD());
-	}
+	PBHUD = PBHUD == nullptr ? Cast<APBHUD>(GetHUD()) : PBHUD;
 
 	bool bHUDValid = PBHUD && PBHUD->CharacterOverlay && PBHUD->CharacterOverlay->WeaponAmmoAmmount;
 	if (bHUDValid)
@@ -131,10 +193,7 @@ void APBPlayerController::SetHUDWeaponAmmo(int32 Ammo)
 
 void APBPlayerController::SetHUDCarriedAmmo(int32 Ammo)
 {
-	if (!PBHUD)
-	{
-		PBHUD = Cast<APBHUD>(GetHUD());
-	}
+	PBHUD = PBHUD == nullptr ? Cast<APBHUD>(GetHUD()) : PBHUD;
 
 	bool bHUDValid = PBHUD && PBHUD->CharacterOverlay && PBHUD->CharacterOverlay->CarriedAmmoAmmount;
 	if (bHUDValid)
@@ -146,10 +205,7 @@ void APBPlayerController::SetHUDCarriedAmmo(int32 Ammo)
 
 void APBPlayerController::SetHUDMatchCountdown(float CountdownTime)
 {
-	if (!PBHUD)
-	{
-		PBHUD = Cast<APBHUD>(GetHUD());
-	}
+	PBHUD = PBHUD == nullptr ? Cast<APBHUD>(GetHUD()) : PBHUD;
 
 	bool bHUDValid = PBHUD && PBHUD->CharacterOverlay && PBHUD->CharacterOverlay->MatchCountdownText;
 	if (bHUDValid)

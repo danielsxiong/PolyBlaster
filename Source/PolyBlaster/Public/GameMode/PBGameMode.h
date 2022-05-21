@@ -33,6 +33,8 @@ protected:
 
 	virtual void BeginPlay();
 
+	virtual void OnMatchStateSet() override;
+
 private:
 
 	float CountdownTime = 0.f;

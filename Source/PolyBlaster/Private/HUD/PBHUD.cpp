@@ -8,8 +8,6 @@
 void APBHUD::BeginPlay()
 {
 	Super::BeginPlay();
-
-	AddCharacterOverlay();
 }
 
 void APBHUD::AddCharacterOverlay()

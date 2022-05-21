@@ -36,6 +36,20 @@ void APBGameMode::Tick(float DeltaTime)
 	}
 }
 
+void APBGameMode::OnMatchStateSet()
+{
+	Super::OnMatchStateSet();
+
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		APBPlayerController* PBPlayerController = Cast<APBPlayerController>(*It);
+		if (PBPlayerController)
+		{
+			PBPlayerController->OnMatchStateSet(MatchState);
+		}
+	}
+}
+
 void APBGameMode::PlayerEliminated(APBCharacter* EliminatedCharacter, APBPlayerController* EliminatedController, APBPlayerController* AttackerController)
 {
 	APBPlayerState* AttackerPlayerState = AttackerController ? Cast<APBPlayerState>(AttackerController->PlayerState) : nullptr;
