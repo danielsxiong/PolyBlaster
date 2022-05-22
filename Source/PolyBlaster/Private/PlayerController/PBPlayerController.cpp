@@ -8,6 +8,7 @@
 
 #include "HUD/PBHUD.h"
 #include "HUD/CharacterOverlay.h"
+#include "HUD/Announcement.h"
 #include "Character/PBCharacter.h"
 #include "PlayerState/PBPlayerState.h"
 #include "GameMode/PBGameMode.h"
@@ -16,7 +17,11 @@ void APBPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	PBHUD = Cast<APBHUD>(GetHUD());
+	PBHUD = PBHUD == nullptr ? Cast<APBHUD>(GetHUD()) : PBHUD;
+	if (PBHUD)
+	{
+		PBHUD->AddAnnouncement();
+	}
 }
 
 void APBPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -102,11 +107,7 @@ void APBPlayerController::OnMatchStateSet(FName State)
 
 	if (MatchState == MatchState::InProgress)
 	{
-		PBHUD = PBHUD == nullptr ? Cast<APBHUD>(GetHUD()) : PBHUD;
-		if (PBHUD)
-		{
-			PBHUD->AddCharacterOverlay();
-		}
+		HandleMatchHasStarted();
 	}
 }
 
@@ -114,11 +115,20 @@ void APBPlayerController::OnRep_MatchState()
 {
 	if (MatchState == MatchState::InProgress)
 	{
-		PBHUD = PBHUD == nullptr ? Cast<APBHUD>(GetHUD()) : PBHUD;
-		if (PBHUD)
+		HandleMatchHasStarted();
+	}
+}
+
+void APBPlayerController::HandleMatchHasStarted()
+{
+	PBHUD = PBHUD == nullptr ? Cast<APBHUD>(GetHUD()) : PBHUD;
+	if (PBHUD)
+	{
+		if (PBHUD->Announcement)
 		{
-			PBHUD->AddCharacterOverlay();
+			PBHUD->Announcement->SetVisibility(ESlateVisibility::Hidden);
 		}
+		PBHUD->AddCharacterOverlay();
 	}
 }
 

@@ -50,6 +50,8 @@ protected:
 
 	void PollInit();
 
+	void HandleMatchHasStarted();
+
 	/**
 	* Sync time between client and server
 	*/

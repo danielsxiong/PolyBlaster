@@ -41,12 +41,21 @@ public:
 
 	void AddCharacterOverlay();
 
+	void AddAnnouncement();
+
 	virtual void DrawHUD() override;
 
 	UPROPERTY(EditAnywhere, Category = "Player Stats")
 	TSubclassOf<class UUserWidget> CharacterOverlayClass;
 
+	UPROPERTY()
 	class UCharacterOverlay* CharacterOverlay;
+
+	UPROPERTY(EditAnywhere, Category = "Announcement")
+	TSubclassOf<class UUserWidget> AnnouncementClass;
+
+	UPROPERTY()
+	class UAnnouncement* Announcement;
 
 protected:
 
