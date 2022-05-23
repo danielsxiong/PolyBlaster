@@ -5,6 +5,7 @@
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "Net/UnrealNetwork.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "HUD/PBHUD.h"
 #include "HUD/CharacterOverlay.h"
@@ -17,11 +18,9 @@ void APBPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	PBHUD = PBHUD == nullptr ? Cast<APBHUD>(GetHUD()) : PBHUD;
-	if (PBHUD)
-	{
-		PBHUD->AddAnnouncement();
-	}
+	PBHUD = Cast<APBHUD>(GetHUD());
+
+	ServerCheckMatchState();
 }
 
 void APBPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -227,16 +226,81 @@ void APBPlayerController::SetHUDMatchCountdown(float CountdownTime)
 	}
 }
 
+void APBPlayerController::SetHUDAnnouncementCountdown(float CountdownTime)
+{
+	PBHUD = PBHUD == nullptr ? Cast<APBHUD>(GetHUD()) : PBHUD;
+
+	bool bHUDValid = PBHUD && PBHUD->Announcement && PBHUD->Announcement->WarmupTime;
+	if (bHUDValid)
+	{
+		int32 Minutes = FMath::FloorToInt(CountdownTime / 60.f);
+		int32 Seconds = CountdownTime - (Minutes * 60);
+		FString CountdownText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
+		PBHUD->Announcement->WarmupTime->SetText(FText::FromString(CountdownText));
+	}
+}
+
 void APBPlayerController::SetHUDTime()
 {
-	uint32 SecondsLeft = FMath::CeilToInt(MatchTime - GetServerTime());
+	float TimeLeft = 0.f;
+	if (MatchState == MatchState::WaitingToStart)
+	{
+		TimeLeft = WarmupTime - GetServerTime() + LevelStartingTime;
+	}
+	else if (MatchState == MatchState::InProgress)
+	{
+		TimeLeft = WarmupTime + MatchTime - GetServerTime() + LevelStartingTime;
+	}
+
+	uint32 SecondsLeft = FMath::CeilToInt(TimeLeft - GetServerTime());
 
 	if (CountdownInt != SecondsLeft)
 	{
-		SetHUDMatchCountdown(MatchTime - GetServerTime());
+		if (MatchState == MatchState::WaitingToStart)
+		{
+			SetHUDAnnouncementCountdown(TimeLeft);
+		}
+		if (MatchState == MatchState::InProgress)
+		{
+			SetHUDMatchCountdown(TimeLeft);
+		}
 	}
 
 	CountdownInt = SecondsLeft;
+}
+
+void APBPlayerController::ServerCheckMatchState_Implementation()
+{
+	APBGameMode* GameMode = Cast<APBGameMode>(UGameplayStatics::GetGameMode(this));
+	if (GameMode)
+	{
+		WarmupTime = GameMode->WarmupTime;
+		MatchTime = GameMode->MatchTime;
+		LevelStartingTime = GameMode->LevelStartingTime;
+		MatchState = GameMode->GetMatchState();
+
+		ClientJoinMidgame(MatchState, WarmupTime, MatchTime, LevelStartingTime);
+
+		if (PBHUD && MatchState == MatchState::WaitingToStart)
+		{
+			PBHUD->AddAnnouncement();
+		}
+	}
+}
+
+void APBPlayerController::ClientJoinMidgame_Implementation(FName InMatchState, float InWarmupTime, float InMatchTime, float InLevelStartingTime)
+{
+	WarmupTime = InWarmupTime;
+	MatchTime = InMatchTime;
+	LevelStartingTime = InLevelStartingTime;
+	MatchState = InMatchState;
+
+	OnMatchStateSet(MatchState);
+
+	if (PBHUD && MatchState == MatchState::WaitingToStart)
+	{
+		PBHUD->AddAnnouncement();
+	}
 }
 
 void APBPlayerController::ServerRequestServerTime_Implementation(float TimeOfClientRequest)

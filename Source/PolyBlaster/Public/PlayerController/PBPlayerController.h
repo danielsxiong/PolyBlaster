@@ -42,6 +42,8 @@ public:
 
 	void SetHUDMatchCountdown(float CountdownTime);
 
+	void SetHUDAnnouncementCountdown(float CountdownTime);
+
 protected:
 
 	virtual void BeginPlay() override;
@@ -51,6 +53,12 @@ protected:
 	void PollInit();
 
 	void HandleMatchHasStarted();
+
+	UFUNCTION(Server, Reliable)
+	void ServerCheckMatchState();
+
+	UFUNCTION(Client, Reliable)
+	void ClientJoinMidgame(FName InMatchState, float InWarmupTime, float InMatchTime, float InLevelStartingTime);
 
 	/**
 	* Sync time between client and server
@@ -84,7 +92,11 @@ private:
 
 	bool bInitializeCharacterOverlay = false;
 
-	float MatchTime = 120.f;
+	float LevelStartingTime = 0.f;
+
+	float MatchTime = 0.f;
+
+	float WarmupTime = 0.f;
 
 	uint32 CountdownInt = 0;
 
