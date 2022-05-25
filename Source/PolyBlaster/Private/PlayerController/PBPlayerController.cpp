@@ -131,7 +131,8 @@ void APBPlayerController::HandleMatchHasStarted()
 	PBHUD = PBHUD == nullptr ? Cast<APBHUD>(GetHUD()) : PBHUD;
 	if (PBHUD)
 	{
-		if (PBHUD->Announcement)
+		bool bHUDValid = PBHUD->Announcement && PBHUD->Announcement->AnnouncementText && PBHUD->Announcement->InfoText;
+		if (bHUDValid)
 		{
 			PBHUD->Announcement->SetVisibility(ESlateVisibility::Hidden);
 		}
@@ -145,8 +146,13 @@ void APBPlayerController::HandleCooldown()
 	if (PBHUD)
 	{
 		PBHUD->CharacterOverlay->RemoveFromParent();
-		if (PBHUD->Announcement)
+
+		bool bHUDValid = PBHUD->Announcement && PBHUD->Announcement->AnnouncementText && PBHUD->Announcement->InfoText;
+		if (bHUDValid)
 		{
+			FString AnnouncementText("New Match starts in:");
+			PBHUD->Announcement->AnnouncementText->SetText(FText::FromString(AnnouncementText));
+			PBHUD->Announcement->InfoText->SetVisibility(ESlateVisibility::Hidden);
 			PBHUD->Announcement->SetVisibility(ESlateVisibility::Visible);
 		}
 	}
@@ -240,6 +246,12 @@ void APBPlayerController::SetHUDMatchCountdown(float CountdownTime)
 	bool bHUDValid = PBHUD && PBHUD->CharacterOverlay && PBHUD->CharacterOverlay->MatchCountdownText;
 	if (bHUDValid)
 	{
+		if (CountdownTime < 0.f)
+		{
+			PBHUD->CharacterOverlay->MatchCountdownText->SetText(FText());
+			return;
+		}
+
 		int32 Minutes = FMath::FloorToInt(CountdownTime / 60.f);
 		int32 Seconds = CountdownTime - (Minutes * 60);
 		FString CountdownText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
@@ -254,6 +266,12 @@ void APBPlayerController::SetHUDAnnouncementCountdown(float CountdownTime)
 	bool bHUDValid = PBHUD && PBHUD->Announcement && PBHUD->Announcement->WarmupTime;
 	if (bHUDValid)
 	{
+		if (CountdownTime < 0.f)
+		{
+			PBHUD->Announcement->WarmupTime->SetText(FText());
+			return;
+		}
+
 		int32 Minutes = FMath::FloorToInt(CountdownTime / 60.f);
 		int32 Seconds = CountdownTime - (Minutes * 60);
 		FString CountdownText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
@@ -272,16 +290,29 @@ void APBPlayerController::SetHUDTime()
 	{
 		TimeLeft = WarmupTime + MatchTime - GetServerTime() + LevelStartingTime;
 	}
+	else if (MatchState == MatchState::Cooldown)
+	{
+		TimeLeft = WarmupTime + MatchTime + CooldownTime - GetServerTime() + LevelStartingTime;
+	}
 
 	uint32 SecondsLeft = FMath::CeilToInt(TimeLeft - GetServerTime());
 
+	if (HasAuthority())
+	{
+		PBGameMode = PBGameMode == nullptr ? Cast<APBGameMode>(UGameplayStatics::GetGameMode(this)) : PBGameMode;
+		if (PBGameMode)
+		{
+			SecondsLeft = FMath::CeilToInt(PBGameMode->GetCountdownTime() + LevelStartingTime);
+		}
+	}
+
 	if (CountdownInt != SecondsLeft)
 	{
-		if (MatchState == MatchState::WaitingToStart)
+		if (MatchState == MatchState::WaitingToStart || MatchState == MatchState::Cooldown)
 		{
 			SetHUDAnnouncementCountdown(TimeLeft);
 		}
-		if (MatchState == MatchState::InProgress)
+		else if (MatchState == MatchState::InProgress)
 		{
 			SetHUDMatchCountdown(TimeLeft);
 		}
@@ -297,17 +328,19 @@ void APBPlayerController::ServerCheckMatchState_Implementation()
 	{
 		WarmupTime = GameMode->WarmupTime;
 		MatchTime = GameMode->MatchTime;
+		CooldownTime = GameMode->CooldownTime;
 		LevelStartingTime = GameMode->LevelStartingTime;
 		MatchState = GameMode->GetMatchState();
 
-		ClientJoinMidgame(MatchState, WarmupTime, MatchTime, LevelStartingTime);
+		ClientJoinMidgame(MatchState, WarmupTime, MatchTime, CooldownTime, LevelStartingTime);
 	}
 }
 
-void APBPlayerController::ClientJoinMidgame_Implementation(FName InMatchState, float InWarmupTime, float InMatchTime, float InLevelStartingTime)
+void APBPlayerController::ClientJoinMidgame_Implementation(FName InMatchState, float InWarmupTime, float InMatchTime, float InCooldownTime, float InLevelStartingTime)
 {
 	WarmupTime = InWarmupTime;
 	MatchTime = InMatchTime;
+	CooldownTime = InCooldownTime;
 	LevelStartingTime = InLevelStartingTime;
 	MatchState = InMatchState;
 

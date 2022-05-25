@@ -60,7 +60,7 @@ protected:
 	void ServerCheckMatchState();
 
 	UFUNCTION(Client, Reliable)
-	void ClientJoinMidgame(FName InMatchState, float InWarmupTime, float InMatchTime, float InLevelStartingTime);
+	void ClientJoinMidgame(FName InMatchState, float InWarmupTime, float InMatchTime, float InCooldownTime, float InLevelStartingTime);
 
 	/**
 	* Sync time between client and server
@@ -90,6 +90,9 @@ private:
 	class APBHUD* PBHUD;
 
 	UPROPERTY()
+	class APBGameMode* PBGameMode;
+
+	UPROPERTY()
 	class UCharacterOverlay* CharacterOverlay;
 
 	bool bInitializeCharacterOverlay = false;
@@ -99,6 +102,8 @@ private:
 	float MatchTime = 0.f;
 
 	float WarmupTime = 0.f;
+
+	float CooldownTime = 0.f;
 
 	uint32 CountdownInt = 0;
 
