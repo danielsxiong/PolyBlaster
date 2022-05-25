@@ -54,6 +54,8 @@ protected:
 
 	void HandleMatchHasStarted();
 
+	void HandleCooldown();
+
 	UFUNCTION(Server, Reliable)
 	void ServerCheckMatchState();
 

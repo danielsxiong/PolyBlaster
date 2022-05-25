@@ -108,6 +108,10 @@ void APBPlayerController::OnMatchStateSet(FName State)
 	{
 		HandleMatchHasStarted();
 	}
+	else if (MatchState == MatchState::Cooldown)
+	{
+		HandleCooldown();
+	}
 }
 
 void APBPlayerController::OnRep_MatchState()
@@ -115,6 +119,10 @@ void APBPlayerController::OnRep_MatchState()
 	if (MatchState == MatchState::InProgress)
 	{
 		HandleMatchHasStarted();
+	}
+	else if (MatchState == MatchState::Cooldown)
+	{
+		HandleCooldown();
 	}
 }
 
@@ -128,6 +136,19 @@ void APBPlayerController::HandleMatchHasStarted()
 			PBHUD->Announcement->SetVisibility(ESlateVisibility::Hidden);
 		}
 		PBHUD->AddCharacterOverlay();
+	}
+}
+
+void APBPlayerController::HandleCooldown()
+{
+	PBHUD = PBHUD == nullptr ? Cast<APBHUD>(GetHUD()) : PBHUD;
+	if (PBHUD)
+	{
+		PBHUD->CharacterOverlay->RemoveFromParent();
+		if (PBHUD->Announcement)
+		{
+			PBHUD->Announcement->SetVisibility(ESlateVisibility::Visible);
+		}
 	}
 }
 
@@ -280,11 +301,6 @@ void APBPlayerController::ServerCheckMatchState_Implementation()
 		MatchState = GameMode->GetMatchState();
 
 		ClientJoinMidgame(MatchState, WarmupTime, MatchTime, LevelStartingTime);
-
-		if (PBHUD && MatchState == MatchState::WaitingToStart)
-		{
-			PBHUD->AddAnnouncement();
-		}
 	}
 }
 
