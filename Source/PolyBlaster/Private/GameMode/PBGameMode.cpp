@@ -54,7 +54,7 @@ void APBGameMode::Tick(float DeltaTime)
 
 		if (CountdownTime <= 0.f)
 		{
-			//SetMatchState(MatchState::Cooldown);
+			RestartGame();
 		}
 	}
 }

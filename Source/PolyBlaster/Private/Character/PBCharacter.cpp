@@ -72,6 +72,7 @@ void APBCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME_CONDITION(APBCharacter, OverlappingWeapon, COND_OwnerOnly);
 	//DOREPLIFETIME(APBCharacter, OverlappingWeapon);
 	DOREPLIFETIME(APBCharacter, Health);
+	DOREPLIFETIME(APBCharacter, bDisableGameplay);
 }
 
 void APBCharacter::PostInitializeComponents()
@@ -122,6 +123,21 @@ void APBCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	RotateInPlace(DeltaTime);
+
+	HideCameraIfCharacterClose();
+	PollInit();
+}
+
+void APBCharacter::RotateInPlace(float DeltaTime)
+{
+	if (bDisableGameplay)
+	{
+		bUseControllerRotationYaw = false;
+		TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+		return;
+	}
+
 	if (GetLocalRole() > ENetRole::ROLE_SimulatedProxy && IsLocallyControlled())
 	{
 		AimOffset(DeltaTime);
@@ -135,13 +151,15 @@ void APBCharacter::Tick(float DeltaTime)
 		}
 		CalculateAO_Pitch();
 	}
-
-	HideCameraIfCharacterClose();
-	PollInit();
 }
 
 void APBCharacter::Jump()
 {
+	if (bDisableGameplay)
+	{
+		return;
+	}
+
 	if (bIsCrouched)
 	{
 		UnCrouch();
@@ -162,6 +180,11 @@ void APBCharacter::OnRep_ReplicatedMovement()
 
 void APBCharacter::MoveForward(float Value)
 {
+	if (bDisableGameplay)
+	{
+		return;
+	}
+
 	if (Controller && Value != 0.f)
 	{
 		const FRotator YawRotation(0.f, Controller->GetControlRotation().Yaw, 0.f);
@@ -172,6 +195,11 @@ void APBCharacter::MoveForward(float Value)
 
 void APBCharacter::MoveRight(float Value)
 {
+	if (bDisableGameplay)
+	{
+		return;
+	}
+
 	if (Controller && Value != 0.f)
 	{
 		const FRotator YawRotation(0.f, Controller->GetControlRotation().Yaw, 0.f);
@@ -192,6 +220,11 @@ void APBCharacter::LookUp(float Value)
 
 void APBCharacter::EquipButtonPressed()
 {
+	if (bDisableGameplay)
+	{
+		return;
+	}
+
 	// Must only be done on server (Role Authority)
 	if (Combat)
 	{
@@ -208,6 +241,11 @@ void APBCharacter::EquipButtonPressed()
 
 void APBCharacter::CrouchButtonPressed()
 {
+	if (bDisableGameplay)
+	{
+		return;
+	}
+
 	if (bIsCrouched)
 	{
 		UnCrouch();
@@ -220,7 +258,7 @@ void APBCharacter::CrouchButtonPressed()
 
 void APBCharacter::AimButtonPressed()
 {
-	if (!Combat)
+	if (bDisableGameplay || !Combat)
 	{
 		return;
 	}
@@ -230,7 +268,7 @@ void APBCharacter::AimButtonPressed()
 
 void APBCharacter::AimButtonReleased()
 {
-	if (!Combat)
+	if (bDisableGameplay || !Combat)
 	{
 		return;
 	}
@@ -240,7 +278,7 @@ void APBCharacter::AimButtonReleased()
 
 void APBCharacter::FireButtonPressed()
 {
-	if (!Combat)
+	if (bDisableGameplay || !Combat)
 	{
 		return;
 	}
@@ -250,7 +288,7 @@ void APBCharacter::FireButtonPressed()
 
 void APBCharacter::FireButtonReleased()
 {
-	if (!Combat)
+	if (bDisableGameplay || !Combat)
 	{
 		return;
 	}
@@ -260,7 +298,7 @@ void APBCharacter::FireButtonReleased()
 
 void APBCharacter::ReloadButtonPressed()
 {
-	if (!Combat)
+	if (bDisableGameplay || !Combat)
 	{
 		return;
 	}
@@ -495,10 +533,10 @@ void APBCharacter::MulticastEliminated_Implementation()
 	GetCharacterMovement()->DisableMovement();
 	GetCharacterMovement()->StopMovementImmediately();
 
+	bDisableGameplay = true;
+
 	if (PBPlayerController)
 	{
-		DisableInput(PBPlayerController);
-
 		// Also set ammo HUD to 0
 		PBPlayerController->SetHUDWeaponAmmo(0);
 	}
@@ -717,5 +755,10 @@ void APBCharacter::Destroyed()
 	if (ElimBotComponent)
 	{
 		ElimBotComponent->DestroyComponent();
+	}
+
+	if (Combat && Combat->EquippedWeapon)
+	{
+		Combat->EquippedWeapon->Destroy();
 	}
 }

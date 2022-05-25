@@ -46,6 +46,9 @@ public:
 	/*UFUNCTION(NetMulticast, Unreliable)
 	void MulticastHit();*/
 
+	UPROPERTY(Replicated)
+	bool bDisableGameplay = false;
+
 protected:
 
 	virtual void BeginPlay() override;
@@ -91,6 +94,8 @@ protected:
 	void CalculateAO_Pitch();
 
 	void SimProxiesTurn();
+
+	void RotateInPlace(float DeltaTime);
 
 	void PlayHitReactMontage();
 
@@ -277,6 +282,8 @@ public:
 	FORCEINLINE float GetHealth() const { return Health; }
 
 	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
+
+	FORCEINLINE UCombatComponent* GetCombatComponent() const { return Combat; }
 
 	FVector GetHitTarget() const;
 

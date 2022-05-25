@@ -13,6 +13,7 @@
 #include "Character/PBCharacter.h"
 #include "PlayerState/PBPlayerState.h"
 #include "GameMode/PBGameMode.h"
+#include "PBComponents/CombatComponent.h"
 
 void APBPlayerController::BeginPlay()
 {
@@ -155,6 +156,14 @@ void APBPlayerController::HandleCooldown()
 			PBHUD->Announcement->InfoText->SetVisibility(ESlateVisibility::Hidden);
 			PBHUD->Announcement->SetVisibility(ESlateVisibility::Visible);
 		}
+	}
+
+	APBCharacter* PBCharacter = Cast<APBCharacter>(GetPawn());
+	if (PBCharacter)
+	{
+		PBCharacter->bDisableGameplay = true;
+		// Disable firing weapon if it's not released yet
+		PBCharacter->GetCombatComponent()->FireButtonPressed(false);
 	}
 }
 
