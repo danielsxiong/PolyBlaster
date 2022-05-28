@@ -8,6 +8,7 @@
 #include "Character/PBCharacter.h"
 #include "PlayerController/PBPlayerController.h"
 #include "PlayerState/PBPlayerState.h"
+#include "GameState/PBGameState.h"
 
 namespace MatchState
 {
@@ -54,7 +55,13 @@ void APBGameMode::Tick(float DeltaTime)
 
 		if (CountdownTime <= 0.f)
 		{
-			RestartGame();
+			UWorld* World = GetWorld();
+			if (World)
+			{
+				//bUseSeamlessTravel = true;
+				//World->ServerTravel(TEXT("/Game/Maps/PolyBlasterMap?listen"));
+				RestartGame();
+			}
 		}
 	}
 }
@@ -78,9 +85,12 @@ void APBGameMode::PlayerEliminated(APBCharacter* EliminatedCharacter, APBPlayerC
 	APBPlayerState* AttackerPlayerState = AttackerController ? Cast<APBPlayerState>(AttackerController->PlayerState) : nullptr;
 	APBPlayerState* VictimPlayerState = EliminatedController ? Cast<APBPlayerState>(EliminatedController->PlayerState) : nullptr;
 
-	if (AttackerPlayerState && AttackerPlayerState != VictimPlayerState)
+	APBGameState* PBGameState = GetGameState<APBGameState>();
+
+	if (AttackerPlayerState && AttackerPlayerState != VictimPlayerState && PBGameState)
 	{
 		AttackerPlayerState->AddToScore(1.f);
+		PBGameState->UpdateTopScore(AttackerPlayerState);
 	}
 
 	if (VictimPlayerState)

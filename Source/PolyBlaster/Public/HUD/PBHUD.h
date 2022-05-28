@@ -63,6 +63,7 @@ protected:
 
 private:
 
+	UPROPERTY()
 	FHUDPackage HUDPackage;
 
 	UPROPERTY(EditAnywhere)

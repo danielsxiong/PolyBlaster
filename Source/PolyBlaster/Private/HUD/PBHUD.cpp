@@ -74,6 +74,11 @@ void APBHUD::DrawHUD()
 
 void APBHUD::DrawCrosshair(UTexture2D* Texture, FVector2D ViewportCenter, FVector2D Spread, FLinearColor CrosshairColor)
 {
+	if (!Texture)
+	{
+		return;
+	}
+
 	const float TextureWidth = Texture->GetSizeX();
 	const float TextureHeight = Texture->GetSizeY();
 	const FVector2D TextureDrawPoint(

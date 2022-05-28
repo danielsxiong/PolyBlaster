@@ -535,6 +535,11 @@ void APBCharacter::MulticastEliminated_Implementation()
 
 	bDisableGameplay = true;
 
+	if (Combat)
+	{
+		Combat->FireButtonPressed(false);
+	}
+
 	if (PBPlayerController)
 	{
 		// Also set ammo HUD to 0
@@ -757,7 +762,10 @@ void APBCharacter::Destroyed()
 		ElimBotComponent->DestroyComponent();
 	}
 
-	if (Combat && Combat->EquippedWeapon)
+	APBGameMode* PBGameMode = Cast<APBGameMode>(UGameplayStatics::GetGameMode(this));
+	bool bMatchNotInProgress = PBGameMode && PBGameMode->GetMatchState() != MatchState::InProgress;
+
+	if (Combat && Combat->EquippedWeapon && bMatchNotInProgress)
 	{
 		Combat->EquippedWeapon->Destroy();
 	}

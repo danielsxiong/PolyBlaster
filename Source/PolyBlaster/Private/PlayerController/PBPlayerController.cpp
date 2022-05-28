@@ -12,6 +12,7 @@
 #include "HUD/Announcement.h"
 #include "Character/PBCharacter.h"
 #include "PlayerState/PBPlayerState.h"
+#include "GameState/PBGameState.h"
 #include "GameMode/PBGameMode.h"
 #include "PBComponents/CombatComponent.h"
 
@@ -153,7 +154,41 @@ void APBPlayerController::HandleCooldown()
 		{
 			FString AnnouncementText("New Match starts in:");
 			PBHUD->Announcement->AnnouncementText->SetText(FText::FromString(AnnouncementText));
-			PBHUD->Announcement->InfoText->SetVisibility(ESlateVisibility::Hidden);
+
+			APBGameState* PBGameState = Cast<APBGameState>(UGameplayStatics::GetGameState(this));
+			APBPlayerState* PBPlayerState = GetPlayerState<APBPlayerState>();
+
+			FString InfoTextString;
+			if (PBGameState)
+			{
+				TArray<APBPlayerState*> TopPlayers = PBGameState->TopScoringPlayers;
+				if (TopPlayers.Num() == 0)
+				{
+					InfoTextString = TEXT("There's no winner");
+				}
+				else if (TopPlayers.Num() == 1)
+				{
+					if (TopPlayers[0] == PBPlayerState)
+					{
+						InfoTextString = TEXT("You Win!");
+					}
+					else
+					{
+						InfoTextString = FString::Printf(TEXT("Winner: %s"), *TopPlayers[0]->GetPlayerName());
+					}
+				}
+				else if (TopPlayers.Num() > 1)
+				{
+					InfoTextString = TEXT("Players tied:\n");
+					for (auto TiedPlayer : TopPlayers)
+					{
+						InfoTextString.Append(FString::Printf(TEXT("%s\n"), *TiedPlayer->GetPlayerName()));
+					}
+				}
+				
+				PBHUD->Announcement->InfoText->SetText(FText::FromString(InfoTextString));
+			}
+
 			PBHUD->Announcement->SetVisibility(ESlateVisibility::Visible);
 		}
 	}
@@ -311,7 +346,8 @@ void APBPlayerController::SetHUDTime()
 		PBGameMode = PBGameMode == nullptr ? Cast<APBGameMode>(UGameplayStatics::GetGameMode(this)) : PBGameMode;
 		if (PBGameMode)
 		{
-			SecondsLeft = FMath::CeilToInt(PBGameMode->GetCountdownTime() + LevelStartingTime);
+			TimeLeft = PBGameMode->GetCountdownTime();
+			SecondsLeft = FMath::CeilToInt(PBGameMode->GetCountdownTime() - GetServerTime());
 		}
 	}
 
