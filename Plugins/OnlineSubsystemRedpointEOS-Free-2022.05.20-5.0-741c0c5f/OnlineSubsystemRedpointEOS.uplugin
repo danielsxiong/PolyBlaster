@@ -1,0 +1,227 @@
+{
+  "FileVersion": 3,
+  "Version": 16530626690,
+  "VersionName": "2022.05.20-5.0-741c0c5f",
+  "FriendlyName": "EOS Online Subsystem",
+  "Description": "Provides an online subsystem for Epic Online Services.",
+  "Category": "Networking",
+  "CreatedBy": "Redpoint Games",
+  "CreatedByURL": "https://redpoint.games/",
+  "DocsURL": "https://docs.redpoint.games/eos-online-subsystem/",
+  "MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/2c92594ce5aa416c8bfbd79275389e3b",
+  "SupportURL": "https://redpoint.games/support/",
+  "CanContainContent": true,
+  "IsBetaVersion": false,
+  "IsExperimentalVersion": false,
+  "Installed": true,
+  "PreBuildSteps": {
+    "Win64": [
+      "\"$(PluginDir)\\Resources\\InstallAntiCheatHooksInEngine.bat\" \"$(ProjectDir)\""
+    ]
+  },
+  "Modules": [
+    {
+      "Name": "OnlineSubsystemRedpointEOS",
+      "Type": "Runtime",
+      "LoadingPhase": "Default",
+      "WhitelistPlatforms": [
+        "Win64",
+        "Mac",
+        "IOS",
+        "Android",
+        "Linux"
+      ]
+    },
+    {
+      "Name": "OnlineSubsystemRedpointDiscord",
+      "Type": "Runtime",
+      "LoadingPhase": "Default",
+      "WhitelistPlatforms": [
+        "Win64",
+        "Mac",
+        "Linux"
+      ]
+    },
+    {
+      "Name": "OnlineSubsystemRedpointSteam",
+      "Type": "Runtime",
+      "LoadingPhase": "Default",
+      "WhitelistPlatforms": [
+        "Win64",
+        "Mac",
+        "Linux"
+      ]
+    },
+    {
+      "Name": "OnlineSubsystemRedpointItchIo",
+      "Type": "Runtime",
+      "LoadingPhase": "Default",
+      "WhitelistPlatforms": [
+        "Win64",
+        "Mac",
+        "Linux"
+      ]
+    },
+    {
+      "Name": "OnlineSubsystemRedpointOculus",
+      "Type": "Runtime",
+      "LoadingPhase": "Default",
+      "WhitelistPlatforms": [
+        "Win64",
+        "Android"
+      ]
+    },
+    {
+      "Name": "RedpointEOSUtils",
+      "Type": "Runtime",
+      "LoadingPhase": "Default",
+      "WhitelistPlatforms": [
+        "Win64",
+        "Mac",
+        "IOS",
+        "Android",
+        "Linux"
+      ]
+    },
+    {
+      "Name": "RedpointEOSVoiceChat",
+      "Type": "ClientOnly",
+      "LoadingPhase": "Default",
+      "WhitelistPlatforms": [
+        "Win64",
+        "Mac",
+        "IOS",
+        "Android",
+        "Linux"
+      ]
+    },
+    {
+      "Name": "RedpointEOSTests",
+      "Type": "DeveloperTool",
+      "LoadingPhase": "Default",
+      "WhitelistPlatforms": [
+        "Win64",
+        "Mac",
+        "IOS",
+        "Android",
+        "Linux"
+      ],
+      "BlacklistTargets": [
+        "Server"
+      ]
+    },
+    {
+      "Name": "RedpointEOSEditor",
+      "Type": "Editor",
+      "LoadingPhase": "Default",
+      "WhitelistPlatforms": [
+        "Win64",
+        "Mac"
+      ]
+    },
+    {
+      "Name": "RedpointEOSEditorTests",
+      "Type": "Editor",
+      "LoadingPhase": "Default",
+      "WhitelistPlatforms": [
+        "Win64",
+        "Mac"
+      ]
+    },
+    {
+      "Name": "RedpointEOSPlatformDefault",
+      "Type": "Runtime",
+      "LoadingPhase": "Default",
+      "WhitelistPlatforms": [
+        "Win64",
+        "Mac",
+        "IOS",
+        "Android",
+        "Linux"
+      ]
+    },
+    {
+      "Name": "RedpointDiscordGameSDKRuntime",
+      "Type": "Runtime",
+      "LoadingPhase": "Default",
+      "WhitelistPlatforms": [
+        "Win64",
+        "Mac",
+        "Linux"
+      ]
+    },
+    {
+      "Name": "RedpointLibHydrogen",
+      "Type": "Runtime",
+      "LoadingPhase": "Default",
+      "WhitelistPlatforms": [
+        "Win64",
+        "Mac",
+        "IOS",
+        "Android",
+        "Linux"
+      ]
+    }
+  ],
+  "Plugins": [
+    {
+      "Name": "OnlineSubsystem",
+      "Enabled": true
+    },
+    {
+      "Name": "OnlineSubsystemUtils",
+      "Enabled": true
+    },
+    {
+      "Name": "AESGCMHandlerComponent",
+      "Enabled": true
+    },
+    {
+      "Name": "OnlineSubsystemSteam",
+      "Enabled": true,
+      "Optional": true,
+      "SupportedTargetPlatforms": [
+        "Win64",
+        "Mac",
+        "Linux"
+      ]
+    },
+    {
+      "Name": "OnlineSubsystemOculus",
+      "Enabled": true,
+      "Optional": true,
+      "SupportedTargetPlatforms": [
+        "Win64",
+        "Android"
+      ]
+    },
+    {
+      "Name": "OnlineSubsystemApple",
+      "Enabled": true,
+      "Optional": true,
+      "SupportedTargetPlatforms": [
+        "IOS"
+      ]
+    },
+    {
+      "Name": "OnlineSubsystemGoogle",
+      "Enabled": true,
+      "Optional": true
+    },
+    {
+      "Name": "WebBrowserWidget",
+      "Enabled": true,
+      "Optional": true,
+      "SupportedTargetPlatforms": [
+        "Win64",
+        "Mac",
+        "Linux"
+      ],
+      "TargetAllowList": [
+        "Editor"
+      ]
+    }
+  ],
+  "EngineVersion": "5.0.0",
+  "EnabledByDefault": false
+}

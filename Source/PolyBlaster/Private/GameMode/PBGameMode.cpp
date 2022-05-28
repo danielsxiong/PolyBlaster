@@ -59,8 +59,8 @@ void APBGameMode::Tick(float DeltaTime)
 			if (World)
 			{
 				//bUseSeamlessTravel = true;
-				//World->ServerTravel(TEXT("/Game/Maps/PolyBlasterMap?listen"));
-				RestartGame();
+				World->ServerTravel(TEXT("/Game/Maps/PolyBlasterMap?listen"));
+				//RestartGame();
 			}
 		}
 	}

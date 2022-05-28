@@ -1,0 +1,6 @@
+@echo off
+echo UAT: Locating MSBuild...
+call "GetMSBuildPath.bat"
+echo UAT: Rebuilding AutomationTool binary...
+cd ../../
+%MSBUILD_EXE% /nologo /verbosity:quiet Source\Programs\AutomationTool\Scripts\AutomationScripts.Automation.csproj /property:Configuration=Development /property:Platform=AnyCPU "/property:OutputPath=%ENGINE_PATH%\Engine\Binaries\DotNET_EOSPatched" "/property:ReferencePath=%ENGINE_PATH%\Engine\Binaries\DotNET\AutomationScripts"
