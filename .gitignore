@@ -75,3 +75,6 @@ DerivedDataCache/*
 
 # Temp Folder
 enc_temp_folder/*
+
+#EOS
+EOS-SDK-18950192-v1.14.2-hf-1/*
