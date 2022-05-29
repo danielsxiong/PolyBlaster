@@ -211,10 +211,17 @@ private:
 
 	FTimerHandle EliminatedTimer;
 
+	FTimerHandle DisableCollisionTimer;
+
 	UPROPERTY(EditDefaultsOnly)
 	float EliminatedDelay = 3.f;
 
+	UPROPERTY(EditDefaultsOnly)
+	float DisableCollisionDelay = 0.5f;
+
 	void EliminatedTimerFinished();
+
+	void DisableCollisionTimerFinished();
 
 	/**
 	* Player Dissolve Effect

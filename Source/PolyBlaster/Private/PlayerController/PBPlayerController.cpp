@@ -138,7 +138,11 @@ void APBPlayerController::HandleMatchHasStarted()
 		{
 			PBHUD->Announcement->SetVisibility(ESlateVisibility::Hidden);
 		}
-		PBHUD->AddCharacterOverlay();
+
+		if (!PBHUD->CharacterOverlay)
+		{
+			PBHUD->AddCharacterOverlay();
+		}
 	}
 }
 

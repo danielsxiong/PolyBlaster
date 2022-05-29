@@ -533,6 +533,9 @@ void APBCharacter::MulticastEliminated_Implementation()
 	GetCharacterMovement()->DisableMovement();
 	GetCharacterMovement()->StopMovementImmediately();
 
+	// Delay removing collision to avoid rocket launcher passing through on client
+	GetWorldTimerManager().SetTimer(DisableCollisionTimer, this, &APBCharacter::DisableCollisionTimerFinished, DisableCollisionDelay);
+
 	bDisableGameplay = true;
 
 	if (Combat)
@@ -545,10 +548,6 @@ void APBCharacter::MulticastEliminated_Implementation()
 		// Also set ammo HUD to 0
 		PBPlayerController->SetHUDWeaponAmmo(0);
 	}
-
-	// Disable collision
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	// Spawn Elim Bot
 	if (ElimBotEffect)
@@ -565,6 +564,11 @@ void APBCharacter::MulticastEliminated_Implementation()
 
 void APBCharacter::Eliminated()
 {
+	if (bEliminated)
+	{
+		return;
+	}
+
 	if (Combat && Combat->EquippedWeapon)
 	{
 		Combat->EquippedWeapon->Drop();
@@ -583,6 +587,13 @@ void APBCharacter::EliminatedTimerFinished()
 	{
 		PBGameMode->RequestRespawn(this, Controller);
 	}
+}
+
+void APBCharacter::DisableCollisionTimerFinished()
+{
+	// Disable collision
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void APBCharacter::UpdateDissolveMaterial(float DissolveValue)
