@@ -26,15 +26,15 @@ public:
 
 private:
 
-	UPROPERTY(VisibleAnywhere)
-	class UProjectileMovementComponent* ProjectileMovementComponent;
-
 	UPROPERTY(EditAnywhere)
 	class UParticleSystem* Tracer;
 
 	class UParticleSystemComponent* TracerComponent;
 
 protected:
+
+	UPROPERTY(VisibleAnywhere)
+	class UProjectileMovementComponent* ProjectileMovementComponent;
 
 	UPROPERTY(EditAnywhere)
 	class UBoxComponent* CollisionBox;

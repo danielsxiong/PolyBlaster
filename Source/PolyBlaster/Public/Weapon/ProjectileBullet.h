@@ -13,6 +13,10 @@ UCLASS()
 class POLYBLASTER_API AProjectileBullet : public AProjectile
 {
 	GENERATED_BODY()
+
+public:
+
+	AProjectileBullet();
 	
 protected:
 
