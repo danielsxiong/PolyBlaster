@@ -8,7 +8,7 @@ public class PolyBlaster : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "MultiplayerSessions" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "MultiplayerSessions", "Niagara" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

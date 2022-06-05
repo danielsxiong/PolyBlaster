@@ -29,10 +29,36 @@ protected:
 	UPROPERTY(EditAnywhere)
 	float DamageOuterRadius = 500.f;
 
+	UPROPERTY(EditAnywhere)
+	class UNiagaraSystem* TrailSystem;
+
+	UPROPERTY()
+	class UNiagaraComponent* TrailSystemComponent;
+
+	UPROPERTY(EditAnywhere)
+	USoundCue* ProjectileLoop;
+
+	UPROPERTY()
+	UAudioComponent* ProjectileLoopComponent;
+
+	UPROPERTY(EditAnywhere)
+	USoundAttenuation* LoopingSoundAttenuation;
+
+	virtual void BeginPlay() override;
+
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) override;
+
+	virtual void Destroyed() override;
+
+	void DestroyTimerFinished();
 
 private:
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* RocketMesh;
+
+	FTimerHandle DestroyTimer;
+
+	UPROPERTY(EditAnywhere)
+	float DestroyTime = 3.f;
 };
