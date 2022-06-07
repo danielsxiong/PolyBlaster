@@ -512,6 +512,11 @@ void APBCharacter::PlayReloadMontage()
 			SectionName = FName("Rifle");
 			break;
 		}
+		case EWeaponType::EWT_Pistol:
+		{
+			SectionName = FName("Rifle");
+			break;
+		}
 		}
 		AnimInstance->Montage_JumpToSection(SectionName);
 	}
