@@ -10,8 +10,6 @@
 #include "PBTypes/CombatState.h"
 #include "CombatComponent.generated.h"
 
-#define TRACE_LENGTH 10000.f
-
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class POLYBLASTER_API UCombatComponent : public UActorComponent
 {
@@ -125,6 +123,9 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	int32 StartingSMGAmmo = 60;
+
+	UPROPERTY(EditAnywhere)
+	int32 StartingShotgunAmmo = 12;
 
 	void InitializeCarriedAmmo();
 
