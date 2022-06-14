@@ -43,6 +43,9 @@ public:
 
 	void Eliminated();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShowSniperScopeWidget(bool bShowScope);
+
 	/*UFUNCTION(NetMulticast, Unreliable)
 	void MulticastHit();*/
 

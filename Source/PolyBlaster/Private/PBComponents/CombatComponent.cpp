@@ -82,7 +82,12 @@ void UCombatComponent::SetAiming(bool bIsAiming)
 	/*
 	* On server, ServerSetAiming will just be repeated, bAiming will be replicated to all client
 	* On client, set bAiming to true first so that there's no delay on the client side, then it will call ServerSetAiming to set the server character bAiming to true, hence it will replicate to all clients
-	*/ 
+	*/
+	if (!Character || !EquippedWeapon)
+	{
+		return;
+	}
+
 	bAiming = bIsAiming;
 
 	ServerSetAiming(bIsAiming);
@@ -90,6 +95,11 @@ void UCombatComponent::SetAiming(bool bIsAiming)
 	if (Character)
 	{
 		Character->GetCharacterMovement()->MaxWalkSpeed = bIsAiming ? AimWalkSpeed : BaseWalkSpeed;
+	}
+
+	if (Character->IsLocallyControlled() && EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle)
+	{
+		Character->ShowSniperScopeWidget(bIsAiming);
 	}
 }
 
