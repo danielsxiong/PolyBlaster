@@ -12,6 +12,7 @@
 #include "Character/PBCharacter.h"
 #include "PlayerController/PBPlayerController.h"
 #include "Weapon/Casing.h"
+#include "PBComponents/CombatComponent.h"
 
 AWeapon::AWeapon()
 {
@@ -215,6 +216,12 @@ void AWeapon::OnRep_WeaponState()
 
 void AWeapon::OnRep_Ammo()
 {
+	OwnerPBCharacter = OwnerPBCharacter == nullptr ? Cast<APBCharacter>(GetOwner()) : OwnerPBCharacter;
+	if (OwnerPBCharacter && OwnerPBCharacter->GetCombatComponent() && WeaponType == EWeaponType::EWT_Shotgun && IsFull())
+	{
+		OwnerPBCharacter->GetCombatComponent()->JumpToShotgunEnd();
+	}
+
 	SetHUDAmmo();
 }
 
@@ -252,4 +259,9 @@ void AWeapon::Drop()
 bool AWeapon::IsEmpty()
 {
 	return Ammo <= 0;
+}
+
+bool AWeapon::IsFull()
+{
+	return Ammo == MagCapacity;
 }

@@ -185,6 +185,8 @@ protected:
 
 	void UpdateAmmoValues();
 
+	void UpdateShotgunAmmoValues();
+
 public:
 
 	void EquipWeapon(AWeapon* InWeapon);
@@ -193,6 +195,11 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void FinishReload();
+
+	UFUNCTION(BlueprintCallable)
+	void ShotgunShellReload();
+
+	void JumpToShotgunEnd();
 
 	FORCEINLINE float GetMaxWalkSpeed() { return BaseWalkSpeed; }
 

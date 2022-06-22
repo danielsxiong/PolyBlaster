@@ -496,7 +496,7 @@ void APBCharacter::PlayReloadMontage()
 	}
 
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance && FireWeaponMontage)
+	if (AnimInstance && ReloadMontage)
 	{
 		AnimInstance->Montage_Play(ReloadMontage);
 		FName SectionName;

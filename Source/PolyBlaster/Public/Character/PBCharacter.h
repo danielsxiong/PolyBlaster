@@ -295,6 +295,8 @@ public:
 
 	FORCEINLINE UCombatComponent* GetCombatComponent() const { return Combat; }
 
+	FORCEINLINE UAnimMontage* GetReloadMontage() const { return ReloadMontage; }
+
 	FVector GetHitTarget() const;
 
 	ECombatState GetCombatState() const;
