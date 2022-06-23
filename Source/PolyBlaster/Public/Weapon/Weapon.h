@@ -43,6 +43,12 @@ public:
 
 	void AddAmmo(int32 AmmoToAdd);
 
+	/*
+	* Enable or disable custom depth
+	*/
+
+	void EnableCustomDepth(bool bEnable);
+
 private:
 
 	UPROPERTY()
@@ -150,6 +156,8 @@ public:
 	void ShowPickupWidget(bool bShowPickupWidget);
 
 	void SetWeaponState(EWeaponState InState);
+
+	void SetWeaponState_Internal();
 
 	void SetHUDAmmo();
 
