@@ -38,6 +38,8 @@ public:
 
 	void PlayReloadMontage();
 
+	void PlayThrowGrenadeMontage();
+
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastEliminated();
 
@@ -91,6 +93,8 @@ protected:
 	void FireButtonReleased();
 
 	void ReloadButtonPressed();
+
+	void ThrowGrenadeButtonPressed();
 
 	void AimOffset(float DeltaTime);
 
@@ -162,6 +166,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Combat)
 	UAnimMontage* ReloadMontage;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	UAnimMontage* ThrowGrenadeMontage;
 
 	UPROPERTY(EditAnywhere)
 	float CameraThreshold = 200.f;

@@ -110,6 +110,7 @@ void APBCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APBCharacter::FireButtonPressed);
 	PlayerInputComponent->BindAction("Fire", IE_Released, this, &APBCharacter::FireButtonReleased);
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &APBCharacter::ReloadButtonPressed);
+	PlayerInputComponent->BindAction("ThrowGrenade", IE_Pressed, this, &APBCharacter::ThrowGrenadeButtonPressed);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &APBCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &APBCharacter::MoveRight);
@@ -304,6 +305,16 @@ void APBCharacter::ReloadButtonPressed()
 	}
 
 	Combat->Reload();
+}
+
+void APBCharacter::ThrowGrenadeButtonPressed()
+{
+	if (bDisableGameplay || !Combat)
+	{
+		return;
+	}
+
+	Combat->ThrowGrenade();
 }
 
 void APBCharacter::AimOffset(float DeltaTime)
@@ -542,6 +553,14 @@ void APBCharacter::PlayReloadMontage()
 	}
 }
 
+void APBCharacter::PlayThrowGrenadeMontage()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && ThrowGrenadeMontage)
+	{
+		AnimInstance->Montage_Play(ThrowGrenadeMontage);
+	}
+}
 
 void APBCharacter::MulticastEliminated_Implementation()
 {

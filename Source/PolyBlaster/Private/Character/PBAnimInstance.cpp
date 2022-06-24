@@ -53,11 +53,11 @@ void UPBAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 	bEliminated = PBCharacter->IsEliminated();
 
-	bUseFABRIK = PBCharacter->GetCombatState() != ECombatState::ECS_Reloading;
+	bUseFABRIK = PBCharacter->GetCombatState() == ECombatState::ECS_Unoccupied;
 
-	bUseAimOffsets = PBCharacter->GetCombatState() != ECombatState::ECS_Reloading && !PBCharacter->bDisableGameplay;
+	bUseAimOffsets = PBCharacter->GetCombatState() == ECombatState::ECS_Unoccupied && !PBCharacter->bDisableGameplay;
 
-	bTransformRightHand = PBCharacter->GetCombatState() != ECombatState::ECS_Reloading && !PBCharacter->bDisableGameplay;
+	bTransformRightHand = PBCharacter->GetCombatState() == ECombatState::ECS_Unoccupied && !PBCharacter->bDisableGameplay;
 
 	// Offset Yaw for strafing, this count the delta between movement rotation and aim rotation, then use RInterp to get a smooth yaw offset
 	FRotator AimRotation = PBCharacter->GetBaseAimRotation();

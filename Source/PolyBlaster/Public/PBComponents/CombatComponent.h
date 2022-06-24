@@ -187,6 +187,11 @@ protected:
 
 	void UpdateShotgunAmmoValues();
 
+	void ThrowGrenade();
+
+	UFUNCTION(Server, Reliable)
+	void ServerThrowGrenade();
+
 public:
 
 	void EquipWeapon(AWeapon* InWeapon);
@@ -200,6 +205,9 @@ public:
 	void ShotgunShellReload();
 
 	void JumpToShotgunEnd();
+
+	UFUNCTION(BlueprintCallable)
+	void ThrowGrenadeFinished();
 
 	FORCEINLINE float GetMaxWalkSpeed() { return BaseWalkSpeed; }
 

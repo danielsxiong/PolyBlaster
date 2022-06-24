@@ -329,6 +329,11 @@ void UCombatComponent::EquipWeapon(AWeapon* InWeapon)
 		return;
 	}
 
+	if (CombatState != ECombatState::ECS_Unoccupied)
+	{
+		return;
+	}
+
 	if (EquippedWeapon)
 	{
 		EquippedWeapon->Drop();
@@ -374,7 +379,7 @@ void UCombatComponent::EquipWeapon(AWeapon* InWeapon)
 
 void UCombatComponent::Reload()
 {
-	if (CarriedAmmo > 0 && EquippedWeapon->GetAmmo() < EquippedWeapon->GetMagCapacity() && CombatState != ECombatState::ECS_Reloading)
+	if (CarriedAmmo > 0 && EquippedWeapon->GetAmmo() < EquippedWeapon->GetMagCapacity() && CombatState == ECombatState::ECS_Unoccupied)
 	{
 		ServerReload();
 	}
@@ -393,7 +398,10 @@ void UCombatComponent::ServerReload_Implementation()
 
 void UCombatComponent::HandleReload()
 {
-	Character->PlayReloadMontage();
+	if (Character)
+	{
+		Character->PlayReloadMontage();
+	}
 }
 
 void UCombatComponent::FinishReload()
@@ -473,6 +481,46 @@ void UCombatComponent::UpdateShotgunAmmoValues()
 	}
 }
 
+void UCombatComponent::ThrowGrenade()
+{
+	if (CombatState != ECombatState::ECS_Unoccupied)
+	{
+		return;
+	}
+
+	CombatState = ECombatState::ECS_ThrowingGrenade;
+
+	if (Character)
+	{
+		Character->PlayThrowGrenadeMontage();
+	}
+
+	if (Character && !Character->HasAuthority())
+	{
+		ServerThrowGrenade();
+	}
+}
+
+void UCombatComponent::ServerThrowGrenade_Implementation()
+{
+	if (CombatState != ECombatState::ECS_Unoccupied)
+	{
+		return;
+	}
+
+	CombatState = ECombatState::ECS_ThrowingGrenade;
+
+	if (Character)
+	{
+		Character->PlayThrowGrenadeMontage();
+	}	
+}
+
+void UCombatComponent::ThrowGrenadeFinished()
+{
+	CombatState = ECombatState::ECS_Unoccupied;
+}
+
 void UCombatComponent::JumpToShotgunEnd()
 {
 	UAnimInstance* AnimInstance = Character->GetMesh()->GetAnimInstance();
@@ -515,6 +563,14 @@ void UCombatComponent::OnRep_CombatState()
 		if (bFireButtonPressed)
 		{
 			Fire();
+		}
+		break;
+	}
+	case ECombatState::ECS_ThrowingGrenade:
+	{
+		if (Character && !Character->IsLocallyControlled())
+		{
+			Character->PlayThrowGrenadeMontage();
 		}
 		break;
 	}
