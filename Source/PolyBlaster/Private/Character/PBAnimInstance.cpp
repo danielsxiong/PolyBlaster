@@ -24,10 +24,7 @@ void UPBAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		PBCharacter = Cast<APBCharacter>(TryGetPawnOwner());
 	}
 
-	if (!PBCharacter)
-	{
-		return;
-	}
+	if (!PBCharacter) return;
 
 	FVector Velocity = PBCharacter->GetVelocity();
 	Velocity.Z = 0.f;

@@ -189,8 +189,22 @@ protected:
 
 	void ThrowGrenade();
 
+	void ThrowGrenade_Internal();
+
 	UFUNCTION(Server, Reliable)
 	void ServerThrowGrenade();
+
+	void DropEquippedWeapon();
+
+	void AttachActorToRightHand(AActor* ActorToAttach);
+
+	void AttachActorToLeftHand(AActor* ActorToAttach);
+
+	void UpdateCarriedAmmo();
+
+	void ReloadEmptyWeapon();
+
+	void PlayEquipWeaponSound();
 
 public:
 

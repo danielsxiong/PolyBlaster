@@ -14,10 +14,7 @@ void AShotgun::Fire(const FVector& HitTarget)
 	AWeapon::Fire(HitTarget);
 
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
-	if (!OwnerPawn)
-	{
-		return;
-	}
+	if (!OwnerPawn) return;
 
 	AController* InstigatorController = OwnerPawn->GetController();
 

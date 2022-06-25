@@ -156,10 +156,7 @@ void APBCharacter::RotateInPlace(float DeltaTime)
 
 void APBCharacter::Jump()
 {
-	if (bDisableGameplay)
-	{
-		return;
-	}
+	if (bDisableGameplay) return;
 
 	if (bIsCrouched)
 	{
@@ -181,10 +178,7 @@ void APBCharacter::OnRep_ReplicatedMovement()
 
 void APBCharacter::MoveForward(float Value)
 {
-	if (bDisableGameplay)
-	{
-		return;
-	}
+	if (bDisableGameplay) return;
 
 	if (Controller && Value != 0.f)
 	{
@@ -196,10 +190,7 @@ void APBCharacter::MoveForward(float Value)
 
 void APBCharacter::MoveRight(float Value)
 {
-	if (bDisableGameplay)
-	{
-		return;
-	}
+	if (bDisableGameplay) return;
 
 	if (Controller && Value != 0.f)
 	{
@@ -221,10 +212,7 @@ void APBCharacter::LookUp(float Value)
 
 void APBCharacter::EquipButtonPressed()
 {
-	if (bDisableGameplay)
-	{
-		return;
-	}
+	if (bDisableGameplay) return;
 
 	// Must only be done on server (Role Authority)
 	if (Combat)
@@ -242,10 +230,7 @@ void APBCharacter::EquipButtonPressed()
 
 void APBCharacter::CrouchButtonPressed()
 {
-	if (bDisableGameplay)
-	{
-		return;
-	}
+	if (bDisableGameplay) return;
 
 	if (bIsCrouched)
 	{
@@ -259,70 +244,49 @@ void APBCharacter::CrouchButtonPressed()
 
 void APBCharacter::AimButtonPressed()
 {
-	if (bDisableGameplay || !Combat)
-	{
-		return;
-	}
+	if (bDisableGameplay || !Combat) return;
 
 	Combat->SetAiming(true);
 }
 
 void APBCharacter::AimButtonReleased()
 {
-	if (bDisableGameplay || !Combat)
-	{
-		return;
-	}
+	if (bDisableGameplay || !Combat) return;
 
 	Combat->SetAiming(false);
 }
 
 void APBCharacter::FireButtonPressed()
 {
-	if (bDisableGameplay || !Combat)
-	{
-		return;
-	}
+	if (bDisableGameplay || !Combat) return;
 
 	Combat->FireButtonPressed(true);
 }
 
 void APBCharacter::FireButtonReleased()
 {
-	if (bDisableGameplay || !Combat)
-	{
-		return;
-	}
+	if (bDisableGameplay || !Combat) return;
 
 	Combat->FireButtonPressed(false);
 }
 
 void APBCharacter::ReloadButtonPressed()
 {
-	if (bDisableGameplay || !Combat)
-	{
-		return;
-	}
+	if (bDisableGameplay || !Combat) return;
 
 	Combat->Reload();
 }
 
 void APBCharacter::ThrowGrenadeButtonPressed()
 {
-	if (bDisableGameplay || !Combat)
-	{
-		return;
-	}
+	if (bDisableGameplay || !Combat) return;
 
 	Combat->ThrowGrenade();
 }
 
 void APBCharacter::AimOffset(float DeltaTime)
 {
-	if (Combat && !Combat->EquippedWeapon)
-	{
-		return;
-	}
+	if (Combat && !Combat->EquippedWeapon) return;
 
 	float Speed = CalculateSpeed();
 	bool bIsInAir = GetCharacterMovement()->IsFalling();
@@ -374,10 +338,7 @@ void APBCharacter::CalculateAO_Pitch()
 
 void APBCharacter::SimProxiesTurn()
 {
-	if (!Combat || !Combat->EquippedWeapon)
-	{
-		return;
-	}
+	if (!Combat || !Combat->EquippedWeapon) return;
 
 	bRotateRootBone = false;
 
@@ -417,10 +378,7 @@ void APBCharacter::SimProxiesTurn()
 
 void APBCharacter::HideCameraIfCharacterClose()
 {
-	if (!IsLocallyControlled())
-	{
-		return;
-	}
+	if (!IsLocallyControlled()) return;
 
 	if ((FollowCamera->GetComponentLocation() - GetActorLocation()).Size() < CameraThreshold)
 	{
@@ -475,10 +433,7 @@ void APBCharacter::ServerEquipButtonPressed_Implementation()
 
 void APBCharacter::PlayFireMontage(bool bAiming)
 {
-	if (!Combat || !Combat->EquippedWeapon)
-	{
-		return;
-	}
+	if (!Combat || !Combat->EquippedWeapon) return;
 
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance && FireWeaponMontage)
@@ -501,10 +456,7 @@ void APBCharacter::PlayEliminatedMontage()
 
 void APBCharacter::PlayReloadMontage()
 {
-	if (!Combat || !Combat->EquippedWeapon)
-	{
-		return;
-	}
+	if (!Combat || !Combat->EquippedWeapon) return;
 
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance && ReloadMontage)
@@ -619,10 +571,7 @@ void APBCharacter::MulticastEliminated_Implementation()
 
 void APBCharacter::Eliminated()
 {
-	if (bEliminated)
-	{
-		return;
-	}
+	if (bEliminated) return;
 
 	if (Combat && Combat->EquippedWeapon)
 	{
@@ -671,10 +620,7 @@ void APBCharacter::StartDissolve()
 
 void APBCharacter::PlayHitReactMontage()
 {
-	if (!Combat || !Combat->EquippedWeapon)
-	{
-		return;
-	}
+	if (!Combat || !Combat->EquippedWeapon) return;
 
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance && HitReactMontage)
@@ -791,10 +737,7 @@ bool APBCharacter::IsAiming()
 
 AWeapon* APBCharacter::GetEquippedWeapon()
 {
-	if (!Combat)
-	{
-		return nullptr;
-	}
+	if (!Combat) return nullptr;
 
 	return Combat->EquippedWeapon;
 }
