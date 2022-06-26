@@ -397,7 +397,7 @@ void UCombatComponent::ReloadEmptyWeapon()
 
 void UCombatComponent::Reload()
 {
-	if (CarriedAmmo > 0 && EquippedWeapon->GetAmmo() < EquippedWeapon->GetMagCapacity() && CombatState == ECombatState::ECS_Unoccupied)
+	if (CarriedAmmo > 0 && !EquippedWeapon->IsFull() && CombatState == ECombatState::ECS_Unoccupied)
 	{
 		ServerReload();
 	}

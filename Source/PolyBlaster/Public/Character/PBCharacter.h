@@ -274,6 +274,13 @@ private:
 	UPROPERTY()
 	class APBPlayerState* PBPlayerState;
 
+	/**
+	* Grenade
+	*/
+
+	UPROPERTY(VisibleAnywhere);
+	UStaticMeshComponent* AttachedGrenade;
+
 public:	
 
 	void SetOverlappingWeapon(AWeapon* InWeapon);
