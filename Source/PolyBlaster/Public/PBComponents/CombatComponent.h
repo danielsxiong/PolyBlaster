@@ -206,6 +206,8 @@ protected:
 
 	void PlayEquipWeaponSound();
 
+	void ShowAttachedGrenade(bool bShowGrenade);
+
 public:
 
 	void EquipWeapon(AWeapon* InWeapon);
@@ -222,6 +224,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void ThrowGrenadeFinished();
+
+	UFUNCTION(BlueprintCallable)
+	void LaunchGrenade();
 
 	FORCEINLINE float GetMaxWalkSpeed() { return BaseWalkSpeed; }
 

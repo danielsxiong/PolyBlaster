@@ -311,6 +311,8 @@ public:
 
 	FORCEINLINE UAnimMontage* GetReloadMontage() const { return ReloadMontage; }
 
+	FORCEINLINE UStaticMeshComponent* GetAttachedGrenade() const { return AttachedGrenade; }
+
 	FVector GetHitTarget() const;
 
 	ECombatState GetCombatState() const;

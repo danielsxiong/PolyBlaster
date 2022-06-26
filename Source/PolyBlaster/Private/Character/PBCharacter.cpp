@@ -99,6 +99,11 @@ void APBCharacter::BeginPlay()
 	{
 		OnTakeAnyDamage.AddDynamic(this, &APBCharacter::ReceiveDamage);
 	}
+
+	if (AttachedGrenade)
+	{
+		AttachedGrenade->SetVisibility(false);
+	}
 }
 
 // Called to bind functionality to input
