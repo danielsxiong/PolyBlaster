@@ -13,6 +13,7 @@
 #include "Sound/SoundCue.h"
 
 #include "Weapon/Weapon.h"
+#include "Weapon/Projectile.h"
 #include "Character/PBCharacter.h"
 #include "Character/PBAnimInstance.h"
 #include "PlayerController/PBPlayerController.h"
@@ -489,7 +490,7 @@ void UCombatComponent::UpdateShotgunAmmoValues()
 
 void UCombatComponent::ThrowGrenade()
 {
-	if (CombatState != ECombatState::ECS_Unoccupied) return;
+	if (CombatState != ECombatState::ECS_Unoccupied || !EquippedWeapon) return;
 
 	CombatState = ECombatState::ECS_ThrowingGrenade;
 
@@ -537,6 +538,20 @@ void UCombatComponent::ThrowGrenadeFinished()
 void UCombatComponent::LaunchGrenade()
 {
 	ShowAttachedGrenade(false);
+	if (Character && GrenadeClass && Character->GetAttachedGrenade())
+	{
+		const FVector StartingLocation = Character->GetAttachedGrenade()->GetComponentLocation();
+		FVector ToTarget = HitTarget - StartingLocation;
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = Character;
+		SpawnParams.Instigator = Character;
+
+		UWorld* World = GetWorld();
+		if (World)
+		{
+			World->SpawnActor<AProjectile>(GrenadeClass, StartingLocation, ToTarget.Rotation(), SpawnParams);
+		}
+	}
 }
 
 void UCombatComponent::JumpToShotgunEnd()

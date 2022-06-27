@@ -643,6 +643,11 @@ void APBCharacter::PlayHitReactMontage()
 
 void APBCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser)
 {
+	if (Combat)
+	{
+		Combat->SetCombatState(ECombatState::ECS_Unoccupied);
+	}
+
 	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
 	PlayHitReactMontage();
 	UpdateHUDHealth();

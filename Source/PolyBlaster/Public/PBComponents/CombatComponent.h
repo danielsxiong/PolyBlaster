@@ -208,6 +208,9 @@ protected:
 
 	void ShowAttachedGrenade(bool bShowGrenade);
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class AProjectile> GrenadeClass;
+
 public:
 
 	void EquipWeapon(AWeapon* InWeapon);
@@ -228,6 +231,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void LaunchGrenade();
 
-	FORCEINLINE float GetMaxWalkSpeed() { return BaseWalkSpeed; }
+	FORCEINLINE float GetMaxWalkSpeed() const { return BaseWalkSpeed; }
+
+	FORCEINLINE ECombatState GetCombatState() const { return CombatState; }
+
+	FORCEINLINE void SetCombatState(ECombatState InCombatState) { CombatState = InCombatState; }
 
 };
