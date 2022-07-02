@@ -65,6 +65,12 @@ void APBPlayerController::PollInit()
 				SetHUDHealth(HUDHealth, HUDMaxHealth);
 				SetHUDScore(HUDScore);
 				SetHUDDefeats(HUDDefeats);
+
+				APBCharacter* PBCharacter = Cast<APBCharacter>(GetPawn());
+				if (PBCharacter && PBCharacter->GetCombatComponent())
+				{
+					SetHUDGrenade(PBCharacter->GetCombatComponent()->GetGrenades());
+				}
 			}
 		}
 	}
@@ -324,6 +330,22 @@ void APBPlayerController::SetHUDAnnouncementCountdown(float CountdownTime)
 		int32 Seconds = CountdownTime - (Minutes * 60);
 		FString CountdownText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
 		PBHUD->Announcement->WarmupTime->SetText(FText::FromString(CountdownText));
+	}
+}
+
+void APBPlayerController::SetHUDGrenade(int32 Grenades)
+{
+	PBHUD = PBHUD == nullptr ? Cast<APBHUD>(GetHUD()) : PBHUD;
+
+	bool bHUDValid = PBHUD && PBHUD->CharacterOverlay && PBHUD->CharacterOverlay->GrenadeText;
+	if (bHUDValid)
+	{
+		FString GrenadeText = FString::Printf(TEXT("%d"), Grenades);
+		PBHUD->CharacterOverlay->GrenadeText->SetText(FText::FromString(GrenadeText));
+	}
+	else
+	{
+		HUDGrenades = Grenades;
 	}
 }
 

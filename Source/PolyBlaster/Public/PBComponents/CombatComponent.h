@@ -141,6 +141,17 @@ private:
 	UFUNCTION()
 	void OnRep_CombatState();
 
+	UPROPERTY(ReplicatedUsing = OnRep_Grenades)
+	int32 Grenades = 4;
+
+	UPROPERTY(EditAnywhere)
+	int32 MaxGrenades = 4;
+
+	UFUNCTION()
+	void OnRep_Grenades();
+
+	void UpdateHUDGrenades();
+
 protected:
 
 	void SetAiming(bool bIsAiming);
@@ -237,4 +248,5 @@ public:
 
 	FORCEINLINE void SetCombatState(ECombatState InCombatState) { CombatState = InCombatState; }
 
+	FORCEINLINE int32 GetGrenades() const { return Grenades; }
 };

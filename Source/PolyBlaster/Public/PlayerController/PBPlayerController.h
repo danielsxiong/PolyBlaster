@@ -44,6 +44,8 @@ public:
 
 	void SetHUDAnnouncementCountdown(float CountdownTime);
 
+	void SetHUDGrenade(int32 Grenades);
+
 protected:
 
 	virtual void BeginPlay() override;
@@ -114,6 +116,8 @@ private:
 	float HUDScore;
 
 	int32 HUDDefeats;
+
+	int32 HUDGrenades;
 
 	UPROPERTY(ReplicatedUsing = OnRep_MatchState)
 	FName MatchState;

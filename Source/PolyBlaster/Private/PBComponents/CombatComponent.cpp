@@ -57,6 +57,7 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(UCombatComponent, CombatState);
 	// Just replicate to owning client, since other don't need it
 	DOREPLIFETIME_CONDITION(UCombatComponent, CarriedAmmo, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(UCombatComponent, Grenades, COND_OwnerOnly);
 }
 
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -490,6 +491,7 @@ void UCombatComponent::UpdateShotgunAmmoValues()
 
 void UCombatComponent::ThrowGrenade()
 {
+	if (Grenades == 0) return;
 	if (CombatState != ECombatState::ECS_Unoccupied || !EquippedWeapon) return;
 
 	CombatState = ECombatState::ECS_ThrowingGrenade;
@@ -499,6 +501,12 @@ void UCombatComponent::ThrowGrenade()
 	if (Character && !Character->HasAuthority())
 	{
 		ServerThrowGrenade();
+	}
+
+	if (Character && Character->HasAuthority())
+	{
+		Grenades = FMath::Clamp(Grenades - 1, 0, MaxGrenades);
+		UpdateHUDGrenades();
 	}
 }
 
@@ -514,11 +522,24 @@ void UCombatComponent::ThrowGrenade_Internal()
 
 void UCombatComponent::ServerThrowGrenade_Implementation()
 {
+	if (Grenades == 0) return;
 	if (CombatState != ECombatState::ECS_Unoccupied) return;
 
 	CombatState = ECombatState::ECS_ThrowingGrenade;
 
 	ThrowGrenade_Internal();
+
+	Grenades = FMath::Clamp(Grenades - 1, 0, MaxGrenades);
+	UpdateHUDGrenades();
+}
+
+void UCombatComponent::UpdateHUDGrenades()
+{
+	Controller = Controller == nullptr ? Cast<APBPlayerController>(Character->Controller) : Controller;
+	if (Controller)
+	{
+		Controller->SetHUDGrenade(Grenades);
+	}
 }
 
 void UCombatComponent::ShowAttachedGrenade(bool bShowGrenade)
@@ -545,6 +566,7 @@ void UCombatComponent::LaunchGrenade()
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = Character;
 		SpawnParams.Instigator = Character;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
 		UWorld* World = GetWorld();
 		if (World)
@@ -609,6 +631,11 @@ void UCombatComponent::OnRep_CombatState()
 	default:
 		break;
 	}
+}
+
+void UCombatComponent::OnRep_Grenades()
+{
+	UpdateHUDGrenades();
 }
 
 void UCombatComponent::InterpFOV(float DeltaTime)

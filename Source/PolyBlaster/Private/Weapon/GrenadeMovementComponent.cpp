@@ -14,3 +14,4 @@ UGrenadeMovementComponent::EHandleBlockingHitResult UGrenadeMovementComponent::H
 
 	return EHandleBlockingHitResult::Deflect;
 }
+

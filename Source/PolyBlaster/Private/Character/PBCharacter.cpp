@@ -316,7 +316,6 @@ void APBCharacter::AimOffset(float DeltaTime)
 		bUseControllerRotationYaw = true;
 
 		TurnInPlace(DeltaTime);
-
 		// UE_LOG(LogTemp, Warning, TEXT("AO_Yaw: %f"), AO_Yaw);
 	}
 
@@ -409,11 +408,11 @@ void APBCharacter::HideCameraIfCharacterClose()
 
 void APBCharacter::TurnInPlace(float DeltaTime)
 {
-	if (AO_Yaw > 90.f)
+	if (AO_Yaw > TurnThreshold)
 	{
 		TurningInPlace = ETurningInPlace::ETIP_Right;
 	}
-	else if (AO_Yaw < -90.f)
+	else if (AO_Yaw < -TurnThreshold)
 	{
 		TurningInPlace = ETurningInPlace::ETIP_Left;
 	}
@@ -643,6 +642,7 @@ void APBCharacter::PlayHitReactMontage()
 
 void APBCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser)
 {
+	if (bEliminated) return;
 	if (Combat)
 	{
 		Combat->SetCombatState(ECombatState::ECS_Unoccupied);

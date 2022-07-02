@@ -5,9 +5,15 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
+#include "Components/BoxComponent.h"
 
 AProjectileGrenade::AProjectileGrenade()
 {
+	if (GetOwner())
+	{
+		CollisionBox->IgnoreActorWhenMoving(GetOwner(), true);
+	}
+
 	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GrenadeMesh"));
 	ProjectileMesh->SetupAttachment(RootComponent);
 	ProjectileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
