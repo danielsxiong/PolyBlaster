@@ -113,6 +113,9 @@ private:
 	TMap<EWeaponType, int32> CarriedAmmoMap;
 
 	UPROPERTY(EditAnywhere)
+	int32 MaxCarriedAmmo = 500;
+
+	UPROPERTY(EditAnywhere)
 	int32 StartingARAmmo = 30;
 
 	UPROPERTY(EditAnywhere)
@@ -134,6 +137,8 @@ private:
 	int32 StartingGrenadeLauncherAmmo = 5;
 
 	void InitializeCarriedAmmo();
+
+	void UpdateHUDCarriedAmmo();
 
 	UPROPERTY(ReplicatedUsing = OnRep_CombatState)
 	ECombatState CombatState = ECombatState::ECS_Unoccupied;
@@ -241,6 +246,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void LaunchGrenade();
+
+	void PickupAmmo(EWeaponType WeaponType, int32 AmmoAmount);
 
 	FORCEINLINE float GetMaxWalkSpeed() const { return BaseWalkSpeed; }
 
