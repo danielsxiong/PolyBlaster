@@ -2,6 +2,7 @@
 
 
 #include "PBComponents/BuffComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 #include "Character/PBCharacter.h"
 
@@ -47,3 +48,38 @@ void UBuffComponent::HealRampUp(float DeltaTime)
 	}
 }
 
+void UBuffComponent::SetInitialSpeeds(float BaseSpeed, float CrouchSpeed)
+{
+	InitialBaseSpeed = BaseSpeed;
+	InitialCrouchSpeed = CrouchSpeed;
+}
+
+void UBuffComponent::BuffSpeed(float BuffBaseSpeed, float BuffCrouchSpeed, float SpeedBuffTime)
+{
+	if (!Character) return;
+
+	Character->GetWorldTimerManager().SetTimer(SpeedBuffTimer, this, &UBuffComponent::ResetSpeeds, SpeedBuffTime);
+
+	BuffSpeed_Internal(BuffBaseSpeed, BuffCrouchSpeed);
+	MulticastSpeedBuff(BuffBaseSpeed, BuffCrouchSpeed);
+}
+
+void UBuffComponent::MulticastSpeedBuff_Implementation(float BaseSpeed, float CrouchSpeed)
+{
+	BuffSpeed_Internal(BaseSpeed, CrouchSpeed);
+}
+
+void UBuffComponent::BuffSpeed_Internal(float BaseSpeed, float CrouchSpeed)
+{
+	if (Character && Character->GetCharacterMovement())
+	{
+		Character->GetCharacterMovement()->MaxWalkSpeed = BaseSpeed;
+		Character->GetCharacterMovement()->MaxWalkSpeedCrouched = CrouchSpeed;
+	}
+}
+
+void UBuffComponent::ResetSpeeds()
+{
+	BuffSpeed_Internal(InitialBaseSpeed, InitialCrouchSpeed);
+	MulticastSpeedBuff(InitialBaseSpeed, InitialCrouchSpeed);
+}

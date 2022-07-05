@@ -18,8 +18,6 @@ public:
 
 	friend class APBCharacter;
 
-	void Heal(float HealAmount, float HealingTime);
-
 protected:
 
 	virtual void BeginPlay() override;
@@ -30,14 +28,39 @@ public:
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	void Heal(float HealAmount, float HealingTime);
+
+	void BuffSpeed(float BuffBaseSpeed, float BuffCrouchSpeed, float SpeedBuffTime);
+
+	void SetInitialSpeeds(float BaseSpeed, float CrouchSpeed);
+
 private:
 
 	UPROPERTY()
 	class APBCharacter* Character;
 
+	/**
+	* Health Buff
+	*/
 	bool bHealing = false;
 
 	float HealingRate = 0.f;
 
 	float AmountToHeal = 0.f;
+
+	/**
+	* Speed Buff
+	*/
+	FTimerHandle SpeedBuffTimer;
+
+	float InitialBaseSpeed;
+
+	float InitialCrouchSpeed;
+
+	void BuffSpeed_Internal(float BaseSpeed, float CrouchSpeed);
+
+	void ResetSpeeds();
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastSpeedBuff(float BaseSpeed, float CrouchSpeed);
 };
