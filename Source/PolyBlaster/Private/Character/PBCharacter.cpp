@@ -16,10 +16,11 @@
 #include "Sound/SoundCue.h"
 #include "Particles/ParticleSystemComponent.h"
 
+#include "../PolyBlaster.h"
 #include "Weapon/Weapon.h"
 #include "Weapon/WeaponTypes.h"
 #include "PBComponents/CombatComponent.h"
-#include "../PolyBlaster.h"
+#include "PBComponents/BuffComponent.h"
 #include "Character/PBAnimInstance.h"
 #include "PlayerController/PBPlayerController.h"
 #include "PlayerState/PBPlayerState.h"
@@ -47,6 +48,9 @@ APBCharacter::APBCharacter()
 	// Components doesn't need to be registered to GetLifetimeReplicatedProps
 	Combat = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
 	Combat->SetIsReplicated(true);
+
+	Buff = CreateDefaultSubobject<UBuffComponent>(TEXT("BuffComponent"));
+	Buff->SetIsReplicated(true);
 
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 0.f, 650.f);
@@ -86,6 +90,11 @@ void APBCharacter::PostInitializeComponents()
 	if (Combat)
 	{
 		Combat->Character = this;
+	}
+
+	if (Buff)
+	{
+		Buff->Character = this;
 	}
 }
 
