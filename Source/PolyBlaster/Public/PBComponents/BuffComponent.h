@@ -18,9 +18,13 @@ public:
 
 	friend class APBCharacter;
 
+	void Heal(float HealAmount, float HealingTime);
+
 protected:
 
 	virtual void BeginPlay() override;
+
+	void HealRampUp(float DeltaTime);
 
 public:	
 
@@ -30,4 +34,10 @@ private:
 
 	UPROPERTY()
 	class APBCharacter* Character;
+
+	bool bHealing = false;
+
+	float HealingRate = 0.f;
+
+	float AmountToHeal = 0.f;
 };

@@ -48,6 +48,8 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void ShowSniperScopeWidget(bool bShowScope);
 
+	void UpdateHUDHealth();
+
 	/*UFUNCTION(NetMulticast, Unreliable)
 	void MulticastHit();*/
 
@@ -108,8 +110,6 @@ protected:
 
 	UFUNCTION()
 	void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* InstigatorController, AActor* DamageCauser);
-
-	void UpdateHUDHealth();
 
 	// Poll for any relevant classes and init HUD
 	void PollInit();
@@ -212,7 +212,7 @@ private:
 	float Health = 100.f;
 
 	UFUNCTION()
-	void OnRep_Health();
+	void OnRep_Health(float LastHealth);
 
 	UPROPERTY()
 	class APBPlayerController* PBPlayerController;
@@ -309,6 +309,8 @@ public:
 
 	FORCEINLINE float GetHealth() const { return Health; }
 
+	FORCEINLINE void SetHealth(float Amount) { Health = Amount; }
+
 	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
 
 	FORCEINLINE UCombatComponent* GetCombatComponent() const { return Combat; }
@@ -316,6 +318,8 @@ public:
 	FORCEINLINE UAnimMontage* GetReloadMontage() const { return ReloadMontage; }
 
 	FORCEINLINE UStaticMeshComponent* GetAttachedGrenade() const { return AttachedGrenade; }
+
+	FORCEINLINE UBuffComponent* GetBuffComponent() const { return Buff; }
 
 	FVector GetHitTarget() const;
 

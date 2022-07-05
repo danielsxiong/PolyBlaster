@@ -678,9 +678,13 @@ void APBCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDama
 //	PlayHitReactMontage();
 //}
 
-void APBCharacter::OnRep_Health()
+void APBCharacter::OnRep_Health(float LastHealth)
 {
-	PlayHitReactMontage();
+	if (Health < LastHealth)
+	{
+		PlayHitReactMontage();
+	}
+	
 	UpdateHUDHealth();
 }
 
