@@ -83,3 +83,37 @@ void UBuffComponent::ResetSpeeds()
 	BuffSpeed_Internal(InitialBaseSpeed, InitialCrouchSpeed);
 	MulticastSpeedBuff(InitialBaseSpeed, InitialCrouchSpeed);
 }
+
+void UBuffComponent::SetInitialJumpVelocity(float Velocity)
+{
+	InitialJumpVelocity = Velocity;
+}
+
+void UBuffComponent::BuffJump(float Velocity, float JumpBuffTime)
+{
+	if (!Character) return;
+
+	Character->GetWorldTimerManager().SetTimer(JumpBuffTimer, this, &UBuffComponent::ResetJump, JumpBuffTime);
+
+	BuffJump_Internal(Velocity);
+	MulticastJumpBuff(Velocity);
+}
+
+void UBuffComponent::MulticastJumpBuff_Implementation(float Velocity)
+{
+	BuffJump_Internal(Velocity);
+}
+
+void UBuffComponent::BuffJump_Internal(float Velocity)
+{
+	if (Character && Character->GetCharacterMovement())
+	{
+		Character->GetCharacterMovement()->JumpZVelocity = Velocity;
+	}
+}
+
+void UBuffComponent::ResetJump()
+{
+	BuffJump_Internal(InitialJumpVelocity);
+	MulticastJumpBuff(InitialJumpVelocity);
+}

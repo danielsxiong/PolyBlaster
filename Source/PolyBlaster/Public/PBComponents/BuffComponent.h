@@ -32,7 +32,11 @@ public:
 
 	void BuffSpeed(float BuffBaseSpeed, float BuffCrouchSpeed, float SpeedBuffTime);
 
+	void BuffJump(float Velocity, float JumpBuffTime);
+
 	void SetInitialSpeeds(float BaseSpeed, float CrouchSpeed);
+
+	void SetInitialJumpVelocity(float Velocity);
 
 private:
 
@@ -63,4 +67,18 @@ private:
 	
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastSpeedBuff(float BaseSpeed, float CrouchSpeed);
+
+	/**
+	* Jump Buff
+	*/
+	FTimerHandle JumpBuffTimer;
+
+	float InitialJumpVelocity;
+
+	void BuffJump_Internal(float Velocity);
+
+	void ResetJump();
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastJumpBuff(float Velocity);
 };
