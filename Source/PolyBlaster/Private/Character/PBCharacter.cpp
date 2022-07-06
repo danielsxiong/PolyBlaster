@@ -80,6 +80,7 @@ void APBCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME_CONDITION(APBCharacter, OverlappingWeapon, COND_OwnerOnly);
 	//DOREPLIFETIME(APBCharacter, OverlappingWeapon);
 	DOREPLIFETIME(APBCharacter, Health);
+	DOREPLIFETIME(APBCharacter, Shield);
 	DOREPLIFETIME(APBCharacter, bDisableGameplay);
 }
 
@@ -690,12 +691,31 @@ void APBCharacter::OnRep_Health(float LastHealth)
 	UpdateHUDHealth();
 }
 
+void APBCharacter::OnRep_Shield(float LastShield)
+{
+	if (Shield < LastShield)
+	{
+		PlayHitReactMontage();
+	}
+
+	UpdateHUDShield();
+}
+
 void APBCharacter::UpdateHUDHealth()
 {
 	PBPlayerController = PBPlayerController == nullptr ? Cast<APBPlayerController>(Controller) : PBPlayerController;
 	if (PBPlayerController)
 	{
 		PBPlayerController->SetHUDHealth(Health, MaxHealth);
+	}
+}
+
+void APBCharacter::UpdateHUDShield()
+{
+	PBPlayerController = PBPlayerController == nullptr ? Cast<APBPlayerController>(Controller) : PBPlayerController;
+	if (PBPlayerController)
+	{
+		PBPlayerController->SetHUDShield(Shield, MaxShield);
 	}
 }
 

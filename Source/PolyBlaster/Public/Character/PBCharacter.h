@@ -50,6 +50,8 @@ public:
 
 	void UpdateHUDHealth();
 
+	void UpdateHUDShield();
+
 	/*UFUNCTION(NetMulticast, Unreliable)
 	void MulticastHit();*/
 
@@ -201,6 +203,9 @@ private:
 
 	float CalculateSpeed();
 
+	UPROPERTY()
+	class APBPlayerController* PBPlayerController;
+
 	/**
 	* Player Health
 	*/
@@ -214,8 +219,18 @@ private:
 	UFUNCTION()
 	void OnRep_Health(float LastHealth);
 
-	UPROPERTY()
-	class APBPlayerController* PBPlayerController;
+	/**
+	* Player Shield
+	*/
+
+	UPROPERTY(EditAnywhere, Category = "Player Stats")
+	float MaxShield = 100.f;
+
+	UPROPERTY(ReplicatedUsing = OnRep_Shield, VisibleAnywhere, Category = "Player Stats")
+	float Shield = 100.f;
+
+	UFUNCTION()
+	void OnRep_Shield(float LastShield);
 
 	/**
 	* Player Elimination

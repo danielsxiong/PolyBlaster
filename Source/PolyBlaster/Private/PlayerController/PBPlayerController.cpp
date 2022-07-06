@@ -63,6 +63,7 @@ void APBPlayerController::PollInit()
 			if (CharacterOverlay)
 			{
 				SetHUDHealth(HUDHealth, HUDMaxHealth);
+				SetHUDShield(HUDShield, HUDMaxShield);
 				SetHUDScore(HUDScore);
 				SetHUDDefeats(HUDDefeats);
 
@@ -230,6 +231,27 @@ void APBPlayerController::SetHUDHealth(float Health, float MaxHealth)
 
 		HUDHealth = Health;
 		HUDMaxHealth = MaxHealth;
+	}
+}
+
+void APBPlayerController::SetHUDShield(float Shield, float MaxShield)
+{
+	PBHUD = PBHUD == nullptr ? Cast<APBHUD>(GetHUD()) : PBHUD;
+
+	bool bHUDValid = PBHUD && PBHUD->CharacterOverlay && PBHUD->CharacterOverlay->ShieldBar && PBHUD->CharacterOverlay->ShieldText;
+	if (bHUDValid)
+	{
+		const float ShieldPercent = Shield / MaxShield;
+		PBHUD->CharacterOverlay->ShieldBar->SetPercent(ShieldPercent);
+		FString ShieldText = FString::Printf(TEXT("%d/%d"), FMath::CeilToInt(Shield), FMath::CeilToInt(MaxShield));
+		PBHUD->CharacterOverlay->ShieldText->SetText(FText::FromString(ShieldText));
+	}
+	else
+	{
+		bInitializeCharacterOverlay = true;
+
+		HUDShield = Shield;
+		HUDMaxShield = MaxShield;
 	}
 }
 

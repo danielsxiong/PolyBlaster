@@ -32,6 +32,8 @@ public:
 
 	void SetHUDHealth(float Health, float MaxHealth);
 
+	void SetHUDShield(float Shield, float MaxShield);
+
 	void SetHUDScore(float Score);
 
 	void SetHUDDefeats(int32 Defeats);
@@ -112,6 +114,10 @@ private:
 	float HUDHealth;
 
 	float HUDMaxHealth;
+
+	float HUDShield;
+
+	float HUDMaxShield;
 
 	float HUDScore;
 
