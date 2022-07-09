@@ -106,6 +106,7 @@ void APBCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	UpdateHUDHealth();
+	UpdateHUDShield();
 
 	if (HasAuthority())
 	{
@@ -655,14 +656,30 @@ void APBCharacter::PlayHitReactMontage()
 void APBCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser)
 {
 	if (bEliminated) return;
-	if (Combat)
+	/*if (Combat)
 	{
 		Combat->SetCombatState(ECombatState::ECS_Unoccupied);
-	}
+	}*/
 
-	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
+	float DamageToHealth = Damage;
+	if (Shield > 0.f)
+	{
+		if (Shield >= Damage)
+		{
+			Shield = FMath::Clamp(Shield - Damage, 0.f, MaxShield);
+			DamageToHealth = 0.f;
+		}
+		else
+		{
+			DamageToHealth = FMath::Clamp(DamageToHealth - Shield, 0.f, Damage);
+			Shield = 0.f;
+		}
+	}
+	Health = FMath::Clamp(Health - DamageToHealth, 0.f, MaxHealth);
+
 	PlayHitReactMontage();
 	UpdateHUDHealth();
+	UpdateHUDShield();
 
 	if (Health == 0.f)
 	{

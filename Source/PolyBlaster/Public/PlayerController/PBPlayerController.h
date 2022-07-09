@@ -99,8 +99,6 @@ private:
 	UPROPERTY()
 	class UCharacterOverlay* CharacterOverlay;
 
-	bool bInitializeCharacterOverlay = false;
-
 	float LevelStartingTime = 0.f;
 
 	float MatchTime = 0.f;
@@ -113,17 +111,27 @@ private:
 
 	float HUDHealth;
 
+	bool bInitializeHealth = false;
+
 	float HUDMaxHealth;
 
 	float HUDShield;
+
+	bool bInitializeShield = false;
 
 	float HUDMaxShield;
 
 	float HUDScore;
 
+	bool bInitializeScore = false;
+
 	int32 HUDDefeats;
 
+	bool bInitializeDefeats = false;
+
 	int32 HUDGrenades;
+
+	bool bInitializeGrenades = false;
 
 	UPROPERTY(ReplicatedUsing = OnRep_MatchState)
 	FName MatchState;
