@@ -249,6 +249,10 @@ public:
 
 	void PickupAmmo(EWeaponType WeaponType, int32 AmmoAmount);
 
+	int32 GetWeaponAmmo() const;
+
+	int32 GetCarriedAmmo() const;
+
 	FORCEINLINE float GetMaxWalkSpeed() const { return BaseWalkSpeed; }
 
 	FORCEINLINE ECombatState GetCombatState() const { return CombatState; }

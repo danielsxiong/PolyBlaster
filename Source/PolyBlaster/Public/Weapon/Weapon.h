@@ -111,6 +111,8 @@ protected:
 
 public:
 
+	bool bDestroyWeapon = false;
+
 	/**
 	* Textures for weapon crosshairs
 	*/

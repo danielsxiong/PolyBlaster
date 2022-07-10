@@ -724,3 +724,13 @@ void UCombatComponent::InitializeCarriedAmmo()
 	CarriedAmmoMap.Emplace(EWeaponType::EWT_SniperRifle, StartingSniperAmmo);
 	CarriedAmmoMap.Emplace(EWeaponType::EWT_GrenadeLauncher, StartingGrenadeLauncherAmmo);
 }
+
+int32 UCombatComponent::GetWeaponAmmo() const
+{
+	return EquippedWeapon->GetAmmo(); 
+}
+
+int32 UCombatComponent::GetCarriedAmmo() const
+{ 
+	return CarriedAmmoMap[EquippedWeapon->GetWeaponType()]; 
+}

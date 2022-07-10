@@ -133,6 +133,14 @@ private:
 
 	bool bInitializeGrenades = false;
 
+	int32 HUDCarriedAmmo;
+
+	bool bInitializeCarriedAmmo = false;
+
+	int32 HUDWeaponAmmo;
+
+	bool bInitializeWeaponAmmo = false;
+
 	UPROPERTY(ReplicatedUsing = OnRep_MatchState)
 	FName MatchState;
 

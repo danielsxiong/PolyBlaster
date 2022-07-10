@@ -66,6 +66,8 @@ void APBPlayerController::PollInit()
 				if (bInitializeShield) SetHUDShield(HUDShield, HUDMaxShield);
 				if (bInitializeScore) SetHUDScore(HUDScore);
 				if (bInitializeDefeats) SetHUDDefeats(HUDDefeats);
+				if (bInitializeCarriedAmmo) SetHUDCarriedAmmo(HUDCarriedAmmo);
+				if (bInitializeWeaponAmmo) SetHUDWeaponAmmo(HUDWeaponAmmo);
 
 				APBCharacter* PBCharacter = Cast<APBCharacter>(GetPawn());
 				if (PBCharacter && PBCharacter->GetCombatComponent())
@@ -107,6 +109,8 @@ void APBPlayerController::OnPossess(APawn* InPawn)
 	{
 		SetHUDHealth(PBCharacter->GetHealth(), PBCharacter->GetMaxHealth());
 		SetHUDShield(PBCharacter->GetShield(), PBCharacter->GetMaxShield());
+		SetHUDWeaponAmmo(PBCharacter->GetCombatComponent()->GetWeaponAmmo());
+		SetHUDCarriedAmmo(PBCharacter->GetCombatComponent()->GetCarriedAmmo());
 	}
 }
 
@@ -302,6 +306,12 @@ void APBPlayerController::SetHUDWeaponAmmo(int32 Ammo)
 		FString AmmoText = FString::Printf(TEXT("%d"), Ammo);
 		PBHUD->CharacterOverlay->WeaponAmmoAmmount->SetText(FText::FromString(AmmoText));
 	}
+	else
+	{
+		bInitializeWeaponAmmo = true;
+
+		HUDWeaponAmmo = Ammo;
+	}
 }
 
 void APBPlayerController::SetHUDCarriedAmmo(int32 Ammo)
@@ -313,6 +323,12 @@ void APBPlayerController::SetHUDCarriedAmmo(int32 Ammo)
 	{
 		FString AmmoText = FString::Printf(TEXT("%d"), Ammo);
 		PBHUD->CharacterOverlay->CarriedAmmoAmmount->SetText(FText::FromString(AmmoText));
+	}
+	else
+	{
+		bInitializeCarriedAmmo = true;
+
+		HUDCarriedAmmo = Ammo;
 	}
 }
 

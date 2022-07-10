@@ -105,6 +105,9 @@ void APBCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SpawnDefaultWeapon();
+
+	UpdateHUDAmmo();
 	UpdateHUDHealth();
 	UpdateHUDShield();
 
@@ -150,6 +153,23 @@ void APBCharacter::Tick(float DeltaTime)
 
 	HideCameraIfCharacterClose();
 	PollInit();
+}
+
+void APBCharacter::SpawnDefaultWeapon()
+{
+	// If this map is a game map, spawn default weapon
+	APBGameMode* PBGameMode = Cast<APBGameMode>(UGameplayStatics::GetGameMode(this));
+	UWorld* World = GetWorld();
+	if (PBGameMode && World && !bEliminated && DefaultWeaponClass)
+	{
+		AWeapon* StartingWeapon = World->SpawnActor<AWeapon>(DefaultWeaponClass);
+		StartingWeapon->bDestroyWeapon = true;
+
+		if (Combat)
+		{
+			Combat->EquipWeapon(StartingWeapon);	
+		}
+	}
 }
 
 void APBCharacter::RotateInPlace(float DeltaTime)
@@ -596,7 +616,14 @@ void APBCharacter::Eliminated()
 
 	if (Combat && Combat->EquippedWeapon)
 	{
-		Combat->EquippedWeapon->Drop();
+		if (!Combat->EquippedWeapon->bDestroyWeapon)
+		{
+			Combat->EquippedWeapon->Drop();
+		}
+		else
+		{
+			Combat->EquippedWeapon->Destroy();
+		}
 		Combat->EquippedWeapon = nullptr;
 	}
 
@@ -733,6 +760,16 @@ void APBCharacter::UpdateHUDShield()
 	if (PBPlayerController)
 	{
 		PBPlayerController->SetHUDShield(Shield, MaxShield);
+	}
+}
+
+void APBCharacter::UpdateHUDAmmo()
+{
+	PBPlayerController = PBPlayerController == nullptr ? Cast<APBPlayerController>(Controller) : PBPlayerController;
+	if (PBPlayerController && Combat && Combat->EquippedWeapon)
+	{
+		PBPlayerController->SetHUDCarriedAmmo(Combat->CarriedAmmo);
+		PBPlayerController->SetHUDWeaponAmmo(Combat->EquippedWeapon->GetAmmo());
 	}
 }
 

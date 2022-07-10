@@ -52,6 +52,8 @@ public:
 
 	void UpdateHUDShield();
 
+	void UpdateHUDAmmo();
+
 	/*UFUNCTION(NetMulticast, Unreliable)
 	void MulticastHit();*/
 
@@ -300,7 +302,16 @@ private:
 	UPROPERTY(VisibleAnywhere);
 	UStaticMeshComponent* AttachedGrenade;
 
+	/**
+	* Default Weapon
+	*/
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AWeapon> DefaultWeaponClass;
+
 public:	
+
+	void SpawnDefaultWeapon();
 
 	void SetOverlappingWeapon(AWeapon* InWeapon);
 
