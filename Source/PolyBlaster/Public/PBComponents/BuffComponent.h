@@ -24,6 +24,8 @@ protected:
 
 	void HealRampUp(float DeltaTime);
 
+	void ShieldRampUp(float DeltaTime);
+
 public:	
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -33,6 +35,8 @@ public:
 	void BuffSpeed(float BuffBaseSpeed, float BuffCrouchSpeed, float SpeedBuffTime);
 
 	void BuffJump(float Velocity, float JumpBuffTime);
+
+	void ReplenishShield(float ShieldAmount, float ReplenishTime);
 
 	void SetInitialSpeeds(float BaseSpeed, float CrouchSpeed);
 
@@ -81,4 +85,13 @@ private:
 	
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastJumpBuff(float Velocity);
+
+	/**
+	* Health Buff
+	*/
+	bool bReplenishShield = false;
+
+	float ShieldReplenishRate = 0.f;
+
+	float AmountToReplenishShield = 0.f;
 };
