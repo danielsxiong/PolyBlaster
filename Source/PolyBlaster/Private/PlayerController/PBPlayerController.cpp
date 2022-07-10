@@ -106,6 +106,7 @@ void APBPlayerController::OnPossess(APawn* InPawn)
 	if (PBCharacter)
 	{
 		SetHUDHealth(PBCharacter->GetHealth(), PBCharacter->GetMaxHealth());
+		SetHUDShield(PBCharacter->GetShield(), PBCharacter->GetMaxShield());
 	}
 }
 
