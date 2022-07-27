@@ -44,6 +44,9 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
 	class AWeapon* EquippedWeapon;
 
+	UPROPERTY(ReplicatedUsing = OnRep_SecondaryWeapon)
+	AWeapon* SecondaryWeapon;
+
 	UPROPERTY(Replicated)
 	bool bAiming;
 
@@ -167,6 +170,9 @@ protected:
 	UFUNCTION()
 	void OnRep_EquippedWeapon();
 
+	UFUNCTION()
+	void OnRep_SecondaryWeapon();
+
 	void Fire();
 
 	/*
@@ -216,13 +222,19 @@ protected:
 
 	void AttachActorToLeftHand(AActor* ActorToAttach);
 
+	void AttachActorToBackpack(AActor* ActorToAttach);
+
 	void UpdateCarriedAmmo();
 
 	void ReloadEmptyWeapon();
 
-	void PlayEquipWeaponSound();
+	void PlayEquipWeaponSound(AWeapon* WeaponToEquip);
 
 	void ShowAttachedGrenade(bool bShowGrenade);
+
+	void EquipPrimaryWeapon(AWeapon* WeaponToEquip);
+
+	void EquipSecondaryWeapon(AWeapon* WeaponToEquip);
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AProjectile> GrenadeClass;

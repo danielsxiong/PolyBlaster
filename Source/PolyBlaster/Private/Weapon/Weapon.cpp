@@ -81,7 +81,11 @@ void AWeapon::OnRep_Owner()
 		return;
 	}
 	
-	SetHUDAmmo();
+	OwnerPBCharacter = OwnerPBCharacter == nullptr ? Cast<APBCharacter>(Owner) : OwnerPBCharacter;
+	if (OwnerPBCharacter && OwnerPBCharacter->GetEquippedWeapon() && OwnerPBCharacter->GetEquippedWeapon() == this)
+	{
+		SetHUDAmmo();
+	}
 }
 
 void AWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& Sweep)
@@ -179,8 +183,6 @@ void AWeapon::SetWeaponState_Internal()
 			WeaponMesh->SetEnableGravity(true);
 			WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		}
-
-		EnableCustomDepth(false);
 		break;
 	}
 	case EWeaponState::EWS_Dropped:

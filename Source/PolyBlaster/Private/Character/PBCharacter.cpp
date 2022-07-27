@@ -259,14 +259,7 @@ void APBCharacter::EquipButtonPressed()
 	// Must only be done on server (Role Authority)
 	if (Combat)
 	{
-		if (HasAuthority())
-		{
-			Combat->EquipWeapon(OverlappingWeapon);
-		}
-		else
-		{
-			ServerEquipButtonPressed();
-		}
+		ServerEquipButtonPressed();
 	}
 }
 
