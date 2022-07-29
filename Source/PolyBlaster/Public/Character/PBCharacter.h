@@ -118,6 +118,8 @@ protected:
 	// Poll for any relevant classes and init HUD
 	void PollInit();
 
+	void DropOrDestroyWeapon(AWeapon* Weapon);
+
 private:
 
 	UPROPERTY(VisibleAnywhere, Category = Camera)

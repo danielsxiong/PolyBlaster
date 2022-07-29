@@ -614,22 +614,32 @@ void APBCharacter::Eliminated()
 {
 	if (bEliminated) return;
 
-	if (Combat && Combat->EquippedWeapon)
+	if (Combat)
 	{
-		if (!Combat->EquippedWeapon->bDestroyWeapon)
-		{
-			Combat->EquippedWeapon->Drop();
-		}
-		else
-		{
-			Combat->EquippedWeapon->Destroy();
-		}
-		Combat->EquippedWeapon = nullptr;
+		DropOrDestroyWeapon(Combat->EquippedWeapon);
+		DropOrDestroyWeapon(Combat->SecondaryWeapon);
 	}
 
 	MulticastEliminated();
 
 	GetWorldTimerManager().SetTimer(EliminatedTimer, this, &APBCharacter::EliminatedTimerFinished, EliminatedDelay);
+}
+
+void APBCharacter::DropOrDestroyWeapon(AWeapon* Weapon)
+{
+	if (Weapon)
+	{
+		if (!Weapon->bDestroyWeapon)
+		{
+			Weapon->Drop();
+		}
+		else
+		{
+			Weapon->Destroy();
+		}
+
+		Weapon = nullptr;
+	}
 }
 
 void APBCharacter::EliminatedTimerFinished()
