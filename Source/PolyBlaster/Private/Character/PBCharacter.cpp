@@ -263,6 +263,22 @@ void APBCharacter::EquipButtonPressed()
 	}
 }
 
+void APBCharacter::ServerEquipButtonPressed_Implementation()
+{
+	// Must only be done on server (Role Authority)
+	if (Combat)
+	{
+		if (OverlappingWeapon)
+		{
+			Combat->EquipWeapon(OverlappingWeapon);
+		}
+		else if (Combat->ShouldSwapWeapon())
+		{
+			Combat->SwapWeapon();
+		}
+	}
+}
+
 void APBCharacter::CrouchButtonPressed()
 {
 	if (bDisableGameplay) return;
@@ -453,15 +469,6 @@ void APBCharacter::TurnInPlace(float DeltaTime)
 			TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 			StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
 		}
-	}
-}
-
-void APBCharacter::ServerEquipButtonPressed_Implementation()
-{
-	// Must only be done on server (Role Authority)
-	if (Combat)
-	{
-		Combat->EquipWeapon(OverlappingWeapon);
 	}
 }
 

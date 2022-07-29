@@ -243,6 +243,8 @@ public:
 
 	void EquipWeapon(AWeapon* InWeapon);
 
+	void SwapWeapon();
+
 	void Reload();
 
 	UFUNCTION(BlueprintCallable)
@@ -264,6 +266,8 @@ public:
 	int32 GetWeaponAmmo() const;
 
 	int32 GetCarriedAmmo() const;
+
+	bool ShouldSwapWeapon();
 
 	FORCEINLINE float GetMaxWalkSpeed() const { return BaseWalkSpeed; }
 
