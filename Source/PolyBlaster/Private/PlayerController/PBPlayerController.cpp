@@ -6,6 +6,7 @@
 #include "Components/TextBlock.h"
 #include "Net/UnrealNetwork.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/Image.h"
 
 #include "HUD/PBHUD.h"
 #include "HUD/CharacterOverlay.h"
@@ -50,6 +51,8 @@ void APBPlayerController::Tick(float DeltaTime)
 	CheckTimeSync(DeltaTime);
 
 	PollInit();
+
+	CheckPing(DeltaTime);
 }
 
 void APBPlayerController::PollInit()
@@ -86,6 +89,35 @@ void APBPlayerController::CheckTimeSync(float DeltaTime)
 	{
 		ServerRequestServerTime(GetWorld()->GetTimeSeconds());
 		TimeSyncRunningTime = 0.f;
+	}
+}
+
+void APBPlayerController::CheckPing(float DeltaTime)
+{
+	HighPingRunningTime += DeltaTime;
+	if (HighPingRunningTime > CheckPingFrequency)
+	{
+		PlayerState = PlayerState == nullptr ? GetPlayerState<APlayerState>() : PlayerState;
+		if (PlayerState)
+		{
+			if (PlayerState->GetPing() * 4 > HighPingThreshold)
+			{
+				HighPingWarning();
+				PingAnimationRunningTime = 0;
+			}
+		}
+
+		HighPingRunningTime = 0.f;
+	}
+
+	bool bHighPingAnimationPlaying = PBHUD && PBHUD->CharacterOverlay && PBHUD->CharacterOverlay->HighPingAnimation && PBHUD->CharacterOverlay->IsAnimationPlaying(PBHUD->CharacterOverlay->HighPingAnimation);
+	if (bHighPingAnimationPlaying)
+	{
+		PingAnimationRunningTime += DeltaTime;
+		if (PingAnimationRunningTime > HighPingDuration)
+		{
+			StopHighPingWarning();
+		}
 	}
 }
 
@@ -475,4 +507,31 @@ void APBPlayerController::ClientReportServerTime_Implementation(float TimeOfClie
 	float RoundTripTime = GetWorld()->GetTimeSeconds() - TimeOfClientRequest;
 	float CurrentServerTime = TimeServerReceivedRequest + (0.5f * RoundTripTime);
 	ClientServerDelta = CurrentServerTime - GetWorld()->GetTimeSeconds();
+}
+
+void APBPlayerController::HighPingWarning()
+{
+	PBHUD = PBHUD == nullptr ? Cast<APBHUD>(GetHUD()) : PBHUD;
+
+	bool bHUDValid = PBHUD && PBHUD->CharacterOverlay && PBHUD->CharacterOverlay->HighPingIcon && PBHUD->CharacterOverlay->HighPingAnimation;
+	if (bHUDValid)
+	{
+		PBHUD->CharacterOverlay->HighPingIcon->SetOpacity(1.0f);
+		PBHUD->CharacterOverlay->PlayAnimation(PBHUD->CharacterOverlay->HighPingAnimation, 0.f, 5);
+	}
+}
+
+void APBPlayerController::StopHighPingWarning()
+{
+	PBHUD = PBHUD == nullptr ? Cast<APBHUD>(GetHUD()) : PBHUD;
+
+	bool bHUDValid = PBHUD && PBHUD->CharacterOverlay && PBHUD->CharacterOverlay->HighPingIcon && PBHUD->CharacterOverlay->HighPingAnimation;
+	if (bHUDValid)
+	{
+		PBHUD->CharacterOverlay->HighPingIcon->SetOpacity(0.0f);
+		if (PBHUD->CharacterOverlay->IsAnimationPlaying(PBHUD->CharacterOverlay->HighPingAnimation))
+		{
+			PBHUD->CharacterOverlay->StopAnimation(PBHUD->CharacterOverlay->HighPingAnimation);
+		}
+	}
 }

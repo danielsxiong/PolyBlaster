@@ -88,6 +88,16 @@ protected:
 
 	float TimeSyncRunningTime = 0.f;
 
+	/**
+	* High Ping
+	*/
+
+	void HighPingWarning();
+
+	void StopHighPingWarning();
+
+	void CheckPing(float DeltaTime);
+
 private:
 	
 	UPROPERTY()
@@ -146,4 +156,17 @@ private:
 
 	UFUNCTION()
 	void OnRep_MatchState();
+
+	float HighPingRunningTime = 0.f;
+
+	UPROPERTY(EditAnywhere)
+	float HighPingDuration = 5.f;
+
+	float PingAnimationRunningTime = 0.f;
+
+	UPROPERTY(EditAnywhere)
+	float CheckPingFrequency = 20.f;
+
+	UPROPERTY(EditAnywhere)
+	float HighPingThreshold = 50.f;
 };
