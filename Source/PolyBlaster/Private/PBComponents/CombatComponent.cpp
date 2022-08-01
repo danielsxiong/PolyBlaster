@@ -54,11 +54,11 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(UCombatComponent, EquippedWeapon);
 	DOREPLIFETIME(UCombatComponent, SecondaryWeapon);
 	DOREPLIFETIME(UCombatComponent, bAiming);
-	DOREPLIFETIME(UCombatComponent, HitTarget);
 	DOREPLIFETIME(UCombatComponent, CombatState);
 	// Just replicate to owning client, since other don't need it
 	DOREPLIFETIME_CONDITION(UCombatComponent, CarriedAmmo, COND_OwnerOnly);
 	DOREPLIFETIME_CONDITION(UCombatComponent, Grenades, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(UCombatComponent, HitTarget, COND_SkipOwner);
 }
 
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -162,7 +162,7 @@ void UCombatComponent::Fire()
 
 	bCanFire = false;
 	ServerFire(HitTarget);
-	LocalFire(HitTarget);
+	if (!Character->HasAuthority()) LocalFire(HitTarget);
 
 	if (EquippedWeapon)
 	{
