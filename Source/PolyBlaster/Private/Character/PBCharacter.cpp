@@ -181,19 +181,19 @@ void APBCharacter::RotateInPlace(float DeltaTime)
 		return;
 	}
 
-	if (GetLocalRole() > ENetRole::ROLE_SimulatedProxy && IsLocallyControlled())
+	/*if (GetLocalRole() > ENetRole::ROLE_SimulatedProxy && IsLocallyControlled())
 	{
 		AimOffset(DeltaTime);
 	}
 	else
-	{
+	{*/
 		TimeSinceLastMovementReplication += DeltaTime;
 		if (TimeSinceLastMovementReplication > 0.25f)
 		{
 			OnRep_ReplicatedMovement();
 		}
 		CalculateAO_Pitch();
-	}
+	//}
 }
 
 void APBCharacter::Jump()
@@ -357,7 +357,8 @@ void APBCharacter::AimOffset(float DeltaTime)
 
 		bUseControllerRotationYaw = true;
 
-		TurnInPlace(DeltaTime);
+		// TurnInPlace(DeltaTime);
+		SimProxiesTurn();
 		// UE_LOG(LogTemp, Warning, TEXT("AO_Yaw: %f"), AO_Yaw);
 	}
 

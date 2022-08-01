@@ -162,6 +162,7 @@ void UCombatComponent::Fire()
 
 	bCanFire = false;
 	ServerFire(HitTarget);
+	LocalFire(HitTarget);
 
 	if (EquippedWeapon)
 	{
@@ -177,6 +178,13 @@ void UCombatComponent::ServerFire_Implementation(const FVector_NetQuantize& Trac
 }
 
 void UCombatComponent::MulticastFire_Implementation(const FVector_NetQuantize& TraceHitTarget)
+{
+	// If this is the character on server or the client that is not locally controlled, do LocalFire()
+	if (Character && Character->IsLocallyControlled() && !Character->HasAuthority()) return;
+	LocalFire(TraceHitTarget);
+}
+
+void UCombatComponent::LocalFire(const FVector_NetQuantize& TraceHitTarget)
 {
 	if (Character && EquippedWeapon && CombatState == ECombatState::ECS_Reloading && EquippedWeapon->GetWeaponType() == EWeaponType::EWT_Shotgun)
 	{
@@ -347,6 +355,8 @@ void UCombatComponent::EquipWeapon(AWeapon* InWeapon)
 
 void UCombatComponent::SwapWeapon()
 {
+	if (CombatState != ECombatState::ECS_Unoccupied) return;
+
 	AWeapon* TempWeapon = EquippedWeapon;
 	EquippedWeapon = SecondaryWeapon;
 	SecondaryWeapon = TempWeapon;

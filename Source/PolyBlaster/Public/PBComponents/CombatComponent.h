@@ -175,6 +175,8 @@ protected:
 
 	void Fire();
 
+	void LocalFire(const FVector_NetQuantize& TraceHitTarget);
+
 	/*
 	* Flow on replicating weapon fire
 	* 
