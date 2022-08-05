@@ -9,12 +9,10 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 {
 	Super::Fire(HitTarget);
 
-	if (!HasAuthority()) return;
-
-	MulticastSpawnProjectile(HitTarget);
+	SpawnProjectile(HitTarget);
 }
 
-void AProjectileWeapon::MulticastSpawnProjectile_Implementation(const FVector& HitTarget)
+void AProjectileWeapon::SpawnProjectile(const FVector& HitTarget)
 {
 	APawn* InstigatorPawn = Cast<APawn>(GetOwner());
 

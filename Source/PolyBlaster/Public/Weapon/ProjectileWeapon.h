@@ -18,8 +18,7 @@ public:
 
 	virtual void Fire(const FVector& HitTarget) override;
 
-	UFUNCTION(NetMulticast, Unreliable)
-	void MulticastSpawnProjectile(const FVector& HitTarget);
+	void SpawnProjectile(const FVector& HitTarget);
 
 private:
 

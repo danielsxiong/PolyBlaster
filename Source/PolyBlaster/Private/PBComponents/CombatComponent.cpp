@@ -191,6 +191,14 @@ void UCombatComponent::Fire()
 	StartFireTimer();
 }
 
+/*
+* How do fire works?
+* On Server, just do server fire, it will just call multicast fire which will call EquippedWeapon->Fire() on server and all clients
+* On client, do local fire first for display, then do server fire which will call multicast fire on server and all clients except for the one firing
+* 
+* Multicast Fire only do fires on server, or client that is not locally controlled, which means clients who sent the server fire won;t shoot twice
+*/
+
 void UCombatComponent::FireProjectileWeapon()
 {
 	if (!Character->HasAuthority()) LocalFire(HitTarget);
