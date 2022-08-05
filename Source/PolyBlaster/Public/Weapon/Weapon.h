@@ -19,6 +19,16 @@ enum class EWeaponState : uint8
 	EWS_MAX UMETA(DisplayName = "DefaultMax"),
 };
 
+UENUM(BlueprintType)
+enum class EFireType : uint8
+{
+	EFT_HitScan UMETA(DisplayName = "HitScan Weapon"),
+	EFT_Projectile UMETA(DisplayName = "Projectile Weapon"),
+	EFT_Shotgun UMETA(DisplayName = "Shotgun Weapon"),
+
+	EFT_MAX UMETA(DisplayName = "DefaultMax")
+};
+
 UCLASS()
 class POLYBLASTER_API AWeapon : public AActor
 {
@@ -120,7 +130,13 @@ protected:
 
 public:
 
+	UPROPERTY(EditAnywhere)
+	EFireType FireType;
+
 	bool bDestroyWeapon = false;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
+	bool bUseScatter = false;
 
 	/**
 	* Textures for weapon crosshairs
@@ -163,6 +179,18 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	class USoundCue* EquipSound;
+
+	/**
+	* Trace End with Scatter
+	*/
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
+	float DistanceToSphere = 800.f;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
+	float SphereRadius = 75.f;
+
+	FVector TraceEndWithScatter(const FVector& HitTarget);
 
 	void ShowPickupWidget(bool bShowPickupWidget);
 

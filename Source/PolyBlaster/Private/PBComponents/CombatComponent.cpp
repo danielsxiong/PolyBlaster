@@ -161,15 +161,55 @@ void UCombatComponent::Fire()
 	if (!CanFire()) return;
 
 	bCanFire = false;
-	ServerFire(HitTarget);
-	if (!Character->HasAuthority()) LocalFire(HitTarget);
 
 	if (EquippedWeapon)
 	{
 		CrosshairShootingFactor = 0.75f;
+
+		switch (EquippedWeapon->FireType)
+		{
+		case EFireType::EFT_Projectile:
+		{
+			FireProjectileWeapon();
+			break;
+		}
+		case EFireType::EFT_HitScan:
+		{
+			FireHitScanWeapon();
+			break;
+		}
+		case EFireType::EFT_Shotgun:
+		{
+			FireShotgun();
+			break;
+		}
+		default:
+			break;
+		}
 	}
 
 	StartFireTimer();
+}
+
+void UCombatComponent::FireProjectileWeapon()
+{
+	if (!Character->HasAuthority()) LocalFire(HitTarget);
+	ServerFire(HitTarget);
+}
+
+void UCombatComponent::FireHitScanWeapon()
+{
+	if (EquippedWeapon)
+	{
+		HitTarget = EquippedWeapon->bUseScatter ? EquippedWeapon->TraceEndWithScatter(HitTarget) : HitTarget;
+		if (!Character->HasAuthority()) LocalFire(HitTarget);
+		ServerFire(HitTarget);
+	}
+}
+
+void UCombatComponent::FireShotgun()
+{
+
 }
 
 void UCombatComponent::ServerFire_Implementation(const FVector_NetQuantize& TraceHitTarget)

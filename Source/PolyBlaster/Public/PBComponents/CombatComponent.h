@@ -175,6 +175,12 @@ protected:
 
 	void Fire();
 
+	void FireProjectileWeapon();
+
+	void FireHitScanWeapon();
+
+	void FireShotgun();
+
 	void LocalFire(const FVector_NetQuantize& TraceHitTarget);
 
 	/*
