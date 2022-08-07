@@ -10,9 +10,9 @@
 
 #include "Character/PBCharacter.h"
 
-void AShotgun::Fire(const FVector& HitTarget)
+void AShotgun::FireShotgun(const TArray<FVector_NetQuantize>& HitTargets)
 {
-	AWeapon::Fire(HitTarget);
+	AWeapon::Fire(FVector());
 
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
 	if (!OwnerPawn) return;
@@ -22,17 +22,19 @@ void AShotgun::Fire(const FVector& HitTarget)
 	const USkeletalMeshSocket* MuzzleFlashSocket = GetWeaponMesh()->GetSocketByName("MuzzleFlash");
 	if (MuzzleFlashSocket)
 	{
-		FTransform SocketTransform = MuzzleFlashSocket->GetSocketTransform(GetWeaponMesh());
-		FVector Start = SocketTransform.GetLocation();
+		const FTransform SocketTransform = MuzzleFlashSocket->GetSocketTransform(GetWeaponMesh());
+		const FVector Start = SocketTransform.GetLocation();
 
+		// Maps hit character to a number of times hit
 		TMap<APBCharacter*, uint32> HitMap;
-		for (uint32 i = 0; i < NumPellets; i++)
+
+		for (FVector_NetQuantize HitTarget : HitTargets)
 		{
 			FHitResult FireHit;
 			WeaponTraceHit(Start, HitTarget, FireHit);
 
 			APBCharacter* PBCharacter = Cast<APBCharacter>(FireHit.GetActor());
-			if (PBCharacter && HasAuthority() && InstigatorController)
+			if (PBCharacter)
 			{
 				if (HitMap.Contains(PBCharacter))
 				{
@@ -41,8 +43,7 @@ void AShotgun::Fire(const FVector& HitTarget)
 				else
 				{
 					HitMap.Emplace(PBCharacter, 1);
-				}				
-				// UGameplayStatics::ApplyDamage(PBCharacter, Damage, InstigatorController, this, UDamageType::StaticClass());
+				}
 			}
 
 			if (ImpactParticles)
@@ -66,7 +67,7 @@ void AShotgun::Fire(const FVector& HitTarget)
 	}
 }
 
-void AShotgun::ShotgunTraceEndWithScatter(const FVector& HitTarget, TArray<FVector>& OutHitTargets)
+void AShotgun::ShotgunTraceEndWithScatter(const FVector& HitTarget, TArray<FVector_NetQuantize>& OutHitTargets)
 {
 	const USkeletalMeshSocket* MuzzleFlashSocket = GetWeaponMesh()->GetSocketByName("MuzzleFlash");
 	if (!MuzzleFlashSocket) return;

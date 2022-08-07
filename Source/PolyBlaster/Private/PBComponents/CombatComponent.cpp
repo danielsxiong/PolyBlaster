@@ -227,8 +227,10 @@ void UCombatComponent::FireShotgun()
 		AShotgun* Shotgun = Cast<AShotgun>(EquippedWeapon);
 		if (Shotgun)
 		{
-			TArray<FVector> HitTargets;
+			TArray<FVector_NetQuantize> HitTargets;
 			Shotgun->ShotgunTraceEndWithScatter(HitTarget, HitTargets);
+			if (!Character->HasAuthority()) ShotgunLocalFire(HitTargets);
+			ServerShotgunFire(HitTargets);
 		}
 	}
 }
@@ -245,17 +247,23 @@ void UCombatComponent::MulticastFire_Implementation(const FVector_NetQuantize& T
 	LocalFire(TraceHitTarget);
 }
 
+void UCombatComponent::ServerShotgunFire_Implementation(const TArray<FVector_NetQuantize>& TraceHitTargets)
+{
+	MulticastShotgunFire(TraceHitTargets);
+}
+
+void UCombatComponent::MulticastShotgunFire_Implementation(const TArray<FVector_NetQuantize>& TraceHitTargets)
+{
+	// If this is the character on server or the client that is not locally controlled, do LocalFire()
+	if (Character && Character->IsLocallyControlled() && !Character->HasAuthority()) return;
+	ShotgunLocalFire(TraceHitTargets);
+}
+
 void UCombatComponent::LocalFire(const FVector_NetQuantize& TraceHitTarget)
 {
-	if (Character && EquippedWeapon && CombatState == ECombatState::ECS_Reloading && EquippedWeapon->GetWeaponType() == EWeaponType::EWT_Shotgun)
-	{
-		Character->PlayFireMontage(bAiming);
-		EquippedWeapon->Fire(TraceHitTarget);
-		CombatState = ECombatState::ECS_Unoccupied;
-		return;
-	}
+	if (!Character || !EquippedWeapon) return;
 
-	if (Character && EquippedWeapon && CombatState == ECombatState::ECS_Unoccupied)
+	if (CombatState == ECombatState::ECS_Unoccupied)
 	{
 		Character->PlayFireMontage(bAiming);
 		EquippedWeapon->Fire(TraceHitTarget);
@@ -264,6 +272,22 @@ void UCombatComponent::LocalFire(const FVector_NetQuantize& TraceHitTarget)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Trace hit target: %s"), *TraceHitTarget.ToString());
 		}*/
+	}
+}
+
+void UCombatComponent::ShotgunLocalFire(const TArray<FVector_NetQuantize>& TraceHitTargets)
+{
+	if (!Character || !EquippedWeapon) return;
+
+	if (CombatState == ECombatState::ECS_Reloading || CombatState == ECombatState::ECS_Unoccupied)
+	{
+		AShotgun* Shotgun = Cast<AShotgun>(EquippedWeapon);
+		if (Shotgun)
+		{
+			Character->PlayFireMontage(bAiming);
+			Shotgun->FireShotgun(TraceHitTargets);
+			CombatState = ECombatState::ECS_Unoccupied;
+		}
 	}
 }
 

@@ -183,6 +183,8 @@ protected:
 
 	void LocalFire(const FVector_NetQuantize& TraceHitTarget);
 
+	void ShotgunLocalFire(const TArray<FVector_NetQuantize>& TraceHitTargets);
+
 	/*
 	* Flow on replicating weapon fire
 	* 
@@ -198,6 +200,12 @@ protected:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastFire(const FVector_NetQuantize& TraceHitTarget);
+
+	UFUNCTION(Server, Reliable)
+	void ServerShotgunFire(const TArray<FVector_NetQuantize>& TraceHitTargets);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastShotgunFire(const TArray<FVector_NetQuantize>& TraceHitTargets);
 
 	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
 
