@@ -14,6 +14,7 @@
 
 #include "Weapon/Weapon.h"
 #include "Weapon/Projectile.h"
+#include "Weapon/Shotgun.h"
 #include "Character/PBCharacter.h"
 #include "Character/PBAnimInstance.h"
 #include "PlayerController/PBPlayerController.h"
@@ -201,8 +202,12 @@ void UCombatComponent::Fire()
 
 void UCombatComponent::FireProjectileWeapon()
 {
-	if (!Character->HasAuthority()) LocalFire(HitTarget);
-	ServerFire(HitTarget);
+	if (EquippedWeapon)
+	{
+		HitTarget = EquippedWeapon->bUseScatter ? EquippedWeapon->TraceEndWithScatter(HitTarget) : HitTarget;
+		if (!Character->HasAuthority()) LocalFire(HitTarget);
+		ServerFire(HitTarget);
+	}
 }
 
 void UCombatComponent::FireHitScanWeapon()
@@ -217,7 +222,15 @@ void UCombatComponent::FireHitScanWeapon()
 
 void UCombatComponent::FireShotgun()
 {
-
+	if (EquippedWeapon)
+	{
+		AShotgun* Shotgun = Cast<AShotgun>(EquippedWeapon);
+		if (Shotgun)
+		{
+			TArray<FVector> HitTargets;
+			Shotgun->ShotgunTraceEndWithScatter(HitTarget, HitTargets);
+		}
+	}
 }
 
 void UCombatComponent::ServerFire_Implementation(const FVector_NetQuantize& TraceHitTarget)
