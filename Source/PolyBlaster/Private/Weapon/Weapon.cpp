@@ -59,7 +59,6 @@ void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AWeapon, WeaponState);
-	DOREPLIFETIME(AWeapon, Ammo);
 }
 
 void AWeapon::Tick(float DeltaTime)
@@ -130,16 +129,7 @@ void AWeapon::Fire(const FVector& HitTarget)
 		}
 	}
 
-	if (HasAuthority())
-	{
-		SpendRound();
-	}
-}
-
-void AWeapon::AddAmmo(int32 AmmoToAdd)
-{
-	Ammo = FMath::Clamp(Ammo + AmmoToAdd, 0, MagCapacity);
-	SetHUDAmmo();
+	SpendRound();
 }
 
 void AWeapon::EnableCustomDepth(bool bEnable)
@@ -275,20 +265,51 @@ void AWeapon::OnDropped()
 	EnableCustomDepth(true);
 }
 
-void AWeapon::OnRep_Ammo()
-{
-	OwnerPBCharacter = OwnerPBCharacter == nullptr ? Cast<APBCharacter>(GetOwner()) : OwnerPBCharacter;
-	if (OwnerPBCharacter && OwnerPBCharacter->GetCombatComponent() && WeaponType == EWeaponType::EWT_Shotgun && IsFull())
-	{
-		OwnerPBCharacter->GetCombatComponent()->JumpToShotgunEnd();
-	}
-
-	SetHUDAmmo();
-}
-
 void AWeapon::SpendRound()
 {
 	Ammo = FMath::Clamp(Ammo - 1, 0, MagCapacity);
+	SetHUDAmmo();
+
+	if (HasAuthority())
+	{
+		ClientUpdateAmmo(Ammo);
+	}
+	else
+	{
+		++Sequence;
+	}
+}
+
+void AWeapon::ClientUpdateAmmo_Implementation(int32 ServerAmmo)
+{
+	if (HasAuthority()) return;
+
+	Ammo = ServerAmmo;
+	--Sequence;
+
+	Ammo -= Sequence;
+	SetHUDAmmo();
+}
+
+void AWeapon::AddAmmo(int32 AmmoToAdd)
+{
+	Ammo = FMath::Clamp(Ammo + AmmoToAdd, 0, MagCapacity);
+	SetHUDAmmo();
+
+	ClientAddAmmo(AmmoToAdd);
+}
+
+void AWeapon::ClientAddAmmo_Implementation(int32 AmmoToAdd)
+{
+	if (HasAuthority()) return;
+
+	Ammo = FMath::Clamp(Ammo + AmmoToAdd, 0, MagCapacity);
+	
+	OwnerPBCharacter = OwnerPBCharacter == nullptr ? Cast<APBCharacter>(GetOwner()) : OwnerPBCharacter;
+	if (OwnerPBCharacter && OwnerPBCharacter->GetCombatComponent() && IsFull())
+	{
+		OwnerPBCharacter->GetCombatComponent()->JumpToShotgunEnd();
+	}
 
 	SetHUDAmmo();
 }
