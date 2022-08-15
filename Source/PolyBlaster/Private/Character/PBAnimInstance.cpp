@@ -52,6 +52,11 @@ void UPBAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 	bUseFABRIK = PBCharacter->GetCombatState() == ECombatState::ECS_Unoccupied;
 
+	if (PBCharacter->IsLocallyControlled() && PBCharacter->GetCombatState() != ECombatState::ECS_ThrowingGrenade)
+	{
+		bUseFABRIK = !PBCharacter->IsLocallyReloading();
+	}
+
 	bUseAimOffsets = PBCharacter->GetCombatState() == ECombatState::ECS_Unoccupied && !PBCharacter->bDisableGameplay;
 
 	bTransformRightHand = PBCharacter->GetCombatState() == ECombatState::ECS_Unoccupied && !PBCharacter->bDisableGameplay;

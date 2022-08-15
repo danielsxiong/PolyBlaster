@@ -262,6 +262,8 @@ protected:
 
 public:
 
+	bool bLocallyReloading = false;
+
 	void EquipWeapon(AWeapon* InWeapon);
 
 	void SwapWeapon();

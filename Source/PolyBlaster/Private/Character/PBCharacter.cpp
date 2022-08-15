@@ -856,6 +856,13 @@ AWeapon* APBCharacter::GetEquippedWeapon()
 	return Combat->EquippedWeapon;
 }
 
+bool APBCharacter::IsLocallyReloading() const
+{
+	if (!Combat) return false;
+
+	return Combat->bLocallyReloading;
+}
+
 FVector APBCharacter::GetHitTarget() const
 {
 	if (!Combat)

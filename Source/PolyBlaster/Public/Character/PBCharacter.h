@@ -355,6 +355,8 @@ public:
 
 	FORCEINLINE UBuffComponent* GetBuffComponent() const { return Buff; }
 
+	bool IsLocallyReloading() const;
+
 	FVector GetHitTarget() const;
 
 	ECombatState GetCombatState() const;
