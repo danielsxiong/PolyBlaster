@@ -8,6 +8,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/BoxComponent.h"
 #include "HUD/OverheadWidget.h"
 #include "Net/UnrealNetwork.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -70,6 +71,74 @@ APBCharacter::APBCharacter()
 	AttachedGrenade = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AttachedGrenade"));
 	AttachedGrenade->SetupAttachment(GetMesh(), FName("GrenadeSocket"));
 	AttachedGrenade->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	/**
+	* Hit boxes for server side rewind
+	*/
+
+	HeadBox = CreateDefaultSubobject<UBoxComponent>(TEXT("head"));
+	HeadBox->SetupAttachment(GetMesh(), FName("head"));
+	HeadBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	PelvisBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Pelvis"));
+	PelvisBox->SetupAttachment(GetMesh(), FName("Pelvis"));
+	PelvisBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	Spine02Box = CreateDefaultSubobject<UBoxComponent>(TEXT("spine_02"));
+	Spine02Box->SetupAttachment(GetMesh(), FName("spine_02"));
+	Spine02Box->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	Spine03Box = CreateDefaultSubobject<UBoxComponent>(TEXT("spine_03"));
+	Spine03Box->SetupAttachment(GetMesh(), FName("spine_03"));
+	Spine03Box->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	UpperArm_LBox = CreateDefaultSubobject<UBoxComponent>(TEXT("UpperArm_L"));
+	UpperArm_LBox->SetupAttachment(GetMesh(), FName("UpperArm_L"));
+	UpperArm_LBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	UpperArm_RBox = CreateDefaultSubobject<UBoxComponent>(TEXT("UpperArm_R"));
+	UpperArm_RBox->SetupAttachment(GetMesh(), FName("UpperArm_R"));
+	UpperArm_RBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	LowerArm_LBox = CreateDefaultSubobject<UBoxComponent>(TEXT("lowerarm_l"));
+	LowerArm_LBox->SetupAttachment(GetMesh(), FName("lowerarm_l"));
+	LowerArm_LBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	LowerArm_RBox = CreateDefaultSubobject<UBoxComponent>(TEXT("lowerarm_r"));
+	LowerArm_RBox->SetupAttachment(GetMesh(), FName("lowerarm_r"));
+	LowerArm_RBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	Hand_LBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Hand_L"));
+	Hand_LBox->SetupAttachment(GetMesh(), FName("Hand_L"));
+	Hand_LBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	Hand_RBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Hand_R"));
+	Hand_RBox->SetupAttachment(GetMesh(), FName("Hand_R"));
+	Hand_RBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	Thigh_LBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Thigh_L"));
+	Thigh_LBox->SetupAttachment(GetMesh(), FName("Thigh_L"));
+	Thigh_LBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	Thigh_RBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Thigh_R"));
+	Thigh_RBox->SetupAttachment(GetMesh(), FName("Thigh_R"));
+	Thigh_RBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	Calf_LBox = CreateDefaultSubobject<UBoxComponent>(TEXT("calf_l"));
+	Calf_LBox->SetupAttachment(GetMesh(), FName("calf_l"));
+	Calf_LBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	Calf_RBox = CreateDefaultSubobject<UBoxComponent>(TEXT("calf_r"));
+	Calf_RBox->SetupAttachment(GetMesh(), FName("calf_r"));
+	Calf_RBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	Foot_LBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Foot_L"));
+	Foot_LBox->SetupAttachment(GetMesh(), FName("Foot_L"));
+	Foot_LBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	Foot_RBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Foot_R"));
+	Foot_RBox->SetupAttachment(GetMesh(), FName("Foot_R"));
+	Foot_RBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void APBCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

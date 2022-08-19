@@ -120,6 +120,58 @@ protected:
 
 	void DropOrDestroyWeapon(AWeapon* Weapon);
 
+	/**
+	* Hit boxes used for server side rewind
+	*/
+
+	UPROPERTY(EditAnywhere)
+	class UBoxComponent* HeadBox;
+
+	UPROPERTY(EditAnywhere)
+	UBoxComponent* PelvisBox;
+
+	UPROPERTY(EditAnywhere)
+	UBoxComponent* Spine02Box;
+
+	UPROPERTY(EditAnywhere)
+	UBoxComponent* Spine03Box;
+
+	UPROPERTY(EditAnywhere)
+	UBoxComponent* UpperArm_LBox;
+
+	UPROPERTY(EditAnywhere)
+	UBoxComponent* UpperArm_RBox;
+
+	UPROPERTY(EditAnywhere)
+	UBoxComponent* LowerArm_LBox;
+
+	UPROPERTY(EditAnywhere)
+	UBoxComponent* LowerArm_RBox;
+
+	UPROPERTY(EditAnywhere)
+	UBoxComponent* Hand_LBox;
+
+	UPROPERTY(EditAnywhere)
+	UBoxComponent* Hand_RBox;
+
+	UPROPERTY(EditAnywhere)
+	UBoxComponent* Thigh_LBox;
+
+	UPROPERTY(EditAnywhere)
+	UBoxComponent* Thigh_RBox;
+
+	UPROPERTY(EditAnywhere)
+	UBoxComponent* Calf_LBox;
+
+	UPROPERTY(EditAnywhere)
+	UBoxComponent* Calf_RBox;
+
+	UPROPERTY(EditAnywhere)
+	UBoxComponent* Foot_LBox;
+
+	UPROPERTY(EditAnywhere)
+	UBoxComponent* Foot_RBox;
+
 private:
 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
