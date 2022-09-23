@@ -82,66 +82,82 @@ APBCharacter::APBCharacter()
 	HeadBox = CreateDefaultSubobject<UBoxComponent>(TEXT("head"));
 	HeadBox->SetupAttachment(GetMesh(), FName("head"));
 	HeadBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	HitCollisionBoxes.Add(FName("head"), HeadBox);
 
 	PelvisBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Pelvis"));
 	PelvisBox->SetupAttachment(GetMesh(), FName("Pelvis"));
 	PelvisBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	HitCollisionBoxes.Add(FName("Pelvis"), PelvisBox);
 
 	Spine02Box = CreateDefaultSubobject<UBoxComponent>(TEXT("spine_02"));
 	Spine02Box->SetupAttachment(GetMesh(), FName("spine_02"));
 	Spine02Box->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	HitCollisionBoxes.Add(FName("spine_02"), Spine02Box);
 
 	Spine03Box = CreateDefaultSubobject<UBoxComponent>(TEXT("spine_03"));
 	Spine03Box->SetupAttachment(GetMesh(), FName("spine_03"));
 	Spine03Box->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	HitCollisionBoxes.Add(FName("spine_03"), Spine03Box);
 
 	UpperArm_LBox = CreateDefaultSubobject<UBoxComponent>(TEXT("UpperArm_L"));
 	UpperArm_LBox->SetupAttachment(GetMesh(), FName("UpperArm_L"));
 	UpperArm_LBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	HitCollisionBoxes.Add(FName("UpperArm_L"), UpperArm_LBox);
 
 	UpperArm_RBox = CreateDefaultSubobject<UBoxComponent>(TEXT("UpperArm_R"));
 	UpperArm_RBox->SetupAttachment(GetMesh(), FName("UpperArm_R"));
 	UpperArm_RBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	HitCollisionBoxes.Add(FName("UpperArm_R"), UpperArm_RBox);
 
 	LowerArm_LBox = CreateDefaultSubobject<UBoxComponent>(TEXT("lowerarm_l"));
 	LowerArm_LBox->SetupAttachment(GetMesh(), FName("lowerarm_l"));
 	LowerArm_LBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	HitCollisionBoxes.Add(FName("lowerarm_l"), LowerArm_LBox);
 
 	LowerArm_RBox = CreateDefaultSubobject<UBoxComponent>(TEXT("lowerarm_r"));
 	LowerArm_RBox->SetupAttachment(GetMesh(), FName("lowerarm_r"));
 	LowerArm_RBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	HitCollisionBoxes.Add(FName("lowerarm_r"), LowerArm_RBox);
 
 	Hand_LBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Hand_L"));
 	Hand_LBox->SetupAttachment(GetMesh(), FName("Hand_L"));
 	Hand_LBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	HitCollisionBoxes.Add(FName("Hand_L"), Hand_LBox);
 
 	Hand_RBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Hand_R"));
 	Hand_RBox->SetupAttachment(GetMesh(), FName("Hand_R"));
 	Hand_RBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	HitCollisionBoxes.Add(FName("Hand_R"), Hand_RBox);
 
 	Thigh_LBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Thigh_L"));
 	Thigh_LBox->SetupAttachment(GetMesh(), FName("Thigh_L"));
 	Thigh_LBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	HitCollisionBoxes.Add(FName("Thigh_L"), Thigh_LBox);
 
 	Thigh_RBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Thigh_R"));
 	Thigh_RBox->SetupAttachment(GetMesh(), FName("Thigh_R"));
 	Thigh_RBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	HitCollisionBoxes.Add(FName("Thigh_R"), Thigh_RBox);
 
 	Calf_LBox = CreateDefaultSubobject<UBoxComponent>(TEXT("calf_l"));
 	Calf_LBox->SetupAttachment(GetMesh(), FName("calf_l"));
 	Calf_LBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	HitCollisionBoxes.Add(FName("calf_l"), Calf_LBox);
 
 	Calf_RBox = CreateDefaultSubobject<UBoxComponent>(TEXT("calf_r"));
 	Calf_RBox->SetupAttachment(GetMesh(), FName("calf_r"));
 	Calf_RBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	HitCollisionBoxes.Add(FName("calf_r"), Calf_RBox);
 
 	Foot_LBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Foot_L"));
 	Foot_LBox->SetupAttachment(GetMesh(), FName("Foot_L"));
 	Foot_LBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	HitCollisionBoxes.Add(FName("Foot_L"), Foot_LBox);
 
 	Foot_RBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Foot_R"));
 	Foot_RBox->SetupAttachment(GetMesh(), FName("Foot_R"));
 	Foot_RBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	HitCollisionBoxes.Add(FName("Foot_R"), Foot_RBox);
 }
 
 void APBCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
