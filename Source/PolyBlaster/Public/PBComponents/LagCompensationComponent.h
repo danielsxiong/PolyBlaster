@@ -6,6 +6,32 @@
 #include "Components/ActorComponent.h"
 #include "LagCompensationComponent.generated.h"
 
+USTRUCT(BlueprintType)
+struct FBoxInformation
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FVector Location;
+
+	UPROPERTY();
+	FRotator Rotation;
+
+	UPROPERTY()
+	FVector BoxExtent;
+};
+
+USTRUCT(BlueprintType)
+struct FFramePackage
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	float Time;
+
+	UPROPERTY()
+	TMap<FName, FBoxInformation> HitBoxInfo;
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class POLYBLASTER_API ULagCompensationComponent : public UActorComponent
@@ -15,6 +41,7 @@ class POLYBLASTER_API ULagCompensationComponent : public UActorComponent
 public:	
 
 	ULagCompensationComponent();
+	friend class APBCharacter;
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
@@ -24,5 +51,12 @@ protected:
 
 public:	
 
+private:
+
+	UPROPERTY()
+	APBCharacter* Character;
+
+	UPROPERTY()
+	class APBPlayerController* Controller;
 		
 };

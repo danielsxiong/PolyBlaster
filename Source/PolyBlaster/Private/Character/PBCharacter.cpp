@@ -22,6 +22,7 @@
 #include "Weapon/WeaponTypes.h"
 #include "PBComponents/CombatComponent.h"
 #include "PBComponents/BuffComponent.h"
+#include "PBComponents/LagCompensationComponent.h"
 #include "Character/PBAnimInstance.h"
 #include "PlayerController/PBPlayerController.h"
 #include "PlayerState/PBPlayerState.h"
@@ -52,6 +53,8 @@ APBCharacter::APBCharacter()
 
 	Buff = CreateDefaultSubobject<UBuffComponent>(TEXT("BuffComponent"));
 	Buff->SetIsReplicated(true);
+
+	LagCompensation = CreateDefaultSubobject<ULagCompensationComponent>(TEXT("LagCompensation"));
 
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 0.f, 650.f);
@@ -167,6 +170,15 @@ void APBCharacter::PostInitializeComponents()
 		Buff->Character = this;
 		Buff->SetInitialSpeeds(GetCharacterMovement()->MaxWalkSpeed, GetCharacterMovement()->MaxWalkSpeedCrouched);
 		Buff->SetInitialJumpVelocity(GetCharacterMovement()->JumpZVelocity);
+	}
+
+	if (LagCompensation)
+	{
+		LagCompensation->Character = this;
+		if (Controller)
+		{
+			LagCompensation->Controller = Cast<APBPlayerController>(Controller);
+		}
 	}
 }
 

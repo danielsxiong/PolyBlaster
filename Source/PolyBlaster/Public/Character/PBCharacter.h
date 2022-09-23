@@ -183,6 +183,10 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UWidgetComponent* OverheadWidget;
 
+	/**
+	* PB Components
+	*/
+
 	// bIsReplicated - true
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UCombatComponent* Combat;
@@ -190,6 +194,9 @@ private:
 	// bIsReplicated - true
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UBuffComponent* Buff;
+
+	UPROPERTY(VisibleAnywhere)
+	class ULagCompensationComponent* LagCompensation;
 
 	/*
 	* Flow for replicating OverlappingWeapon
