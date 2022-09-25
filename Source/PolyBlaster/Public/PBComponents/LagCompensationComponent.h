@@ -54,8 +54,6 @@ protected:
 
 	void SaveFramePackage(FFramePackage& Package);
 
-public:	
-
 private:
 
 	UPROPERTY()
@@ -63,5 +61,10 @@ private:
 
 	UPROPERTY()
 	class APBPlayerController* Controller;
+
+	TDoubleLinkedList<FFramePackage> FrameHistory;
+
+	UPROPERTY(EditAnywhere)
+	float MaxRecordTime = 4.f;
 		
 };
