@@ -417,6 +417,8 @@ public:
 
 	FORCEINLINE UBuffComponent* GetBuffComponent() const { return Buff; }
 
+	FORCEINLINE ULagCompensationComponent* GetLagCompensationComponent() const { return LagCompensation; }
+
 	bool IsLocallyReloading() const;
 
 	FVector GetHitTarget() const;
