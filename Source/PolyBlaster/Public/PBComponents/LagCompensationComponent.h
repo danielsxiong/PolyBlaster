@@ -33,6 +33,18 @@ struct FFramePackage
 	TMap<FName, FBoxInformation> HitBoxInfo;
 };
 
+USTRUCT(BlueprintType)
+struct FServerSideRewindResult
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	bool bHitConfirmed;
+
+	UPROPERTY()
+	bool bHeadShot;
+};
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class POLYBLASTER_API ULagCompensationComponent : public UActorComponent
 {
@@ -48,7 +60,7 @@ public:
 
 	void ShowFramePackage(const FFramePackage& Package, const FColor& Color);
 
-	void ServerSideRewind(class APBCharacter* HitCharacter, const FVector_NetQuantize& TraceStart, const FVector_NetQuantize& HitLocation, float HitTime);
+	FServerSideRewindResult ServerSideRewind(class APBCharacter* HitCharacter, const FVector_NetQuantize& TraceStart, const FVector_NetQuantize& HitLocation, float HitTime);
 
 protected:
 
@@ -57,6 +69,16 @@ protected:
 	void SaveFramePackage(FFramePackage& Package);
 
 	FFramePackage InterpBetweenFrames(const FFramePackage& OlderFrame, const FFramePackage& YoungerFrame, float HitTime);
+
+	FServerSideRewindResult ConfirmHit(const FFramePackage& Package, APBCharacter* HitCharacter, const FVector_NetQuantize& TraceStart, const FVector_NetQuantize& HitLocation);
+
+	void CacheBoxPositions(APBCharacter* HitCharacter, FFramePackage& OutFramePackage);
+
+	void MoveBoxes(APBCharacter* HitCharacter, const FFramePackage& Package);
+
+	void ResetHitBoxes(APBCharacter* HitCharacter, const FFramePackage& Package);
+
+	void EnableCharacterMeshCollision(APBCharacter* HitCharacter, ECollisionEnabled::Type CollisionEnabled);
 
 private:
 
