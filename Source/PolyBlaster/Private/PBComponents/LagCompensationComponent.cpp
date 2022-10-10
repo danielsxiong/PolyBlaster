@@ -155,7 +155,7 @@ FServerSideRewindResult ULagCompensationComponent::ConfirmHit(const FFramePackag
 	return FServerSideRewindResult{ false, false };
 }
 
-void CacheBoxPositions(APBCharacter* HitCharacter, FFramePackage& OutFramePackage)
+void ULagCompensationComponent::CacheBoxPositions(APBCharacter* HitCharacter, FFramePackage& OutFramePackage)
 {
 	if (!HitCharacter) return;
 
