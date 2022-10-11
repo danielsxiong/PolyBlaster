@@ -48,6 +48,8 @@ public:
 
 	void SetHUDGrenade(int32 Grenades);
 
+	float SingleTripTime = 0.f;
+
 protected:
 
 	virtual void BeginPlay() override;

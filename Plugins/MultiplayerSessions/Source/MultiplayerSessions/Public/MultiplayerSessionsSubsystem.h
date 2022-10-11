@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Interfaces/OnlineSessionInterface.h"
+#include "Interfaces/OnlineIdentityInterface.h"
 #include "MultiplayerSessionsSubsystem.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMultiplayerOnCreateSessionComplete, bool, bWasSuccessful);
@@ -56,6 +57,8 @@ public:
 
 protected:
 
+	void OnLoginComplete(int32 LocalUserNum, bool bWasSuccessful, const FUniqueNetId& UserId, const FString& Error);
+
 	void OnCreateSessionComplete(FName SessionName, bool bWasSuccessful);
 
 	void OnFindSessionsComplete(bool bWasSuccessful);
@@ -70,9 +73,15 @@ private:
 	// Pointer to online session interface
 	IOnlineSessionPtr OnlineSessionInterface;
 
+	// Pointer to online identity interface
+	IOnlineIdentityPtr OnlineIdentityInterface;
+
 	TSharedPtr<FOnlineSessionSettings> LastSessionSettings;
 
 	TSharedPtr<FOnlineSessionSearch> LastSessionSearch;
+
+	FOnLoginCompleteDelegate LoginCompleteDelegate;
+	FDelegateHandle LoginCompleteDelegateHandle;
 
 	FOnCreateSessionCompleteDelegate CreateSessionCompleteDelegate;
 	FDelegateHandle CreateSessionCompleteDelegateHandle;

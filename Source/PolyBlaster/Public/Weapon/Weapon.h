@@ -62,12 +62,6 @@ public:
 
 private:
 
-	UPROPERTY()
-	class APBCharacter* OwnerPBCharacter;
-
-	UPROPERTY()
-	class APBPlayerController* OwnerPBPlayerController;
-
 	UPROPERTY(EditAnywhere)
 	EWeaponType WeaponType;
 
@@ -119,6 +113,19 @@ private:
 	void ClientAddAmmo(int32 AmmoToAdd);
 
 protected:
+
+	
+	UPROPERTY()
+	class APBCharacter* OwnerPBCharacter;
+
+	UPROPERTY()
+	class APBPlayerController* OwnerPBPlayerController;
+
+	UPROPERTY(EditAnywhere)
+	float Damage = 20.f;
+
+	UPROPERTY(EditAnywhere)
+	bool bUseServerSideRewind = false;
 
 	UFUNCTION()
 	virtual void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& Sweep);
@@ -223,5 +230,7 @@ public:
 	FORCEINLINE int32 GetAmmo() const { return Ammo; }
 
 	FORCEINLINE int32 GetMagCapacity() const { return MagCapacity; }
+
+	FORCEINLINE float GetDamage() const { return Damage; }
 		 
 };

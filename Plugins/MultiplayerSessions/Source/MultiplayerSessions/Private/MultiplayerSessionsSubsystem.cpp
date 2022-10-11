@@ -6,6 +6,7 @@
 #include "OnlineSessionSettings.h"
 
 UMultiplayerSessionsSubsystem::UMultiplayerSessionsSubsystem():
+	LoginCompleteDelegate(FOnLoginCompleteDelegate::CreateUObject(this, &ThisClass::OnLoginComplete)),
 	CreateSessionCompleteDelegate(FOnCreateSessionCompleteDelegate::CreateUObject(this, &ThisClass::OnCreateSessionComplete)),
 	FindSessionsCompleteDelegate(FOnFindSessionsCompleteDelegate::CreateUObject(this, &ThisClass::OnFindSessionsComplete)),
 	JoinSessionCompleteDelegate(FOnJoinSessionCompleteDelegate::CreateUObject(this, &ThisClass::OnJoinSessionComplete)),
@@ -19,23 +20,37 @@ void UMultiplayerSessionsSubsystem::Initialize(FSubsystemCollectionBase& Collect
 	IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
 	if (OnlineSubsystem)
 	{
-		OnlineSessionInterface = OnlineSubsystem->GetSessionInterface();
+		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Loaded Online Subsystem: %s"), *IOnlineSubsystem::Get()->GetSubsystemName().ToString()));
 
+		OnlineSessionInterface = OnlineSubsystem->GetSessionInterface();
+		OnlineIdentityInterface = OnlineSubsystem->GetIdentityInterface();
+
+		OnlineIdentityInterface->AddOnLoginCompleteDelegate_Handle(0, LoginCompleteDelegate);
 		CreateSessionCompleteDelegateHandle = OnlineSessionInterface->AddOnCreateSessionCompleteDelegate_Handle(CreateSessionCompleteDelegate);
 		FindSessionsCompleteDelegateHandle = OnlineSessionInterface->AddOnFindSessionsCompleteDelegate_Handle(FindSessionsCompleteDelegate);
 		JoinSessionCompleteDelegateHandle = OnlineSessionInterface->AddOnJoinSessionCompleteDelegate_Handle(JoinSessionCompleteDelegate);
 		DestroySessionCompleteDelegateHandle = OnlineSessionInterface->AddOnDestroySessionCompleteDelegate_Handle(DestroySessionCompleteDelegate);
 		StartSessionCompleteDelegateHandle = OnlineSessionInterface->AddOnStartSessionCompleteDelegate_Handle(StartSessionCompleteDelegate);
+
+		if (IOnlineSubsystem::Get()->GetSubsystemName() != "NULL")
+		{
+			FOnlineAccountCredentials Credentials;
+			Credentials.Id = FString();
+			Credentials.Token = FString();
+			Credentials.Type = TEXT("accountportal");
+			OnlineIdentityInterface->Login(0, Credentials);
+		}
 	}
 }
 
 void UMultiplayerSessionsSubsystem::Deinitialize()
 {
-	if (!OnlineSessionInterface.IsValid())
+	if (!OnlineSessionInterface.IsValid() || !OnlineIdentityInterface.IsValid())
 	{
 		return;
 	}
 
+	OnlineIdentityInterface->ClearOnLoginCompleteDelegate_Handle(0, LoginCompleteDelegateHandle);
 	OnlineSessionInterface->ClearOnCreateSessionCompleteDelegate_Handle(CreateSessionCompleteDelegateHandle);
 	OnlineSessionInterface->ClearOnFindSessionsCompleteDelegate_Handle(FindSessionsCompleteDelegateHandle);
 	OnlineSessionInterface->ClearOnJoinSessionCompleteDelegate_Handle(JoinSessionCompleteDelegateHandle);
@@ -63,7 +78,8 @@ void UMultiplayerSessionsSubsystem::CreateSession(int32 NumPublicConnections, FS
 	LastSessionSettings = MakeShareable(new FOnlineSessionSettings());
 	if (IOnlineSubsystem::Get()->GetSubsystemName() == "NULL")
 	{
-		LastSessionSettings->bIsLANMatch = true;
+		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Loaded Online Subsystem: %s, will use LAN match"), *IOnlineSubsystem::Get()->GetSubsystemName().ToString()));
+		LastSessionSettings->bIsLANMatch = false;
 	}
 	else
 	{
@@ -96,7 +112,8 @@ void UMultiplayerSessionsSubsystem::FindSessions(int32 MaxSearchResults)
 	LastSessionSearch->MaxSearchResults = MaxSearchResults;
 	if (IOnlineSubsystem::Get()->GetSubsystemName() == "NULL")
 	{
-		LastSessionSearch->bIsLanQuery = true;
+		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Loaded Online Subsystem: %s, will use LAN query"), *IOnlineSubsystem::Get()->GetSubsystemName().ToString()));
+		LastSessionSearch->bIsLanQuery = false;
 	}
 	else
 	{
@@ -143,6 +160,17 @@ void UMultiplayerSessionsSubsystem::StartSession()
 	OnlineSessionInterface->StartSession(NAME_GameSession);
 }
 
+void UMultiplayerSessionsSubsystem::OnLoginComplete(int32 LocalUserNum, bool bWasSuccessful, const FUniqueNetId& UserId, const FString& Error)
+{
+	if (!bWasSuccessful)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red, FString::Printf(TEXT("Login Error: %s"), *Error));
+		return;
+	}
+
+	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Login Success, User Id: %s"), *UserId.ToString()));
+}
+
 void UMultiplayerSessionsSubsystem::OnCreateSessionComplete(FName SessionName, bool bWasSuccessful)
 {
 	if (!OnlineSessionInterface.IsValid())
@@ -150,6 +178,7 @@ void UMultiplayerSessionsSubsystem::OnCreateSessionComplete(FName SessionName, b
 		return;
 	}
 
+	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Created Session: %s"), *SessionName.ToString()));
 	MultiplayerOnCreateSessionComplete.Broadcast(bWasSuccessful);
 }
 

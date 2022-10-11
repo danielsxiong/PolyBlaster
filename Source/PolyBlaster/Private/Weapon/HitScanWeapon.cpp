@@ -9,7 +9,9 @@
 #include "DrawDebugHelpers.h"
 
 #include "Character/PBCharacter.h"
+#include "PlayerController/PBPlayerController.h"
 #include "Weapon/WeaponTypes.h"
+#include "PBComponents/LagCompensationComponent.h"
 
 void AHitScanWeapon::Fire(const FVector& HitTarget)
 {
@@ -38,9 +40,22 @@ void AHitScanWeapon::Fire(const FVector& HitTarget)
 			if (FireHit.bBlockingHit)
 			{
 				APBCharacter* PBCharacter = Cast<APBCharacter>(FireHit.GetActor());
-				if (PBCharacter && HasAuthority() && InstigatorController)
+				if (PBCharacter && InstigatorController)
 				{
-					UGameplayStatics::ApplyDamage(PBCharacter, Damage, InstigatorController, this, UDamageType::StaticClass());
+					if (HasAuthority() && !bUseServerSideRewind)
+					{
+						UGameplayStatics::ApplyDamage(PBCharacter, Damage, InstigatorController, this, UDamageType::StaticClass());
+					}
+					else if (!HasAuthority() && bUseServerSideRewind)
+					{
+						OwnerPBCharacter = OwnerPBCharacter == nullptr ? Cast<APBCharacter>(OwnerPawn) : OwnerPBCharacter;
+						OwnerPBPlayerController = OwnerPBPlayerController == nullptr ? Cast<APBPlayerController>(InstigatorController) : OwnerPBPlayerController;
+
+						if (OwnerPBPlayerController && OwnerPBCharacter && OwnerPBCharacter->GetLagCompensationComponent())
+						{
+							OwnerPBCharacter->GetLagCompensationComponent()->ServerScoreRequest(PBCharacter, Start, HitTarget, OwnerPBPlayerController->GetServerTime() - OwnerPBPlayerController->SingleTripTime, this);
+						}
+					}
 				}
 
 				if (ImpactParticles)

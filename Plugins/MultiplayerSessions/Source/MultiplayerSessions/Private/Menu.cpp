@@ -132,6 +132,11 @@ void UMenu::OnFindSessions(const TArray<FOnlineSessionSearchResult>& SessionResu
 
 	if (!bWasSuccessful || SessionResults.Num() == 0)
 	{
+		if (!bWasSuccessful)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red, TEXT("Find session failed"));
+		}
+		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red, TEXT("Cannot find session"));
 		JoinButton->SetIsEnabled(true);
 	}
 }
