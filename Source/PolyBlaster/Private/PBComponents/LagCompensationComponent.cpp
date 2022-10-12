@@ -34,14 +34,14 @@ void ULagCompensationComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 
 void ULagCompensationComponent::SaveFramePackage()
 {
-	if (!Character || Character->HasAuthority()) return;
+	if (!Character || !Character->HasAuthority()) return;
 
 	if (FrameHistory.Num() <= 1)
 	{
 		FFramePackage ThisFrame;
 		SaveFramePackage(ThisFrame);
 		FrameHistory.AddHead(ThisFrame);
-		ShowFramePackage(ThisFrame, FColor::Orange);
+		// ShowFramePackage(ThisFrame, FColor::Orange);
 	}
 	else
 	{
@@ -258,7 +258,7 @@ FServerSideRewindResult ULagCompensationComponent::ServerSideRewind(class APBCha
 	}
 
 	TDoubleLinkedList<FFramePackage>::TDoubleLinkedListNode* Younger = History.GetHead();
-	TDoubleLinkedList<FFramePackage>::TDoubleLinkedListNode* Older = History.GetTail();
+	TDoubleLinkedList<FFramePackage>::TDoubleLinkedListNode* Older = Younger;
 
 	while (Older->GetValue().Time > HitTime) // Is Older time still younger than hit time?
 	{
@@ -266,6 +266,7 @@ FServerSideRewindResult ULagCompensationComponent::ServerSideRewind(class APBCha
 		if (Older->GetNextNode() == nullptr) break;
 		Older = Older->GetNextNode();
 
+		// On the last iteration where we found older time is already older than hit time, we won't need to set younger to older
 		if (Older->GetValue().Time > HitTime)
 		{
 			Younger = Older;

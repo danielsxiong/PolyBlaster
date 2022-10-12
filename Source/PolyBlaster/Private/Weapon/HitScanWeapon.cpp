@@ -53,7 +53,7 @@ void AHitScanWeapon::Fire(const FVector& HitTarget)
 
 						if (OwnerPBPlayerController && OwnerPBCharacter && OwnerPBCharacter->GetLagCompensationComponent())
 						{
-							OwnerPBCharacter->GetLagCompensationComponent()->ServerScoreRequest(PBCharacter, Start, HitTarget, OwnerPBPlayerController->GetServerTime() - OwnerPBPlayerController->SingleTripTime, this);
+							OwnerPBCharacter->GetLagCompensationComponent()->ServerScoreRequest(PBCharacter, Start, FireHit.ImpactPoint, OwnerPBPlayerController->GetServerTime() - OwnerPBPlayerController->SingleTripTime, this);
 						}
 					}
 				}

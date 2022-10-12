@@ -18,6 +18,7 @@ UMultiplayerSessionsSubsystem::UMultiplayerSessionsSubsystem():
 void UMultiplayerSessionsSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
+
 	if (OnlineSubsystem)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Loaded Online Subsystem: %s"), *IOnlineSubsystem::Get()->GetSubsystemName().ToString()));
@@ -32,13 +33,15 @@ void UMultiplayerSessionsSubsystem::Initialize(FSubsystemCollectionBase& Collect
 		DestroySessionCompleteDelegateHandle = OnlineSessionInterface->AddOnDestroySessionCompleteDelegate_Handle(DestroySessionCompleteDelegate);
 		StartSessionCompleteDelegateHandle = OnlineSessionInterface->AddOnStartSessionCompleteDelegate_Handle(StartSessionCompleteDelegate);
 
-		if (IOnlineSubsystem::Get()->GetSubsystemName() != "NULL")
+		if (IOnlineSubsystem::Get()->GetSubsystemName() == "EOS")
 		{
+#if !WITH_EDITOR
 			FOnlineAccountCredentials Credentials;
 			Credentials.Id = FString();
 			Credentials.Token = FString();
 			Credentials.Type = TEXT("accountportal");
 			OnlineIdentityInterface->Login(0, Credentials);
+#endif
 		}
 	}
 }
@@ -79,7 +82,7 @@ void UMultiplayerSessionsSubsystem::CreateSession(int32 NumPublicConnections, FS
 	if (IOnlineSubsystem::Get()->GetSubsystemName() == "NULL")
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Loaded Online Subsystem: %s, will use LAN match"), *IOnlineSubsystem::Get()->GetSubsystemName().ToString()));
-		LastSessionSettings->bIsLANMatch = false;
+		LastSessionSettings->bIsLANMatch = true;
 	}
 	else
 	{
@@ -92,6 +95,7 @@ void UMultiplayerSessionsSubsystem::CreateSession(int32 NumPublicConnections, FS
 	LastSessionSettings->bUsesPresence = true;
 	LastSessionSettings->bUseLobbiesIfAvailable = true;
 	LastSessionSettings->Set(FName("MatchType"), MatchType, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	LastSessionSettings->Set(SEARCH_KEYWORDS, FString("PolyBlasterLobby"), EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 	LastSessionSettings->BuildUniqueId = 1;
 
 	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
@@ -113,13 +117,14 @@ void UMultiplayerSessionsSubsystem::FindSessions(int32 MaxSearchResults)
 	if (IOnlineSubsystem::Get()->GetSubsystemName() == "NULL")
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Loaded Online Subsystem: %s, will use LAN query"), *IOnlineSubsystem::Get()->GetSubsystemName().ToString()));
-		LastSessionSearch->bIsLanQuery = false;
+		LastSessionSearch->bIsLanQuery = true;
 	}
 	else
 	{
 		LastSessionSearch->bIsLanQuery = false;
 	}
-	LastSessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
+	LastSessionSearch->QuerySettings.Set(SEARCH_LOBBIES, true, EOnlineComparisonOp::Equals);
+	LastSessionSearch->QuerySettings.Set(SEARCH_KEYWORDS, FString("PolyBlasterLobby"), EOnlineComparisonOp::Equals);
 
 	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
 	if (!OnlineSessionInterface->FindSessions(*LocalPlayer->GetPreferredUniqueNetId(), LastSessionSearch.ToSharedRef()))
