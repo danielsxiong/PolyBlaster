@@ -106,9 +106,9 @@ protected:
 	* Shotgun
 	*/
 
-	FShotgunServerSideRewindResult ShotgunServerSideRewind(const TArray<APBCharacter*>& HitCharacters, const FVector_NetQuantize& TraceStart, const TArray<FVector_NetQuantize>& HitLocation, float HitTime);
+	FShotgunServerSideRewindResult ShotgunServerSideRewind(const TArray<APBCharacter*>& HitCharacters, const FVector_NetQuantize& TraceStart, const TArray<FVector_NetQuantize>& HitLocations, float HitTime);
 
-	FShotgunServerSideRewindResult ShotgunConfirmHit(const TArray<FFramePackage>& Package, const FVector_NetQuantize& TraceStart, const TArray<FVector_NetQuantize>& HitLocation);
+	FShotgunServerSideRewindResult ShotgunConfirmHit(const TArray<FFramePackage>& Packages, const FVector_NetQuantize& TraceStart, const TArray<FVector_NetQuantize>& HitLocations);
 
 private:
 
