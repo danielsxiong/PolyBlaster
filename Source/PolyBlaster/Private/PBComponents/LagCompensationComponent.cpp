@@ -59,20 +59,13 @@ void ULagCompensationComponent::SaveFramePackage()
 	}
 }
 
-void ULagCompensationComponent::ShowFramePackage(const FFramePackage& Package, const FColor& Color)
-{
-	for (auto& BoxInfo : Package.HitBoxInfo)
-	{
-		DrawDebugBox(GetWorld(), BoxInfo.Value.Location, BoxInfo.Value.BoxExtent, FQuat(BoxInfo.Value.Rotation), Color, false, 4.f);
-	}
-}
-
 void ULagCompensationComponent::SaveFramePackage(FFramePackage& Package)
 {
 	Character = Character ? Cast<APBCharacter>(GetOwner()) : Character;
 	if (Character)
 	{
 		Package.Time = GetWorld()->GetTimeSeconds();
+		Package.Character = Character;
 
 		for (auto& BoxPair : Character->HitCollisionBoxes)
 		{
@@ -83,6 +76,14 @@ void ULagCompensationComponent::SaveFramePackage(FFramePackage& Package)
 
 			Package.HitBoxInfo.Add(BoxPair.Key, BoxInformation);
 		}
+	}
+}
+
+void ULagCompensationComponent::ShowFramePackage(const FFramePackage& Package, const FColor& Color)
+{
+	for (auto& BoxInfo : Package.HitBoxInfo)
+	{
+		DrawDebugBox(GetWorld(), BoxInfo.Value.Location, BoxInfo.Value.BoxExtent, FQuat(BoxInfo.Value.Rotation), Color, false, 4.f);
 	}
 }
 
@@ -164,6 +165,11 @@ FServerSideRewindResult ULagCompensationComponent::ConfirmHit(const FFramePackag
 	return FServerSideRewindResult{ false, false };
 }
 
+FShotgunServerSideRewindResult ULagCompensationComponent::ShotgunConfirmHit(const TArray<FFramePackage>& Package, const FVector_NetQuantize& TraceStart, const TArray<FVector_NetQuantize>& HitLocation)
+{
+	return FShotgunServerSideRewindResult();
+}
+
 void ULagCompensationComponent::CacheBoxPositions(APBCharacter* HitCharacter, FFramePackage& OutFramePackage)
 {
 	if (!HitCharacter) return;
@@ -222,13 +228,31 @@ void ULagCompensationComponent::EnableCharacterMeshCollision(APBCharacter* HitCh
 
 FServerSideRewindResult ULagCompensationComponent::ServerSideRewind(class APBCharacter* HitCharacter, const FVector_NetQuantize& TraceStart, const FVector_NetQuantize& HitLocation, float HitTime)
 {
+	// Frame package that we check to verify a hit
+	FFramePackage FrameTocheck = GetFrameToCheck(HitCharacter, HitTime);
+	return ConfirmHit(FrameTocheck, HitCharacter, TraceStart, HitLocation);
+}
+
+FShotgunServerSideRewindResult ULagCompensationComponent::ShotgunServerSideRewind(const TArray<APBCharacter*>& HitCharacters, const FVector_NetQuantize& TraceStart, const TArray<FVector_NetQuantize>& HitLocation, float HitTime)
+{
+	TArray<FFramePackage> FramesToCheck;
+	for (APBCharacter* HitCharacter : HitCharacters)
+	{
+		FramesToCheck.Add(GetFrameToCheck(HitCharacter, HitTime));
+	}
+
+	return FShotgunServerSideRewindResult();
+}
+
+FFramePackage ULagCompensationComponent::GetFrameToCheck(APBCharacter* HitCharacter, float HitTime)
+{
 	bool bReturn =
 		HitCharacter == nullptr ||
 		HitCharacter->GetLagCompensationComponent() == nullptr ||
 		HitCharacter->GetLagCompensationComponent()->FrameHistory.GetHead() == nullptr ||
 		HitCharacter->GetLagCompensationComponent()->FrameHistory.GetTail() == nullptr;
 
-	if (bReturn) return FServerSideRewindResult();
+	if (bReturn) return FFramePackage();
 
 	// Frame package that we check to verify a hit
 	FFramePackage FrameTocheck;
@@ -242,7 +266,7 @@ FServerSideRewindResult ULagCompensationComponent::ServerSideRewind(class APBCha
 	if (OldestHistoryTime > HitTime)
 	{
 		// Too far back, too laggy to do SSR
-		return FServerSideRewindResult();
+		return FFramePackage();
 	}
 
 	if (OldestHistoryTime == HitTime)
@@ -285,7 +309,7 @@ FServerSideRewindResult ULagCompensationComponent::ServerSideRewind(class APBCha
 		FrameTocheck = InterpBetweenFrames(Older->GetValue(), Younger->GetValue(), HitTime);
 	}
 
-	return ConfirmHit(FrameTocheck, HitCharacter, TraceStart, HitLocation);
+	return FrameTocheck;
 }
 
 void ULagCompensationComponent::ServerScoreRequest_Implementation(APBCharacter* HitCharacter, const FVector_NetQuantize& TraceStart, const FVector_NetQuantize& HitLocation, float HitTime, class AWeapon* DamageCauser)
