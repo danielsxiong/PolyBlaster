@@ -425,7 +425,7 @@ void ULagCompensationComponent::ServerScoreRequest_Implementation(APBCharacter* 
 	}
 }
 
-void ULagCompensationComponent::ShotgunServerScoreRequest(const TArray<APBCharacter*>& HitCharacters, const FVector_NetQuantize& TraceStart, const TArray<FVector_NetQuantize>& HitLocations, float HitTime)
+void ULagCompensationComponent::ShotgunServerScoreRequest_Implementation(const TArray<APBCharacter*>& HitCharacters, const FVector_NetQuantize& TraceStart, const TArray<FVector_NetQuantize>& HitLocations, float HitTime)
 {
 	FShotgunServerSideRewindResult ShotgunConfirm = ShotgunServerSideRewind(HitCharacters, TraceStart, HitLocations, HitTime);
 
