@@ -9,6 +9,8 @@
 #include "Sound/SoundCue.h"
 
 #include "Character/PBCharacter.h"
+#include "PlayerController/PBPlayerController.h"
+#include "PBComponents/LagCompensationComponent.h"
 
 void AShotgun::FireShotgun(const TArray<FVector_NetQuantize>& HitTargets)
 {
@@ -57,13 +59,31 @@ void AShotgun::FireShotgun(const TArray<FVector_NetQuantize>& HitTargets)
 			}
 		}
 
+		TArray<APBCharacter*> HitCharacters;
+
 		for (auto HitPair : HitMap)
 		{
-			if (HitPair.Key && HasAuthority() && InstigatorController)
+			if (HitPair.Key && InstigatorController)
 			{
-				UGameplayStatics::ApplyDamage(HitPair.Key, Damage * HitPair.Value, InstigatorController, this, UDamageType::StaticClass());
+				if (HasAuthority() && !bUseServerSideRewind)
+				{
+					UGameplayStatics::ApplyDamage(HitPair.Key, Damage * HitPair.Value, InstigatorController, this, UDamageType::StaticClass());
+				}
+				
+				HitCharacters.Add(HitPair.Key);
 			}
 		}
+
+	if (!HasAuthority() && bUseServerSideRewind)
+	{
+		OwnerPBCharacter = OwnerPBCharacter == nullptr ? Cast<APBCharacter>(OwnerPawn) : OwnerPBCharacter;
+		OwnerPBPlayerController = OwnerPBPlayerController == nullptr ? Cast<APBPlayerController>(InstigatorController) : OwnerPBPlayerController;
+
+		if (OwnerPBPlayerController && OwnerPBCharacter && OwnerPBCharacter->GetLagCompensationComponent() && OwnerPBCharacter->IsLocallyControlled())
+		{
+			OwnerPBCharacter->GetLagCompensationComponent()->ShotgunServerScoreRequest(HitCharacters, Start, HitTargets, OwnerPBPlayerController->GetServerTime() - OwnerPBPlayerController->SingleTripTime);
+		}
+	}
 	}
 }
 

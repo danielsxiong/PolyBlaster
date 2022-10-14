@@ -412,6 +412,8 @@ FFramePackage ULagCompensationComponent::GetFrameToCheck(APBCharacter* HitCharac
 		FrameTocheck = InterpBetweenFrames(Older->GetValue(), Younger->GetValue(), HitTime);
 	}
 
+	// Assign hit character to frame package, in case it's created from InterpBetweenFrames
+	FrameTocheck.Character = HitCharacter;
 	return FrameTocheck;
 }
 
@@ -431,7 +433,7 @@ void ULagCompensationComponent::ShotgunServerScoreRequest_Implementation(const T
 
 	for (auto& HitCharacter : HitCharacters)
 	{
-		if (!HitCharacter || HitCharacter->GetEquippedWeapon() || !Character) continue;
+		if (!HitCharacter || !HitCharacter->GetEquippedWeapon() || !Character) continue;
 		
 		float TotalDamage = 0.f;
 

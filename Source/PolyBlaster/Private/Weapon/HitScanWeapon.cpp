@@ -51,7 +51,7 @@ void AHitScanWeapon::Fire(const FVector& HitTarget)
 						OwnerPBCharacter = OwnerPBCharacter == nullptr ? Cast<APBCharacter>(OwnerPawn) : OwnerPBCharacter;
 						OwnerPBPlayerController = OwnerPBPlayerController == nullptr ? Cast<APBPlayerController>(InstigatorController) : OwnerPBPlayerController;
 
-						if (OwnerPBPlayerController && OwnerPBCharacter && OwnerPBCharacter->GetLagCompensationComponent())
+						if (OwnerPBPlayerController && OwnerPBCharacter && OwnerPBCharacter->GetLagCompensationComponent() && OwnerPBCharacter->IsLocallyControlled())
 						{
 							OwnerPBCharacter->GetLagCompensationComponent()->ServerScoreRequest(PBCharacter, Start, FireHit.ImpactPoint, OwnerPBPlayerController->GetServerTime() - OwnerPBPlayerController->SingleTripTime, this);
 						}
