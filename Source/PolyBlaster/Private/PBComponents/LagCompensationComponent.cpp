@@ -417,7 +417,7 @@ FFramePackage ULagCompensationComponent::GetFrameToCheck(APBCharacter* HitCharac
 	return FrameTocheck;
 }
 
-void ULagCompensationComponent::ServerScoreRequest_Implementation(APBCharacter* HitCharacter, const FVector_NetQuantize& TraceStart, const FVector_NetQuantize& HitLocation, float HitTime, class AWeapon* DamageCauser)
+void ULagCompensationComponent::ServerScoreRequest_Implementation(APBCharacter* HitCharacter, const FVector_NetQuantize& TraceStart, const FVector_NetQuantize& HitLocation, float HitTime, AWeapon* DamageCauser)
 {
 	FServerSideRewindResult Confirm = ServerSideRewind(HitCharacter, TraceStart, HitLocation, HitTime);
 
@@ -427,7 +427,7 @@ void ULagCompensationComponent::ServerScoreRequest_Implementation(APBCharacter* 
 	}
 }
 
-void ULagCompensationComponent::ShotgunServerScoreRequest_Implementation(const TArray<APBCharacter*>& HitCharacters, const FVector_NetQuantize& TraceStart, const TArray<FVector_NetQuantize>& HitLocations, float HitTime)
+void ULagCompensationComponent::ShotgunServerScoreRequest_Implementation(const TArray<APBCharacter*>& HitCharacters, const FVector_NetQuantize& TraceStart, const TArray<FVector_NetQuantize>& HitLocations, float HitTime, AWeapon* DamageCauser)
 {
 	FShotgunServerSideRewindResult ShotgunConfirm = ShotgunServerSideRewind(HitCharacters, TraceStart, HitLocations, HitTime);
 
@@ -439,15 +439,15 @@ void ULagCompensationComponent::ShotgunServerScoreRequest_Implementation(const T
 
 		if (ShotgunConfirm.HeadShots.Contains(HitCharacter))
 		{
-			float HeadshotDamage = ShotgunConfirm.HeadShots[HitCharacter] * HitCharacter->GetEquippedWeapon()->GetDamage();
+			float HeadshotDamage = ShotgunConfirm.HeadShots[HitCharacter] * DamageCauser->GetDamage();
 			TotalDamage += HeadshotDamage;
 		}
 		if (ShotgunConfirm.BodyShots.Contains(HitCharacter))
 		{
-			float BodyshotDamage = ShotgunConfirm.BodyShots[HitCharacter] * HitCharacter->GetEquippedWeapon()->GetDamage();
+			float BodyshotDamage = ShotgunConfirm.BodyShots[HitCharacter] * DamageCauser->GetDamage();
 			TotalDamage += BodyshotDamage;
 		}
 
-		UGameplayStatics::ApplyDamage(HitCharacter, TotalDamage, HitCharacter->Controller, HitCharacter->GetEquippedWeapon(), UDamageType::StaticClass());
+		UGameplayStatics::ApplyDamage(HitCharacter, TotalDamage, HitCharacter->Controller, DamageCauser, UDamageType::StaticClass());
 	}
 }

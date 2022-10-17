@@ -81,7 +81,7 @@ void AShotgun::FireShotgun(const TArray<FVector_NetQuantize>& HitTargets)
 
 		if (OwnerPBPlayerController && OwnerPBCharacter && OwnerPBCharacter->GetLagCompensationComponent() && OwnerPBCharacter->IsLocallyControlled())
 		{
-			OwnerPBCharacter->GetLagCompensationComponent()->ShotgunServerScoreRequest(HitCharacters, Start, HitTargets, OwnerPBPlayerController->GetServerTime() - OwnerPBPlayerController->SingleTripTime);
+			OwnerPBCharacter->GetLagCompensationComponent()->ShotgunServerScoreRequest(HitCharacters, Start, HitTargets, OwnerPBPlayerController->GetServerTime() - OwnerPBPlayerController->SingleTripTime, this);
 		}
 	}
 	}
