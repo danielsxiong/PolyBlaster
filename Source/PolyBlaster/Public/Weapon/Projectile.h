@@ -37,6 +37,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	float InitialSpeed = 15000.f;
 
+	float Damage = 20.f;
+
 private:
 
 	UPROPERTY(EditAnywhere)
@@ -71,9 +73,6 @@ protected:
 
 	UPROPERTY()
 	class UNiagaraComponent* TrailSystemComponent;
-
-	UPROPERTY(EditAnywhere)
-	float Damage = 20.f;
 
 	UPROPERTY(EditAnywhere)
 	float MinimalDamage = 10.f;
