@@ -75,10 +75,20 @@ public:
 
 	void ShowFramePackage(const FFramePackage& Package, const FColor& Color);
 
+	/**
+	* HitScan
+	*/
+
 	FServerSideRewindResult ServerSideRewind(class APBCharacter* HitCharacter, const FVector_NetQuantize& TraceStart, const FVector_NetQuantize& HitLocation, float HitTime);
 
 	UFUNCTION(Server, Reliable)
 	void ServerScoreRequest(APBCharacter* HitCharacter, const FVector_NetQuantize& TraceStart, const FVector_NetQuantize& HitLocation, float HitTime, class AWeapon* DamageCauser);
+
+	/**
+	* Projectile
+	*/
+
+	FServerSideRewindResult ProjectileServerSideRewind(APBCharacter* HitCharacter, const FVector_NetQuantize& TraceStart, const FVector_NetQuantize100& InitialVelocity, float HitTime);
 
 	/**
 	* Shotgun
@@ -97,7 +107,7 @@ protected:
 
 	FFramePackage InterpBetweenFrames(const FFramePackage& OlderFrame, const FFramePackage& YoungerFrame, float HitTime);
 
-	FServerSideRewindResult ConfirmHit(const FFramePackage& Package, APBCharacter* HitCharacter, const FVector_NetQuantize& TraceStart, const FVector_NetQuantize& HitLocation);
+	
 
 	void CacheBoxPositions(APBCharacter* HitCharacter, FFramePackage& OutFramePackage);
 
@@ -110,6 +120,18 @@ protected:
 	void SaveFramePackage();
 
 	FFramePackage GetFrameToCheck(APBCharacter* HitCharacter, float HitTime);
+	
+	/**
+	* HitScan
+	*/
+
+	FServerSideRewindResult ConfirmHit(const FFramePackage& Package, APBCharacter* HitCharacter, const FVector_NetQuantize& TraceStart, const FVector_NetQuantize& HitLocation);
+
+	/**
+	* Projectile
+	*/
+
+	FServerSideRewindResult ProjectileConfirmHit(const FFramePackage& Package, APBCharacter* HitCharacter, const FVector_NetQuantize& TraceStart, const FVector_NetQuantize100& InitialVelocity, float HitTime);
 
 	/**
 	* Shotgun

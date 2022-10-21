@@ -36,7 +36,7 @@ void AProjectileBullet::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FPredictProjectilePathParams PathParams;
+	/*FPredictProjectilePathParams PathParams;
 	PathParams.bTraceWithChannel = true;
 	PathParams.bTraceWithCollision = true;
 	PathParams.DrawDebugTime = 5.f;
@@ -50,7 +50,7 @@ void AProjectileBullet::BeginPlay()
 	PathParams.ActorsToIgnore.Add(this);
 
 	FPredictProjectilePathResult PathResult;
-	UGameplayStatics::PredictProjectilePath(this, PathParams, PathResult);
+	UGameplayStatics::PredictProjectilePath(this, PathParams, PathResult);*/
 }
 
 void AProjectileBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
