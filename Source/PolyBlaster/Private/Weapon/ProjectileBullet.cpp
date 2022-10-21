@@ -3,8 +3,11 @@
 
 #include "Weapon/ProjectileBullet.h"
 #include "Kismet/GameplayStatics.h"
-#include "GameFramework/Character.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+
+#include "Character/PBCharacter.h"
+#include "PlayerController/PBPlayerController.h"
+#include "PBComponents/LagCompensationComponent.h"
 
 AProjectileBullet::AProjectileBullet()
 {
@@ -55,13 +58,26 @@ void AProjectileBullet::BeginPlay()
 
 void AProjectileBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner());
-	if (OwnerCharacter && OwnerCharacter->HasAuthority())
+	APBCharacter* OwnerCharacter = Cast<APBCharacter>(GetOwner());
+	if (OwnerCharacter)
 	{
-		AController* OwnerController = OwnerCharacter->Controller;
+		APBPlayerController* OwnerController = Cast<APBPlayerController>(OwnerCharacter->Controller);
 		if (OwnerController)
 		{
-			UGameplayStatics::ApplyDamage(OtherActor, Damage, OwnerController, this, UDamageType::StaticClass());
+			if (OwnerCharacter->HasAuthority() && !bUseServerSideRewind)
+			{
+				UGameplayStatics::ApplyDamage(OtherActor, Damage, OwnerController, this, UDamageType::StaticClass());
+				Super::OnHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
+				return;
+			}
+			else if (!OwnerCharacter->HasAuthority() && bUseServerSideRewind)
+			{
+				APBCharacter* HitCharacter = Cast<APBCharacter>(OtherActor);
+				if (OwnerController && OwnerCharacter && HitCharacter && OwnerCharacter->GetLagCompensationComponent() && OwnerCharacter->IsLocallyControlled())
+				{
+					OwnerCharacter->GetLagCompensationComponent()->ProjectileServerScoreRequest(HitCharacter, TraceStart, InitialVelocity, OwnerController->GetServerTime() - OwnerController->SingleTripTime);
+				}
+			}
 		}
 	}
 
