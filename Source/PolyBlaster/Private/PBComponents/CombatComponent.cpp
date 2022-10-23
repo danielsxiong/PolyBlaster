@@ -450,8 +450,17 @@ void UCombatComponent::EquipWeapon(AWeapon* InWeapon)
 
 void UCombatComponent::SwapWeapon()
 {
-	if (CombatState != ECombatState::ECS_Unoccupied) return;
+	if (CombatState != ECombatState::ECS_Unoccupied || !Character) return;
 
+	Character->PlaySwapMontage();
+	Character->bFinishedSwapping = false;
+	CombatState = ECombatState::ECS_SwappingWeapons;
+
+	if (SecondaryWeapon) SecondaryWeapon->EnableCustomDepth(false);
+}
+
+void UCombatComponent::SwapAttachedWeapons()
+{
 	AWeapon* TempWeapon = EquippedWeapon;
 	EquippedWeapon = SecondaryWeapon;
 	SecondaryWeapon = TempWeapon;
@@ -473,6 +482,21 @@ void UCombatComponent::SwapWeapon()
 	SecondaryWeapon->SetWeaponState(EWeaponState::EWS_EquippedSecondary);
 
 	AttachActorToBackpack(SecondaryWeapon);
+}
+
+void UCombatComponent::SwapFinished()
+{
+	if (Character && Character->HasAuthority())
+	{
+		CombatState = ECombatState::ECS_Unoccupied;
+	}
+
+	if (Character)
+	{
+		Character->bFinishedSwapping = true;
+	}
+
+	if (SecondaryWeapon) SecondaryWeapon->EnableCustomDepth(true);
 }
 
 void UCombatComponent::EquipPrimaryWeapon(AWeapon* WeaponToEquip)
@@ -800,7 +824,7 @@ void UCombatComponent::OnRep_CombatState()
 	{
 	case ECombatState::ECS_Reloading:
 	{
-		if (Character && !Character->IsLocallyControlled()) HandleReload();
+		if (Character && !Character->IsLocallyControlled()) HandleReload(); // should not need to run on locally controlled characters since it will be run immediately
 		break;
 	}
 	case ECombatState::ECS_Unoccupied:
@@ -813,11 +837,19 @@ void UCombatComponent::OnRep_CombatState()
 	}
 	case ECombatState::ECS_ThrowingGrenade:
 	{
-		if (Character && !Character->IsLocallyControlled())
+		if (Character && !Character->IsLocallyControlled()) // should not need to run on locally controlled characters since it will be run immediately
 		{
 			Character->PlayThrowGrenadeMontage();
 			AttachActorToLeftHand(EquippedWeapon);
 			ShowAttachedGrenade(true);
+		}
+		break;
+	}
+	case ECombatState::ECS_SwappingWeapons:
+	{
+		if (Character && !Character->IsLocallyControlled()) // should not need to run on locally controlled characters since it will be run immediately
+		{
+			Character->PlaySwapMontage();
 		}
 		break;
 	}
@@ -875,12 +907,12 @@ bool UCombatComponent::CanFire()
 {
 	if (!EquippedWeapon) return false;
 
-	if (bLocallyReloading) return false;
-
 	if (!EquippedWeapon->IsEmpty() && bCanFire && CombatState == ECombatState::ECS_Reloading && EquippedWeapon->GetWeaponType() == EWeaponType::EWT_Shotgun)
 	{
 		return true;
 	}
+
+	if (bLocallyReloading) return false;
 
 	return !EquippedWeapon->IsEmpty() && bCanFire && CombatState == ECombatState::ECS_Unoccupied;
 }

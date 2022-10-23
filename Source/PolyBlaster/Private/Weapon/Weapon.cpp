@@ -255,7 +255,6 @@ void AWeapon::OnEquippedSecondary()
 
 	WeaponMesh->SetCustomDepthStencilValue(CUSTOM_DEPTH_TAN);
 	WeaponMesh->MarkRenderStateDirty();
-	EnableCustomDepth(true);
 
 	OwnerPBCharacter = OwnerPBCharacter == nullptr ? Cast<APBCharacter>(GetOwner()) : OwnerPBCharacter;
 	if (OwnerPBCharacter && bUseServerSideRewind)

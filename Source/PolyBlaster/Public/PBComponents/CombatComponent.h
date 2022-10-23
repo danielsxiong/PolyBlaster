@@ -268,6 +268,12 @@ public:
 
 	void SwapWeapon();
 
+	UFUNCTION(BlueprintCallable)
+	void SwapAttachedWeapons();
+
+	UFUNCTION(BlueprintCallable)
+	void SwapFinished();
+
 	void Reload();
 
 	UFUNCTION(BlueprintCallable)

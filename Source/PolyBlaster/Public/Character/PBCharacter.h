@@ -32,6 +32,10 @@ public:
 
 	virtual void Destroyed() override;
 
+	/**
+	* Play Montages
+	*/
+
 	void PlayFireMontage(bool bAiming);
 
 	void PlayEliminatedMontage();
@@ -39,6 +43,8 @@ public:
 	void PlayReloadMontage();
 
 	void PlayThrowGrenadeMontage();
+
+	void PlaySwapMontage();
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastEliminated();
@@ -59,6 +65,8 @@ public:
 
 	UPROPERTY(Replicated)
 	bool bDisableGameplay = false;
+
+	bool bFinishedSwapping = false;
 
 	UPROPERTY()
 	TMap<FName, class UBoxComponent*> HitCollisionBoxes;
@@ -241,6 +249,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Combat)
 	UAnimMontage* ThrowGrenadeMontage;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	UAnimMontage* SwapMontage;
 
 	UPROPERTY(EditAnywhere)
 	float CameraThreshold = 200.f;

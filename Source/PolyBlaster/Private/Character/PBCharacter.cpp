@@ -348,10 +348,19 @@ void APBCharacter::EquipButtonPressed()
 {
 	if (bDisableGameplay) return;
 
-	// Must only be done on server (Role Authority)
 	if (Combat)
 	{
-		ServerEquipButtonPressed();
+		if (Combat->CombatState == ECombatState::ECS_Unoccupied) ServerEquipButtonPressed(); // Must only be done on server (Role Authority)
+		
+		if (Combat->ShouldSwapWeapon() && 
+			!HasAuthority() && 
+			Combat->CombatState == ECombatState::ECS_Unoccupied && 
+			!OverlappingWeapon) // Play swap animation on client first
+		{
+			PlaySwapMontage();
+			Combat->CombatState = ECombatState::ECS_SwappingWeapons;
+			bFinishedSwapping = false;
+		}
 	}
 }
 
@@ -645,6 +654,15 @@ void APBCharacter::PlayThrowGrenadeMontage()
 	if (AnimInstance && ThrowGrenadeMontage)
 	{
 		AnimInstance->Montage_Play(ThrowGrenadeMontage);
+	}
+}
+
+void APBCharacter::PlaySwapMontage()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && SwapMontage)
+	{
+		AnimInstance->Montage_Play(SwapMontage);
 	}
 }
 
