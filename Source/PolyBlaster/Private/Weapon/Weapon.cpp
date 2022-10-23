@@ -59,6 +59,7 @@ void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AWeapon, WeaponState);
+	DOREPLIFETIME_CONDITION(AWeapon, bUseServerSideRewind, COND_OwnerOnly);
 }
 
 void AWeapon::Tick(float DeltaTime)
@@ -222,6 +223,16 @@ void AWeapon::OnEquipped()
 	}
 
 	EnableCustomDepth(true);
+
+	OwnerPBCharacter = OwnerPBCharacter == nullptr ? Cast<APBCharacter>(GetOwner()) : OwnerPBCharacter;
+	if (OwnerPBCharacter && bUseServerSideRewind)
+	{
+		OwnerPBPlayerController = OwnerPBPlayerController == nullptr ? Cast<APBPlayerController>(OwnerPBCharacter->Controller) : OwnerPBPlayerController;
+		if (OwnerPBPlayerController && HasAuthority() && !OwnerPBPlayerController->HighPingDelegate.IsBound())
+		{
+			OwnerPBPlayerController->HighPingDelegate.AddDynamic(this, &AWeapon::OnPingTooHigh);
+		}
+	}
 }
 
 void AWeapon::OnEquippedSecondary()
@@ -245,6 +256,16 @@ void AWeapon::OnEquippedSecondary()
 	WeaponMesh->SetCustomDepthStencilValue(CUSTOM_DEPTH_TAN);
 	WeaponMesh->MarkRenderStateDirty();
 	EnableCustomDepth(true);
+
+	OwnerPBCharacter = OwnerPBCharacter == nullptr ? Cast<APBCharacter>(GetOwner()) : OwnerPBCharacter;
+	if (OwnerPBCharacter && bUseServerSideRewind)
+	{
+		OwnerPBPlayerController = OwnerPBPlayerController == nullptr ? Cast<APBPlayerController>(OwnerPBCharacter->Controller) : OwnerPBPlayerController;
+		if (OwnerPBPlayerController && HasAuthority() && OwnerPBPlayerController->HighPingDelegate.IsBound())
+		{
+			OwnerPBPlayerController->HighPingDelegate.RemoveDynamic(this, &AWeapon::OnPingTooHigh);
+		}
+	}
 }
 
 void AWeapon::OnDropped()
@@ -263,6 +284,16 @@ void AWeapon::OnDropped()
 	WeaponMesh->SetCustomDepthStencilValue(CUSTOM_DEPTH_BLUE);
 	WeaponMesh->MarkRenderStateDirty();
 	EnableCustomDepth(true);
+
+	OwnerPBCharacter = OwnerPBCharacter == nullptr ? Cast<APBCharacter>(GetOwner()) : OwnerPBCharacter;
+	if (OwnerPBCharacter && bUseServerSideRewind)
+	{
+		OwnerPBPlayerController = OwnerPBPlayerController == nullptr ? Cast<APBPlayerController>(OwnerPBCharacter->Controller) : OwnerPBPlayerController;
+		if (OwnerPBPlayerController && HasAuthority() && OwnerPBPlayerController->HighPingDelegate.IsBound())
+		{
+			OwnerPBPlayerController->HighPingDelegate.RemoveDynamic(this, &AWeapon::OnPingTooHigh);
+		}
+	}
 }
 
 void AWeapon::SpendRound()
@@ -336,6 +367,11 @@ void AWeapon::Drop()
 	SetOwner(nullptr);
 	OwnerPBCharacter = nullptr;
 	OwnerPBPlayerController = nullptr;
+}
+
+void AWeapon::OnPingTooHigh(bool bPingTooHigh)
+{
+	bUseServerSideRewind = !bPingTooHigh;
 }
 
 bool AWeapon::IsEmpty()

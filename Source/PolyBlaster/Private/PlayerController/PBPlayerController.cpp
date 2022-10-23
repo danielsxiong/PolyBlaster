@@ -100,14 +100,21 @@ void APBPlayerController::CheckPing(float DeltaTime)
 		PlayerState = PlayerState == nullptr ? GetPlayerState<APlayerState>() : PlayerState;
 		if (PlayerState)
 		{
-			if (PlayerState->GetPingInMilliseconds() * 4 > HighPingThreshold)
+			// UE_LOG(LogTemp, Warning, TEXT("PlayerState->GetPing() * 4: %d"), PlayerState->GetPing() * 4);
+
+			if (PlayerState->GetPingInMilliseconds() * 4 > HighPingThreshold) // ping is compressed, the actual value will be ping * 4
 			{
 				HighPingWarning();
 				PingAnimationRunningTime = 0;
+				ServerReportPingStatus(true);
 			}
 		}
 
 		HighPingRunningTime = 0.f;
+	}
+	else
+	{
+		ServerReportPingStatus(false);
 	}
 
 	bool bHighPingAnimationPlaying = PBHUD && PBHUD->CharacterOverlay && PBHUD->CharacterOverlay->HighPingAnimation && PBHUD->CharacterOverlay->IsAnimationPlaying(PBHUD->CharacterOverlay->HighPingAnimation);
@@ -119,6 +126,12 @@ void APBPlayerController::CheckPing(float DeltaTime)
 			StopHighPingWarning();
 		}
 	}
+}
+
+// Is the ping too high?
+void APBPlayerController::ServerReportPingStatus_Implementation(bool bHighPing)
+{
+	HighPingDelegate.Broadcast(bHighPing);
 }
 
 float APBPlayerController::GetServerTime()
