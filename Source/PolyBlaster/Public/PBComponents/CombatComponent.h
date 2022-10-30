@@ -117,8 +117,12 @@ private:
 
 	UFUNCTION()
 	void OnRep_CarriedAmmo();
-
+	
+	UPROPERTY(VisibleAnywhere)
 	TMap<EWeaponType, int32> CarriedAmmoMap;
+
+	UFUNCTION(Client, Reliable)
+	void ClientUpdateCarriedAmmoMap(EWeaponType WeaponType, int32 ServerAmmo);
 
 	UPROPERTY(EditAnywhere)
 	int32 MaxCarriedAmmo = 500;
@@ -228,7 +232,11 @@ protected:
 
 	void UpdateAmmoValues();
 
+	void InternalUpdateAmmoValues();
+
 	void UpdateShotgunAmmoValues();
+
+	void InternalUpdateShotgunAmmoValues();
 
 	void ThrowGrenade();
 

@@ -54,6 +54,8 @@ public:
 
 	void AddAmmo(int32 AmmoToAdd);
 
+	void InternalAddAmmo(int32 AmmoToAdd);
+
 	/*
 	* Enable or disable custom depth
 	*/

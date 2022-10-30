@@ -249,7 +249,7 @@ void APBCharacter::Tick(float DeltaTime)
 
 void APBCharacter::SpawnDefaultWeapon()
 {
-	// If this map is a game map, spawn default weapon
+	// If this map is a game map, spawn default weapon, this also makes sure that weapons are spawned on the server and not the client
 	APBGameMode* PBGameMode = Cast<APBGameMode>(UGameplayStatics::GetGameMode(this));
 	UWorld* World = GetWorld();
 	if (PBGameMode && World && !bEliminated && DefaultWeaponClass)
