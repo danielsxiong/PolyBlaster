@@ -695,8 +695,6 @@ void UCombatComponent::UpdateAmmoValues()
 	if (!Character || !EquippedWeapon) return;
 
 	InternalUpdateAmmoValues();
-
-	EquippedWeapon->AddAmmo(AmountToReload());
 }
 
 void UCombatComponent::InternalUpdateAmmoValues()
@@ -705,13 +703,16 @@ void UCombatComponent::InternalUpdateAmmoValues()
 
 	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))
 	{
-		CarriedAmmoMap[EquippedWeapon->GetWeaponType()] -= AmountToReload();
+		int32 AmmoToAdd = AmountToReload();
+		CarriedAmmoMap[EquippedWeapon->GetWeaponType()] -= AmmoToAdd;
 		CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
 
 		if (Character->HasAuthority())
 		{
 			ClientUpdateCarriedAmmoMap(EquippedWeapon->GetWeaponType(), CarriedAmmo);
 		}
+
+		EquippedWeapon->AddAmmo(AmmoToAdd);
 	}
 
 	UpdateHUDCarriedAmmo();
@@ -736,7 +737,6 @@ void UCombatComponent::UpdateShotgunAmmoValues()
 
 	InternalUpdateShotgunAmmoValues();
 
-	EquippedWeapon->AddAmmo(1);
 	bCanFire = true;
 	if (EquippedWeapon->IsFull() || CarriedAmmo == 0)
 	{
@@ -757,6 +757,8 @@ void UCombatComponent::InternalUpdateShotgunAmmoValues()
 		{
 			ClientUpdateCarriedAmmoMap(EWeaponType::EWT_Shotgun, CarriedAmmo);
 		}
+
+		EquippedWeapon->AddAmmo(1);
 	}
 
 	UpdateHUDCarriedAmmo();
