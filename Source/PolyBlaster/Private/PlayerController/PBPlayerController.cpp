@@ -11,6 +11,7 @@
 #include "HUD/PBHUD.h"
 #include "HUD/CharacterOverlay.h"
 #include "HUD/Announcement.h"
+#include "HUD/ReturnToMainMenu.h"
 #include "Character/PBCharacter.h"
 #include "PlayerState/PBPlayerState.h"
 #include "GameState/PBGameState.h"
@@ -31,6 +32,15 @@ void APBPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(APBPlayerController, MatchState);
+}
+
+void APBPlayerController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+
+	if (!InputComponent) return;
+
+	InputComponent->BindAction("Exit", IE_Pressed, this, &APBPlayerController::ShowReturnToMainMenu);
 }
 
 void APBPlayerController::ReceivedPlayer()
@@ -551,6 +561,29 @@ void APBPlayerController::StopHighPingWarning()
 		if (PBHUD->CharacterOverlay->IsAnimationPlaying(PBHUD->CharacterOverlay->HighPingAnimation))
 		{
 			PBHUD->CharacterOverlay->StopAnimation(PBHUD->CharacterOverlay->HighPingAnimation);
+		}
+	}
+}
+
+void APBPlayerController::ShowReturnToMainMenu()
+{
+	if (!ReturnToMainMenuWidget) return;
+
+	if (!ReturnToMainMenu)
+	{
+		ReturnToMainMenu = CreateWidget<UReturnToMainMenu>(this, ReturnToMainMenuWidget);
+	}
+
+	if (ReturnToMainMenu)
+	{
+		bReturnToMainMenuOpen = !bReturnToMainMenuOpen;
+		if (bReturnToMainMenuOpen)
+		{
+			ReturnToMainMenu->MenuSetup();
+		}
+		else
+		{
+			ReturnToMainMenu->MenuTeardown();
 		}
 	}
 }

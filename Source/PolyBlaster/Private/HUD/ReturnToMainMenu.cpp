@@ -27,7 +27,7 @@ void UReturnToMainMenu::MenuSetup()
 		}
 	}
 
-	if (ReturnButton)
+	if (ReturnButton && !ReturnButton->OnClicked.IsBound())
 	{
 		ReturnButton->OnClicked.AddDynamic(this, &UReturnToMainMenu::ReturnButtonClicked);
 	}
@@ -50,8 +50,6 @@ bool UReturnToMainMenu::Initialize()
 		return false;
 	}
 
-	MenuSetup();
-
 	return true;
 }
 
@@ -70,6 +68,16 @@ void UReturnToMainMenu::MenuTeardown()
 			PlayerController->SetShowMouseCursor(false);
 		}
 	}
+
+	if (ReturnButton && ReturnButton->OnClicked.IsBound())
+	{
+		ReturnButton->OnClicked.RemoveDynamic(this, &UReturnToMainMenu::ReturnButtonClicked);
+	}
+
+	if (MultiplayerSessionsSubsystem && MultiplayerSessionsSubsystem->MultiplayerOnDestroySessionComplete.IsBound())
+	{
+		MultiplayerSessionsSubsystem->MultiplayerOnDestroySessionComplete.RemoveDynamic(this, &UReturnToMainMenu::OnDestroySessionComplete);
+	}
 }
 
 void UReturnToMainMenu::ReturnButtonClicked()
@@ -86,7 +94,6 @@ void UReturnToMainMenu::OnDestroySessionComplete(bool bWasSuccessful)
 	if (!bWasSuccessful)
 	{
 		ReturnButton->SetIsEnabled(true);
-		return;
 	}
 
 	UWorld* World = GetWorld();

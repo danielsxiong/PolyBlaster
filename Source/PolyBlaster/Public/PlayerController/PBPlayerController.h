@@ -58,6 +58,8 @@ protected:
 
 	virtual void BeginPlay() override;
 
+	virtual void SetupInputComponent() override;
+
 	void SetHUDTime();
 
 	void PollInit();
@@ -104,6 +106,12 @@ protected:
 
 	void CheckPing(float DeltaTime);
 
+	/**
+	* Exit
+	*/
+
+	void ShowReturnToMainMenu();
+
 private:
 	
 	UPROPERTY()
@@ -114,6 +122,14 @@ private:
 
 	UPROPERTY()
 	class UCharacterOverlay* CharacterOverlay;
+
+	UPROPERTY(EditAnywhere, Category = HUD)
+	TSubclassOf<class UUserWidget> ReturnToMainMenuWidget;
+
+	UPROPERTY()
+	class UReturnToMainMenu* ReturnToMainMenu;
+
+	bool bReturnToMainMenuOpen = false;
 
 	float LevelStartingTime = 0.f;
 
