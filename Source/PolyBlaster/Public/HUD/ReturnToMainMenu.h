@@ -27,6 +27,9 @@ protected:
 	UFUNCTION()
 	void OnDestroySessionComplete(bool bWasSuccessful);
 
+	UFUNCTION()
+	void OnPlayerLeftGame();
+
 private:
 
 	UPROPERTY();

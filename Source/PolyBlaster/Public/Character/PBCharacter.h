@@ -11,6 +11,8 @@
 #include "PBTypes/CombatState.h"
 #include "PBCharacter.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLeftGame);
+
 UCLASS()
 class POLYBLASTER_API APBCharacter : public ACharacter, public IInteractWithCrosshairsInterface
 {
@@ -47,9 +49,9 @@ public:
 	void PlaySwapMontage();
 
 	UFUNCTION(NetMulticast, Reliable)
-	void MulticastEliminated();
+	void MulticastEliminated(bool bPlayerLeftGame = false);
 
-	void Eliminated();
+	void Eliminated(bool bPlayerLeftGame = false);
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void ShowSniperScopeWidget(bool bShowScope);
@@ -59,6 +61,11 @@ public:
 	void UpdateHUDShield();
 
 	void UpdateHUDAmmo();
+
+	UFUNCTION(Server, Reliable)
+	void ServerLeaveGame();
+
+	FOnLeftGame OnLeftGame;
 
 	/*UFUNCTION(NetMulticast, Unreliable)
 	void MulticastHit();*/
@@ -314,6 +321,8 @@ private:
 	*/
 
 	bool bEliminated = false;
+
+	bool bLeftGame = false;
 
 	FTimerHandle EliminatedTimer;
 

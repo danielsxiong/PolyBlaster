@@ -121,3 +121,20 @@ void APBGameMode::RequestRespawn(class ACharacter* EliminatedCharacter, AControl
 		RestartPlayerAtPlayerStart(EliminatedController, PlayerStarts[Selection]);
 	}
 }
+
+void APBGameMode::PlayerLeftGame(APBPlayerState* PlayerLeaving)
+{
+	if (!PlayerLeaving) return;
+
+	APBGameState* PBGameState = GetGameState<APBGameState>();
+	if (PBGameState && PBGameState->TopScoringPlayers.Contains(PlayerLeaving))
+	{
+		PBGameState->TopScoringPlayers.Remove(PlayerLeaving);
+	}
+
+	APBCharacter* PBCharacterLeaving = Cast<APBCharacter>(PlayerLeaving->GetPawn());
+	if (PBCharacterLeaving)
+	{
+		PBCharacterLeaving->Eliminated(true);
+	}
+}

@@ -666,9 +666,10 @@ void APBCharacter::PlaySwapMontage()
 	}
 }
 
-void APBCharacter::MulticastEliminated_Implementation()
+void APBCharacter::MulticastEliminated_Implementation(bool bPlayerLeftGame)
 {
 	bEliminated = true;
+	bLeftGame = bPlayerLeftGame;
 	PlayEliminatedMontage();
 
 	// Start dissolve effect
@@ -719,9 +720,11 @@ void APBCharacter::MulticastEliminated_Implementation()
 	{
 		ShowSniperScopeWidget(false);
 	}
+
+	GetWorldTimerManager().SetTimer(EliminatedTimer, this, &APBCharacter::EliminatedTimerFinished, EliminatedDelay);
 }
 
-void APBCharacter::Eliminated()
+void APBCharacter::Eliminated(bool bPlayerLeftGame)
 {
 	if (bEliminated) return;
 
@@ -731,9 +734,7 @@ void APBCharacter::Eliminated()
 		DropOrDestroyWeapon(Combat->SecondaryWeapon);
 	}
 
-	MulticastEliminated();
-
-	GetWorldTimerManager().SetTimer(EliminatedTimer, this, &APBCharacter::EliminatedTimerFinished, EliminatedDelay);
+	MulticastEliminated(bPlayerLeftGame);
 }
 
 void APBCharacter::DropOrDestroyWeapon(AWeapon* Weapon)
@@ -756,9 +757,14 @@ void APBCharacter::DropOrDestroyWeapon(AWeapon* Weapon)
 void APBCharacter::EliminatedTimerFinished()
 {
 	APBGameMode* PBGameMode = GetWorld()->GetAuthGameMode<APBGameMode>();
-	if (PBGameMode)
+	if (PBGameMode && !bLeftGame)
 	{
 		PBGameMode->RequestRespawn(this, Controller);
+	}
+
+	if (bLeftGame && IsLocallyControlled())
+	{
+		OnLeftGame.Broadcast();
 	}
 }
 
@@ -767,6 +773,16 @@ void APBCharacter::DisableCollisionTimerFinished()
 	// Disable collision
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void APBCharacter::ServerLeaveGame_Implementation()
+{
+	APBGameMode* PBGameMode = GetWorld()->GetAuthGameMode<APBGameMode>();
+	PBPlayerState = PBPlayerState == nullptr ? GetPlayerState<APBPlayerState>() : PBPlayerState;
+	if (PBGameMode && PBPlayerState)
+	{
+		PBGameMode->PlayerLeftGame(PBPlayerState);
+	}
 }
 
 void APBCharacter::UpdateDissolveMaterial(float DissolveValue)

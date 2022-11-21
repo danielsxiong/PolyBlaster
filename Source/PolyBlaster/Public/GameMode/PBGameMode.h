@@ -30,6 +30,8 @@ public:
 
 	virtual void RequestRespawn(class ACharacter* EliminatedCharacter, AController* EliminatedController);
 
+	void PlayerLeftGame(class APBPlayerState* PlayerLeaving);
+
 	UPROPERTY(EditDefaultsOnly)
 	float WarmupTime = 10.f;
 

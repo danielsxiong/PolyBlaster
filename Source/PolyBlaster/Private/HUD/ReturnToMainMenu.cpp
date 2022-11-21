@@ -7,6 +7,7 @@
 #include "Components/Button.h"
 
 #include "MultiplayerSessionsSubsystem.h"
+#include "Character/PBCharacter.h"
 
 void UReturnToMainMenu::MenuSetup()
 {
@@ -82,10 +83,25 @@ void UReturnToMainMenu::MenuTeardown()
 
 void UReturnToMainMenu::ReturnButtonClicked()
 {
-	if (MultiplayerSessionsSubsystem)
+	ReturnButton->SetIsEnabled(false);
+
+	UWorld* World = GetWorld();
+	if (World)
 	{
-		ReturnButton->SetIsEnabled(false);
-		MultiplayerSessionsSubsystem->DestroySession();
+		APlayerController* FirstPlayerController = World->GetFirstPlayerController();
+		if (FirstPlayerController)
+		{
+			APBCharacter* PBCharacter = Cast<APBCharacter>(FirstPlayerController->GetPawn());
+			if (PBCharacter)
+			{
+				PBCharacter->ServerLeaveGame();
+				PBCharacter->OnLeftGame.AddDynamic(this, &UReturnToMainMenu::OnPlayerLeftGame);
+			}
+			else
+			{
+				ReturnButton->SetIsEnabled(true);
+			}
+		}
 	}
 }
 
@@ -112,5 +128,13 @@ void UReturnToMainMenu::OnDestroySessionComplete(bool bWasSuccessful)
 				PlayerController->ClientReturnToMainMenuWithTextReason(FText());
 			}
 		}
+	}
+}
+
+void UReturnToMainMenu::OnPlayerLeftGame()
+{
+	if (MultiplayerSessionsSubsystem)
+	{
+		MultiplayerSessionsSubsystem->DestroySession();
 	}
 }
