@@ -89,8 +89,34 @@ void APBGameMode::PlayerEliminated(APBCharacter* EliminatedCharacter, APBPlayerC
 
 	if (AttackerPlayerState && AttackerPlayerState != VictimPlayerState && PBGameState)
 	{
+		TArray<APBPlayerState*> PlayersCurrentlyInTheLead;
+		for (auto LeadPlayer : PBGameState->TopScoringPlayers)
+		{
+			PlayersCurrentlyInTheLead.Add(LeadPlayer);
+		}
+
 		AttackerPlayerState->AddToScore(1.f);
 		PBGameState->UpdateTopScore(AttackerPlayerState);
+		if (PBGameState->TopScoringPlayers.Contains(AttackerPlayerState))
+		{
+			APBCharacter* Leader = Cast<APBCharacter>(AttackerPlayerState->GetPawn());
+			if (Leader)
+			{
+				Leader->MulticastGainedTheLead();
+			}
+		}
+
+		for (int32 i = 0; i < PlayersCurrentlyInTheLead.Num(); i++)
+		{
+			if (!PBGameState->TopScoringPlayers.Contains(PlayersCurrentlyInTheLead[i]))
+			{
+				APBCharacter* Loser = Cast<APBCharacter>(PlayersCurrentlyInTheLead[i]->GetPawn());
+				if (Loser)
+				{
+					Loser->MulticastLostTheLead();
+				}
+			}
+		}
 	}
 
 	if (VictimPlayerState)

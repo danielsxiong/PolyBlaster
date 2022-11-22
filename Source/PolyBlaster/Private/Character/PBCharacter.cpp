@@ -16,6 +16,8 @@
 #include "TimerManager.h"
 #include "Sound/SoundCue.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 
 #include "../PolyBlaster.h"
 #include "Weapon/Weapon.h"
@@ -27,6 +29,7 @@
 #include "PlayerController/PBPlayerController.h"
 #include "PlayerState/PBPlayerState.h"
 #include "GameMode/PBGameMode.h"
+#include "GameState/PBGameState.h"
 
 APBCharacter::APBCharacter()
 {
@@ -245,6 +248,25 @@ void APBCharacter::Tick(float DeltaTime)
 
 	HideCameraIfCharacterClose();
 	PollInit();
+}
+
+void APBCharacter::PollInit()
+{
+	if (!PBPlayerState)
+	{
+		PBPlayerState = GetPlayerState<APBPlayerState>();
+		if (PBPlayerState)
+		{
+			PBPlayerState->AddToScore(0.f);
+			PBPlayerState->AddToDefeats(0);
+
+			APBGameState* PBGameState = Cast<APBGameState>(UGameplayStatics::GetGameState(this));
+			if (PBGameState && PBGameState->TopScoringPlayers.Contains(PBPlayerState))
+			{
+				MulticastGainedTheLead();
+			}
+		}
+	}
 }
 
 void APBCharacter::SpawnDefaultWeapon()
@@ -721,6 +743,11 @@ void APBCharacter::MulticastEliminated_Implementation(bool bPlayerLeftGame)
 		ShowSniperScopeWidget(false);
 	}
 
+	if (CrownComponent)
+	{
+		CrownComponent->DestroyComponent();
+	}
+
 	GetWorldTimerManager().SetTimer(EliminatedTimer, this, &APBCharacter::EliminatedTimerFinished, EliminatedDelay);
 }
 
@@ -910,19 +937,6 @@ void APBCharacter::UpdateHUDAmmo()
 	}
 }
 
-void APBCharacter::PollInit()
-{
-	if (!PBPlayerState)
-	{
-		PBPlayerState = GetPlayerState<APBPlayerState>();
-		if (PBPlayerState)
-		{
-			PBPlayerState->AddToScore(0.f);
-			PBPlayerState->AddToDefeats(0);
-		}
-	}
-}
-
 void APBCharacter::SetOverlappingWeapon(AWeapon* InWeapon)
 {
 	// Remove the pickup widget from the previous overlapping weapon, if exist
@@ -955,6 +969,36 @@ void APBCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 	if (LastWeapon)
 	{
 		LastWeapon->ShowPickupWidget(false);
+	}
+}
+
+void APBCharacter::MulticastGainedTheLead_Implementation()
+{
+	if (!CrownSystem) return;
+
+	if (!CrownComponent)
+	{
+		CrownComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(
+			CrownSystem, 
+			GetCapsuleComponent(), 
+			FName(), 
+			GetActorLocation() + FVector(0.f, 0.f, 110.f),
+			GetActorRotation(), 
+			EAttachLocation::KeepWorldPosition, false
+		);
+	}
+
+	if (CrownComponent)
+	{
+		CrownComponent->Activate();
+	}
+}
+
+void APBCharacter::MulticastLostTheLead_Implementation()
+{
+	if (CrownComponent)
+	{
+		CrownComponent->DestroyComponent();
 	}
 }
 

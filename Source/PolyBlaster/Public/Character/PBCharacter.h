@@ -67,6 +67,12 @@ public:
 
 	FOnLeftGame OnLeftGame;
 
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastGainedTheLead();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastLostTheLead();
+
 	/*UFUNCTION(NetMulticast, Unreliable)
 	void MulticastHit();*/
 
@@ -364,7 +370,7 @@ private:
 	void StartDissolve();
 
 	/**
-	* Elimination Bot
+	* Elimination Effects
 	*/
 
 	UPROPERTY(EditAnywhere);
@@ -378,6 +384,12 @@ private:
 
 	UPROPERTY()
 	class APBPlayerState* PBPlayerState;
+
+	UPROPERTY(EditAnywhere)
+	class UNiagaraSystem* CrownSystem;
+
+	UPROPERTY()
+	class UNiagaraComponent* CrownComponent;
 
 	/**
 	* Grenade
