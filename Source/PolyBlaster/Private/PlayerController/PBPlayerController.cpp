@@ -587,3 +587,47 @@ void APBPlayerController::ShowReturnToMainMenu()
 		}
 	}
 }
+
+void APBPlayerController::BroadcastElimination(APlayerState* Attacker, APlayerState* Victim)
+{
+	ClientEliminationAnnouncement(Attacker, Victim);
+}
+
+void APBPlayerController::ClientEliminationAnnouncement_Implementation(APlayerState* Attacker, APlayerState* Victim)
+{
+	APlayerState* Self = GetPlayerState<APlayerState>();
+	if (Attacker && Victim && Self)
+	{
+		PBHUD = PBHUD == nullptr ? Cast<APBHUD>(GetHUD()) : PBHUD;
+		if (PBHUD)
+		{
+			// Edge cases
+			if (Attacker == Self && Victim != Self)
+			{
+				PBHUD->AddEliminatedAnnouncement("You", Victim->GetPlayerName());
+				return;
+			}
+
+			if (Victim == Self && Attacker != Self)
+			{
+				PBHUD->AddEliminatedAnnouncement(Attacker->GetPlayerName(), "You");
+				return;
+			}
+
+			if (Attacker == Victim && Attacker == Self)
+			{
+				PBHUD->AddEliminatedAnnouncement("You", "yourself");
+				return;
+			}
+
+			if (Attacker == Victim && Attacker != Self)
+			{
+				PBHUD->AddEliminatedAnnouncement(Attacker->GetPlayerName(), "themselves");
+				return;
+			}
+
+			// general case
+			PBHUD->AddEliminatedAnnouncement(Attacker->GetPlayerName(), Victim->GetPlayerName());
+		}
+	}
+}

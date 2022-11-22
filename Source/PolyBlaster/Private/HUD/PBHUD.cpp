@@ -3,8 +3,10 @@
 
 #include "HUD/PBHUD.h"
 #include "GameFramework/PlayerController.h"
+
 #include "HUD/CharacterOverlay.h"
 #include "HUD/Announcement.h"
+#include "HUD/EliminatedAnnouncement.h"
 
 void APBHUD::BeginPlay()
 {
@@ -13,21 +15,41 @@ void APBHUD::BeginPlay()
 
 void APBHUD::AddCharacterOverlay()
 {
-	APlayerController* PlayerController = GetOwningPlayerController();
-	if (PlayerController && CharacterOverlayClass)
+	OwningPlayerController = OwningPlayerController == nullptr ? GetOwningPlayerController() : OwningPlayerController;
+	if (OwningPlayerController && CharacterOverlayClass)
 	{
-		CharacterOverlay = CreateWidget<UCharacterOverlay>(PlayerController, CharacterOverlayClass);
-		CharacterOverlay->AddToViewport();
+		CharacterOverlay = CreateWidget<UCharacterOverlay>(OwningPlayerController, CharacterOverlayClass);
+		if (CharacterOverlay)
+		{
+			CharacterOverlay->AddToViewport();
+		}
 	}
 }
 
 void APBHUD::AddAnnouncement()
 {
-	APlayerController* PlayerController = GetOwningPlayerController();
-	if (PlayerController && AnnouncementClass)
+	OwningPlayerController = OwningPlayerController == nullptr ? GetOwningPlayerController() : OwningPlayerController;
+	if (OwningPlayerController && AnnouncementClass)
 	{
-		Announcement = CreateWidget<UAnnouncement>(PlayerController, AnnouncementClass);
-		Announcement->AddToViewport();
+		Announcement = CreateWidget<UAnnouncement>(OwningPlayerController, AnnouncementClass);
+		if (Announcement)
+		{
+			Announcement->AddToViewport();
+		}
+	}
+}
+
+void APBHUD::AddEliminatedAnnouncement(const FString& Attacker, const FString& Victim)
+{
+	OwningPlayerController = OwningPlayerController == nullptr ? GetOwningPlayerController() : OwningPlayerController;
+	if (OwningPlayerController && EliminatedAnnouncementClass)
+	{
+		EliminatedAnnouncement = CreateWidget<UEliminatedAnnouncement>(OwningPlayerController, EliminatedAnnouncementClass);
+		if (EliminatedAnnouncement)
+		{
+			EliminatedAnnouncement->SetEliminatedAnnouncementText(Attacker, Victim);
+			EliminatedAnnouncement->AddToViewport();
+		}
 	}
 }
 

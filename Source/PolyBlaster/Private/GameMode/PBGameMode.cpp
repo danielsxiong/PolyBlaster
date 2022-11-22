@@ -128,6 +128,15 @@ void APBGameMode::PlayerEliminated(APBCharacter* EliminatedCharacter, APBPlayerC
 	{
 		EliminatedCharacter->Eliminated();
 	}
+
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		APBPlayerController* PBPlayerController = Cast<APBPlayerController>(*It);
+		if (PBPlayerController && AttackerPlayerState && VictimPlayerState)
+		{
+			PBPlayerController->BroadcastElimination(AttackerPlayerState, VictimPlayerState);
+		}
+	}
 }
 
 void APBGameMode::RequestRespawn(class ACharacter* EliminatedCharacter, AController* EliminatedController)
