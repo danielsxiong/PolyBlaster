@@ -29,6 +29,8 @@ void AShotgun::FireShotgun(const TArray<FVector_NetQuantize>& HitTargets)
 
 		// Maps hit character to a number of times hit
 		TMap<APBCharacter*, uint32> HitMap;
+		// Maps hit character to a number of times headshot hit
+		TMap<APBCharacter*, uint32> HeadShotHitMap;
 
 		for (FVector_NetQuantize HitTarget : HitTargets)
 		{
@@ -38,13 +40,29 @@ void AShotgun::FireShotgun(const TArray<FVector_NetQuantize>& HitTargets)
 			APBCharacter* PBCharacter = Cast<APBCharacter>(FireHit.GetActor());
 			if (PBCharacter)
 			{
-				if (HitMap.Contains(PBCharacter))
+				const bool bHeadShot = FireHit.BoneName.ToString() == FString("head");
+
+				if (bHeadShot)
 				{
-					HitMap[PBCharacter]++;
+					if (HeadShotHitMap.Contains(PBCharacter))
+					{
+						HeadShotHitMap[PBCharacter]++;
+					}
+					else
+					{
+						HeadShotHitMap.Emplace(PBCharacter, 1);
+					}
 				}
 				else
 				{
-					HitMap.Emplace(PBCharacter, 1);
+					if (HitMap.Contains(PBCharacter))
+					{
+						HitMap[PBCharacter]++;
+					}
+					else
+					{
+						HitMap.Emplace(PBCharacter, 1);
+					}
 				}
 			}
 
@@ -61,30 +79,62 @@ void AShotgun::FireShotgun(const TArray<FVector_NetQuantize>& HitTargets)
 
 		TArray<APBCharacter*> HitCharacters;
 
+		// Maps character hit to total damage
+		TMap<APBCharacter*, float> DamageMap;
+
+		// Calculate body shot damage by multiplying times hit x damage
 		for (auto HitPair : HitMap)
 		{
-			if (HitPair.Key && InstigatorController)
+			if (HitPair.Key)
 			{
-				bool bCauseAuthDamage = !bUseServerSideRewind || OwnerPawn->IsLocallyControlled();
-				if (HasAuthority() && bCauseAuthDamage)
-				{
-					UGameplayStatics::ApplyDamage(HitPair.Key, Damage * HitPair.Value, InstigatorController, this, UDamageType::StaticClass());
-				}
-				
-				HitCharacters.Add(HitPair.Key);
+				DamageMap.Emplace(HitPair.Key, HitPair.Value * Damage);
+				HitCharacters.AddUnique(HitPair.Key);
 			}
 		}
 
-	if (!HasAuthority() && bUseServerSideRewind)
-	{
-		OwnerPBCharacter = OwnerPBCharacter == nullptr ? Cast<APBCharacter>(OwnerPawn) : OwnerPBCharacter;
-		OwnerPBPlayerController = OwnerPBPlayerController == nullptr ? Cast<APBPlayerController>(InstigatorController) : OwnerPBPlayerController;
-
-		if (OwnerPBPlayerController && OwnerPBCharacter && OwnerPBCharacter->GetLagCompensationComponent() && OwnerPBCharacter->IsLocallyControlled())
+		// Calculate head shot damage by multiplying times hit x damage
+		for (auto HitPair : HeadShotHitMap)
 		{
-			OwnerPBCharacter->GetLagCompensationComponent()->ShotgunServerScoreRequest(HitCharacters, Start, HitTargets, OwnerPBPlayerController->GetServerTime() - OwnerPBPlayerController->SingleTripTime, this);
+			if (HitPair.Key)
+			{
+				if (DamageMap.Contains(HitPair.Key))
+				{
+					DamageMap[HitPair.Key] += HitPair.Value * HeadShotDamage;
+				}
+				else
+				{
+					DamageMap.Emplace(HitPair.Key, HitPair.Value * HeadShotDamage);
+				}
+
+				HitCharacters.AddUnique(HitPair.Key);
+			}
 		}
-	}
+
+		if (InstigatorController)
+		{
+			for (auto DamagePair : DamageMap)
+			{
+				if (DamagePair.Key)
+				{
+					bool bCauseAuthDamage = !bUseServerSideRewind || OwnerPawn->IsLocallyControlled();
+					if (HasAuthority() && bCauseAuthDamage)
+					{
+						UGameplayStatics::ApplyDamage(DamagePair.Key /*Character that was hit*/, DamagePair.Value /*Total damage*/, InstigatorController, this, UDamageType::StaticClass());
+					}
+				}
+			}
+		}
+
+		if (!HasAuthority() && bUseServerSideRewind)
+		{
+			OwnerPBCharacter = OwnerPBCharacter == nullptr ? Cast<APBCharacter>(OwnerPawn) : OwnerPBCharacter;
+			OwnerPBPlayerController = OwnerPBPlayerController == nullptr ? Cast<APBPlayerController>(InstigatorController) : OwnerPBPlayerController;
+
+			if (OwnerPBPlayerController && OwnerPBCharacter && OwnerPBCharacter->GetLagCompensationComponent() && OwnerPBCharacter->IsLocallyControlled())
+			{
+				OwnerPBCharacter->GetLagCompensationComponent()->ShotgunServerScoreRequest(HitCharacters, Start, HitTargets, OwnerPBPlayerController->GetServerTime() - OwnerPBPlayerController->SingleTripTime, this);
+			}
+		}
 	}
 }
 
