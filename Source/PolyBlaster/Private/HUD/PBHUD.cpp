@@ -3,6 +3,9 @@
 
 #include "HUD/PBHUD.h"
 #include "GameFramework/PlayerController.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
+#include "Components/HorizontalBox.h"
+#include "Components/CanvasPanelSlot.h"
 
 #include "HUD/CharacterOverlay.h"
 #include "HUD/Announcement.h"
@@ -44,12 +47,43 @@ void APBHUD::AddEliminatedAnnouncement(const FString& Attacker, const FString& V
 	OwningPlayerController = OwningPlayerController == nullptr ? GetOwningPlayerController() : OwningPlayerController;
 	if (OwningPlayerController && EliminatedAnnouncementClass)
 	{
-		EliminatedAnnouncement = CreateWidget<UEliminatedAnnouncement>(OwningPlayerController, EliminatedAnnouncementClass);
+		UEliminatedAnnouncement* EliminatedAnnouncement = CreateWidget<UEliminatedAnnouncement>(OwningPlayerController, EliminatedAnnouncementClass);
 		if (EliminatedAnnouncement)
 		{
 			EliminatedAnnouncement->SetEliminatedAnnouncementText(Attacker, Victim);
 			EliminatedAnnouncement->AddToViewport();
+
+			for (UEliminatedAnnouncement* Message : EliminatedMessages)
+			{
+				if (Message && Message->AnnouncementBox)
+				{
+					UCanvasPanelSlot* CanvasSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(Message->AnnouncementBox);
+					if (CanvasSlot)
+					{
+						FVector2D Position = CanvasSlot->GetPosition();
+						FVector2D NewPosition(Position.X, Position.Y - CanvasSlot->GetSize().Y);
+
+						CanvasSlot->SetPosition(NewPosition);
+					}
+				}
+			}
+
+			EliminatedMessages.Add(EliminatedAnnouncement);
+
+			FTimerHandle EliminatedMessageTimer;
+			FTimerDelegate EliminatedMessageDelegate;
+
+			EliminatedMessageDelegate.BindUFunction(this, FName("EliminatedAnnouncementTimerFinished"), EliminatedAnnouncement);
+			GetWorldTimerManager().SetTimer(EliminatedMessageTimer, EliminatedMessageDelegate, EliminatedAnnouncementTime, false /*not looping*/);
 		}
+	}
+}
+
+void APBHUD::EliminatedAnnouncementTimerFinished(UEliminatedAnnouncement* MessageToRemove)
+{
+	if (MessageToRemove)
+	{
+		MessageToRemove->RemoveFromParent();
 	}
 }
 

@@ -79,7 +79,13 @@ private:
 	TSubclassOf<class UUserWidget> EliminatedAnnouncementClass;
 
 	UPROPERTY()
-	class UEliminatedAnnouncement* EliminatedAnnouncement;
+	TArray<UEliminatedAnnouncement*> EliminatedMessages;
+
+	UPROPERTY(EditAnywhere)
+	float EliminatedAnnouncementTime = 2.5f;
+
+	UFUNCTION()
+	void EliminatedAnnouncementTimerFinished(UEliminatedAnnouncement* MessageToRemove);
 
 public:
 
