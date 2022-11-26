@@ -55,7 +55,7 @@ void AHitScanWeapon::Fire(const FVector& HitTarget)
 
 						if (OwnerPBPlayerController && OwnerPBCharacter && OwnerPBCharacter->GetLagCompensationComponent() && OwnerPBCharacter->IsLocallyControlled())
 						{
-							OwnerPBCharacter->GetLagCompensationComponent()->ServerScoreRequest(PBCharacter, Start, FireHit.ImpactPoint, OwnerPBPlayerController->GetServerTime() - OwnerPBPlayerController->SingleTripTime, this);
+							OwnerPBCharacter->GetLagCompensationComponent()->ServerScoreRequest(PBCharacter, Start, FireHit.ImpactPoint, OwnerPBPlayerController->GetServerTime() - OwnerPBPlayerController->SingleTripTime);
 						}
 					}
 				}
