@@ -12,6 +12,7 @@ void APBPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(APBPlayerState, Defeats);
+	DOREPLIFETIME(APBPlayerState, Team);
 }
 
 void APBPlayerState::AddToScore(float ScoreAmount)

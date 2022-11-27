@@ -24,7 +24,7 @@ protected:
 
 	virtual bool Initialize() override;
 
-	virtual void OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld) override;
+	void OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld);
 
 	// Callbacks
 	UFUNCTION()

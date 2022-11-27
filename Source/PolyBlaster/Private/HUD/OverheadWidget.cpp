@@ -55,8 +55,3 @@ void UOverheadWidget::ShowPlayerName(APawn* InPawn)
 		SetDisplayText(PlayerName);
 	}
 }
-
-void UOverheadWidget::OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld)
-{
-	Super::OnLevelRemovedFromWorld(InLevel, InWorld);
-}

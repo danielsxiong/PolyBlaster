@@ -26,9 +26,5 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void ShowPlayerName(APawn* InPawn);
-
-protected:
-
-	virtual void OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld) override;
 	
 };
