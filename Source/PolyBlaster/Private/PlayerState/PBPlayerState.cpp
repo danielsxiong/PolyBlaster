@@ -72,3 +72,23 @@ void APBPlayerState::OnRep_Defeats()
 		}
 	}
 }
+
+void APBPlayerState::SetTeam(ETeam InTeam)
+{
+	Team = InTeam;
+	SetPlayerTeamColor();
+}
+
+void APBPlayerState::OnRep_Team()
+{
+	SetPlayerTeamColor();
+}
+
+void APBPlayerState::SetPlayerTeamColor()
+{
+	APBCharacter* PBCharacter = Cast<APBCharacter>(GetPawn());
+	if (PBCharacter)
+	{
+		PBCharacter->SetTeamColor(Team);
+	}
+}

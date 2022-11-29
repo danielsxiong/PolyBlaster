@@ -9,6 +9,7 @@
 #include "PBTypes/TurningInPlace.h"
 #include "Interfaces/InteractWithCrosshairsInterface.h"
 #include "PBTypes/CombatState.h"
+#include "PBTypes/Team.h"
 #include "PBCharacter.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLeftGame);
@@ -75,6 +76,8 @@ public:
 
 	/*UFUNCTION(NetMulticast, Unreliable)
 	void MulticastHit();*/
+
+	void SetTeamColor(ETeam Team);
 
 	UPROPERTY(Replicated)
 	bool bDisableGameplay = false;
@@ -361,13 +364,32 @@ private:
 	UMaterialInstanceDynamic* DynamicDissolveMaterialInstance;
 
 	// Material Instance set on the BP, used with Dynamic Material Instance
-	UPROPERTY(EditAnywhere, Category = Eliminated)
+	UPROPERTY(VisibleAnywhere, Category = Eliminated)
 	UMaterialInstance* DissolveMaterialInstance;
 
 	UFUNCTION()
 	void UpdateDissolveMaterial(float DissolveValue);
 
 	void StartDissolve();
+
+	/**
+	* Team colors
+	*/
+
+	UPROPERTY(EditAnywhere, Category = Eliminated)
+	UMaterialInstance* RedDissolveMaterialInstance;
+
+	UPROPERTY(EditAnywhere, Category = Eliminated)
+	UMaterialInstance* RedMaterial;
+
+	UPROPERTY(EditAnywhere, Category = Eliminated)
+	UMaterialInstance* BlueDissolveMaterialInstance;
+
+	UPROPERTY(EditAnywhere, Category = Eliminated)
+	UMaterialInstance* BlueMaterial;
+
+	UPROPERTY(EditAnywhere, Category = Eliminated)
+	UMaterialInstance* OriginalMaterial;
 
 	/**
 	* Elimination Effects

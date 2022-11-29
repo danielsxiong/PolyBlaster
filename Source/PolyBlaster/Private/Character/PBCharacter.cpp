@@ -259,6 +259,7 @@ void APBCharacter::PollInit()
 		{
 			PBPlayerState->AddToScore(0.f);
 			PBPlayerState->AddToDefeats(0);
+			SetTeamColor(PBPlayerState->GetTeam());
 
 			APBGameState* PBGameState = Cast<APBGameState>(UGameplayStatics::GetGameState(this));
 			if (PBGameState && PBGameState->TopScoringPlayers.Contains(PBPlayerState))
@@ -283,6 +284,26 @@ void APBCharacter::SpawnDefaultWeapon()
 		{
 			Combat->EquipWeapon(StartingWeapon);	
 		}
+	}
+}
+
+void APBCharacter::SetTeamColor(ETeam Team)
+{
+	if (!GetMesh() || !OriginalMaterial) return;
+	switch (Team)
+	{
+	case ETeam::ET_NoTeam:
+		GetMesh()->SetMaterial(0, OriginalMaterial);
+		DissolveMaterialInstance = BlueDissolveMaterialInstance;
+		break;
+	case ETeam::ET_BlueTeam:
+		GetMesh()->SetMaterial(0, BlueMaterial);
+		DissolveMaterialInstance = BlueDissolveMaterialInstance;
+		break;
+	case ETeam::ET_RedTeam:
+		GetMesh()->SetMaterial(0, RedMaterial);
+		DissolveMaterialInstance = RedDissolveMaterialInstance;
+		break;
 	}
 }
 
