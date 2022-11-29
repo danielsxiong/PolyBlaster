@@ -75,3 +75,23 @@ void APBTeamsGameMode::HandleMatchHasStarted()
 		}
 	}
 }
+
+float APBTeamsGameMode::CalculateDamage(AController* Attacker, AController* Victim, float BaseDamage)
+{
+	APBPlayerState* AttackerPlayerState = Attacker->GetPlayerState<APBPlayerState>();
+	APBPlayerState* VictimPlayerState = Victim->GetPlayerState<APBPlayerState>();
+
+	if (!AttackerPlayerState || !VictimPlayerState) return BaseDamage;
+
+	if (VictimPlayerState == AttackerPlayerState)
+	{
+		return BaseDamage;
+	}
+
+	if (AttackerPlayerState->GetTeam() == VictimPlayerState->GetTeam())
+	{
+		return 0.f;
+	}
+
+	return BaseDamage;
+}

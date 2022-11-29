@@ -273,7 +273,8 @@ void APBCharacter::PollInit()
 void APBCharacter::SpawnDefaultWeapon()
 {
 	// If this map is a game map, spawn default weapon, this also makes sure that weapons are spawned on the server and not the client
-	APBGameMode* PBGameMode = Cast<APBGameMode>(UGameplayStatics::GetGameMode(this));
+	PBGameMode = PBGameMode == nullptr ? GetWorld()->GetAuthGameMode<APBGameMode>() : PBGameMode;
+
 	UWorld* World = GetWorld();
 	if (PBGameMode && World && !bEliminated && DefaultWeaponClass)
 	{
@@ -812,7 +813,8 @@ void APBCharacter::DropOrDestroyWeapon(AWeapon* Weapon)
 
 void APBCharacter::EliminatedTimerFinished()
 {
-	APBGameMode* PBGameMode = GetWorld()->GetAuthGameMode<APBGameMode>();
+	PBGameMode = PBGameMode == nullptr ? GetWorld()->GetAuthGameMode<APBGameMode>() : PBGameMode;
+
 	if (PBGameMode && !bLeftGame)
 	{
 		PBGameMode->RequestRespawn(this, Controller);
@@ -834,7 +836,8 @@ void APBCharacter::DisableCollisionTimerFinished()
 
 void APBCharacter::ServerLeaveGame_Implementation()
 {
-	APBGameMode* PBGameMode = GetWorld()->GetAuthGameMode<APBGameMode>();
+	PBGameMode = PBGameMode == nullptr ? GetWorld()->GetAuthGameMode<APBGameMode>() : PBGameMode;
+
 	PBPlayerState = PBPlayerState == nullptr ? GetPlayerState<APBPlayerState>() : PBPlayerState;
 	if (PBGameMode && PBPlayerState)
 	{
@@ -876,7 +879,12 @@ void APBCharacter::PlayHitReactMontage()
 
 void APBCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser)
 {
-	if (bEliminated) return;
+	PBGameMode = PBGameMode == nullptr ? GetWorld()->GetAuthGameMode<APBGameMode>() : PBGameMode;
+
+	if (bEliminated || !PBGameMode) return;
+
+	Damage = PBGameMode->CalculateDamage(InstigatorController, Controller, Damage);
+
 	/*if (Combat)
 	{
 		Combat->SetCombatState(ECombatState::ECS_Unoccupied);
@@ -904,7 +912,6 @@ void APBCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDama
 
 	if (Health == 0.f)
 	{
-		APBGameMode* PBGameMode = GetWorld()->GetAuthGameMode<APBGameMode>();
 		if (PBGameMode)
 		{
 			PBPlayerController = PBPlayerController == nullptr ? Cast<APBPlayerController>(Controller) : PBPlayerController;
@@ -1092,7 +1099,7 @@ void APBCharacter::Destroyed()
 		ElimBotComponent->DestroyComponent();
 	}
 
-	APBGameMode* PBGameMode = Cast<APBGameMode>(UGameplayStatics::GetGameMode(this));
+	PBGameMode = PBGameMode == nullptr ? GetWorld()->GetAuthGameMode<APBGameMode>() : PBGameMode;
 	bool bMatchNotInProgress = PBGameMode && PBGameMode->GetMatchState() != MatchState::InProgress;
 
 	if (Combat && Combat->EquippedWeapon && bMatchNotInProgress)

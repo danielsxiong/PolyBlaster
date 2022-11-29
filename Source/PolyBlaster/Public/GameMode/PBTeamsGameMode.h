@@ -22,6 +22,8 @@ public:
 	// For players leaving mid game
 	virtual void Logout(AController* Exiting) override;
 
+	virtual float CalculateDamage(AController* Attacker, AController* Victim, float BaseDamage) override;
+
 protected:
 
 	virtual void HandleMatchHasStarted() override;

@@ -201,6 +201,9 @@ protected:
 
 private:
 
+	UPROPERTY()
+	class APBGameMode* PBGameMode;
+
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class USpringArmComponent* CameraBoom;
 

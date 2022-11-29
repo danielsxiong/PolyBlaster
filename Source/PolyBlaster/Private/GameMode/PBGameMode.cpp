@@ -173,3 +173,8 @@ void APBGameMode::PlayerLeftGame(APBPlayerState* PlayerLeaving)
 		PBCharacterLeaving->Eliminated(true);
 	}
 }
+
+float APBGameMode::CalculateDamage(AController* Attacker, AController* Victim, float BaseDamage)
+{
+	return BaseDamage;
+}
