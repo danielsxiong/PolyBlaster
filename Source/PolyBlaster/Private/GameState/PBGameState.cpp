@@ -5,6 +5,7 @@
 #include "Net/UnrealNetwork.h"
 
 #include "PlayerState/PBPlayerState.h"
+#include "PlayerController/PBPlayerController.h"
 
 void APBGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -36,20 +37,40 @@ void APBGameState::UpdateTopScore(APBPlayerState* ScoringPlayer)
 
 void APBGameState::OnRep_RedTeamScore()
 {
-
+	APBPlayerController* PBPlayerController = Cast<APBPlayerController>(GetWorld()->GetFirstPlayerController());
+	if (PBPlayerController)
+	{
+		PBPlayerController->SetHUDRedTeamScore(RedTeamScore);
+	}
 }
 
 void APBGameState::OnRep_BlueTeamScore()
 {
-
+	APBPlayerController* PBPlayerController = Cast<APBPlayerController>(GetWorld()->GetFirstPlayerController());
+	if (PBPlayerController)
+	{
+		PBPlayerController->SetHUDBlueTeamScore(BlueTeamScore);
+	}
 }
 
 void APBGameState::RedTeamScores()
 {
 	++RedTeamScore;
+
+	APBPlayerController* PBPlayerController = Cast<APBPlayerController>(GetWorld()->GetFirstPlayerController());
+	if (PBPlayerController)
+	{
+		PBPlayerController->SetHUDRedTeamScore(RedTeamScore);
+	}
 }
 
 void APBGameState::BlueTeamScores()
 {
 	++BlueTeamScore;
+
+	APBPlayerController* PBPlayerController = Cast<APBPlayerController>(GetWorld()->GetFirstPlayerController());
+	if (PBPlayerController)
+	{
+		PBPlayerController->SetHUDBlueTeamScore(BlueTeamScore);
+	}
 }

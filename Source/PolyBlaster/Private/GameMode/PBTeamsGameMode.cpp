@@ -6,6 +6,7 @@
 
 #include "GameState/PBGameState.h"
 #include "PlayerState/PBPlayerState.h"
+#include "PlayerController/PBPlayerController.h"
 
 APBTeamsGameMode::APBTeamsGameMode()
 {
@@ -77,6 +78,28 @@ void APBTeamsGameMode::HandleMatchHasStarted()
 					PBPlayerState->SetTeam(ETeam::ET_BlueTeam);
 				}
 			}
+		}
+	}
+}
+
+void APBTeamsGameMode::PlayerEliminated(class APBCharacter* EliminatedCharacter, class APBPlayerController* EliminatedController, APBPlayerController* AttackerController)
+{
+	Super::PlayerEliminated(EliminatedCharacter, EliminatedController, AttackerController);
+
+	APBPlayerState* PBAttackerPlayerState = AttackerController->GetPlayerState<APBPlayerState>();
+	APBGameState* PBGameState = Cast<APBGameState>(UGameplayStatics::GetGameState(this));
+	if (PBAttackerPlayerState && PBGameState)
+	{
+		switch (PBAttackerPlayerState->GetTeam())
+		{
+		case ETeam::ET_RedTeam:
+			PBGameState->RedTeamScores();
+			break;
+		case ETeam::ET_BlueTeam:
+			PBGameState->BlueTeamScores();
+			break;
+		default:
+			break;
 		}
 	}
 }
