@@ -32,6 +32,7 @@ void APBPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(APBPlayerController, MatchState);
+	DOREPLIFETIME(APBPlayerController, bShowTeamScores);
 }
 
 void APBPlayerController::SetupInputComponent()
@@ -169,13 +170,13 @@ void APBPlayerController::OnPossess(APawn* InPawn)
 	}
 }
 
-void APBPlayerController::OnMatchStateSet(FName State)
+void APBPlayerController::OnMatchStateSet(FName State, bool bTeamsMatch)
 {
 	MatchState = State;
 
 	if (MatchState == MatchState::InProgress)
 	{
-		HandleMatchHasStarted();
+		HandleMatchHasStarted(bTeamsMatch);
 	}
 	else if (MatchState == MatchState::Cooldown)
 	{
@@ -195,8 +196,10 @@ void APBPlayerController::OnRep_MatchState()
 	}
 }
 
-void APBPlayerController::HandleMatchHasStarted()
+void APBPlayerController::HandleMatchHasStarted(bool bTeamsMatch)
 {
+	if (HasAuthority()) bShowTeamScores = bTeamsMatch;
+
 	PBHUD = PBHUD == nullptr ? Cast<APBHUD>(GetHUD()) : PBHUD;
 	if (PBHUD)
 	{
@@ -214,6 +217,17 @@ void APBPlayerController::HandleMatchHasStarted()
 		if (!PBHUD->CharacterOverlay)
 		{
 			PBHUD->AddCharacterOverlay();
+		}
+
+		if (!HasAuthority()) return;
+
+		if (bTeamsMatch)
+		{
+			InitTeamScores();
+		}
+		else
+		{
+			HideTeamScores();
 		}
 	}
 }
@@ -491,6 +505,70 @@ void APBPlayerController::SetHUDTime()
 	}
 
 	CountdownInt = SecondsLeft;
+}
+
+void APBPlayerController::OnRep_ShowTeamScores()
+{
+	if (bShowTeamScores)
+	{
+		InitTeamScores();
+	}
+	else
+	{
+		HideTeamScores();
+	}
+}
+
+void APBPlayerController::HideTeamScores()
+{
+	PBHUD = PBHUD == nullptr ? Cast<APBHUD>(GetHUD()) : PBHUD;
+
+	bool bHUDValid = PBHUD && PBHUD->CharacterOverlay && PBHUD->CharacterOverlay->BlueTeamScore && PBHUD->CharacterOverlay->RedTeamScore && PBHUD->CharacterOverlay->ScoreSpacerText;
+	if (bHUDValid)
+	{
+		PBHUD->CharacterOverlay->BlueTeamScore->SetText(FText());
+		PBHUD->CharacterOverlay->RedTeamScore->SetText(FText());
+		PBHUD->CharacterOverlay->ScoreSpacerText->SetText(FText());
+	}
+}
+
+void APBPlayerController::InitTeamScores()
+{
+	PBHUD = PBHUD == nullptr ? Cast<APBHUD>(GetHUD()) : PBHUD;
+
+	bool bHUDValid = PBHUD && PBHUD->CharacterOverlay && PBHUD->CharacterOverlay->BlueTeamScore && PBHUD->CharacterOverlay->RedTeamScore && PBHUD->CharacterOverlay->ScoreSpacerText;
+	if (bHUDValid)
+	{
+		FString Zero("0");
+		FString Spacer("|");
+		PBHUD->CharacterOverlay->BlueTeamScore->SetText(FText::FromString(Zero));
+		PBHUD->CharacterOverlay->RedTeamScore->SetText(FText::FromString(Zero));
+		PBHUD->CharacterOverlay->ScoreSpacerText->SetText(FText::FromString(Spacer));
+	}
+}
+
+void APBPlayerController::SetHUDRedTeamScore(int32 RedScore)
+{
+	PBHUD = PBHUD == nullptr ? Cast<APBHUD>(GetHUD()) : PBHUD;
+
+	bool bHUDValid = PBHUD && PBHUD->CharacterOverlay && PBHUD->CharacterOverlay->RedTeamScore;
+	if (bHUDValid)
+	{
+		FString ScoreText = FString::Printf(TEXT("%d"), RedScore);
+		PBHUD->CharacterOverlay->RedTeamScore->SetText(FText::FromString(ScoreText));
+	}
+}
+
+void APBPlayerController::SetHUDBlueTeamScore(int32 BlueScore)
+{
+	PBHUD = PBHUD == nullptr ? Cast<APBHUD>(GetHUD()) : PBHUD;
+
+	bool bHUDValid = PBHUD && PBHUD->CharacterOverlay && PBHUD->CharacterOverlay->BlueTeamScore;
+	if (bHUDValid)
+	{
+		FString ScoreText = FString::Printf(TEXT("%d"), BlueScore);
+		PBHUD->CharacterOverlay->BlueTeamScore->SetText(FText::FromString(ScoreText));
+	}
 }
 
 void APBPlayerController::ServerCheckMatchState_Implementation()

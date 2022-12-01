@@ -30,7 +30,7 @@ public:
 	// Sync with server world time
 	virtual float GetServerTime();
 
-	void OnMatchStateSet(FName State);
+	void OnMatchStateSet(FName State, bool bTeamsMatch = false);
 
 	void SetHUDHealth(float Health, float MaxHealth);
 
@@ -50,6 +50,14 @@ public:
 
 	void SetHUDGrenade(int32 Grenades);
 
+	void HideTeamScores();
+
+	void InitTeamScores();
+
+	void SetHUDRedTeamScore(int32 RedScore);
+
+	void SetHUDBlueTeamScore(int32 BlueScore);
+
 	float SingleTripTime = 0.f;
 
 	FHighPingDelegate HighPingDelegate;
@@ -66,7 +74,7 @@ protected:
 
 	void PollInit();
 
-	void HandleMatchHasStarted();
+	void HandleMatchHasStarted(bool bTeamsMatch = false);
 
 	void HandleCooldown();
 
@@ -116,6 +124,16 @@ protected:
 
 	UFUNCTION(Client, Reliable)
 	void ClientEliminationAnnouncement(APlayerState* Attacker, APlayerState* Victim);
+
+	/**
+	* Teams
+	*/
+
+	UPROPERTY(ReplicatedUsing = OnRep_ShowTeamScores)
+	bool bShowTeamScores = false;
+
+	UFUNCTION()
+	void OnRep_ShowTeamScores();
 
 private:
 	

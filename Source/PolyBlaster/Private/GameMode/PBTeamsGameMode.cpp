@@ -7,6 +7,11 @@
 #include "GameState/PBGameState.h"
 #include "PlayerState/PBPlayerState.h"
 
+APBTeamsGameMode::APBTeamsGameMode()
+{
+	bTeamsMatch = true;
+}
+
 void APBTeamsGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);

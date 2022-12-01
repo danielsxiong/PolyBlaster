@@ -75,7 +75,7 @@ void APBGameMode::OnMatchStateSet()
 		APBPlayerController* PBPlayerController = Cast<APBPlayerController>(*It);
 		if (PBPlayerController)
 		{
-			PBPlayerController->OnMatchStateSet(MatchState);
+			PBPlayerController->OnMatchStateSet(MatchState, bTeamsMatch);
 		}
 	}
 }

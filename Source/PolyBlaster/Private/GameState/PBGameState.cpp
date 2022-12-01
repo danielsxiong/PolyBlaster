@@ -43,3 +43,13 @@ void APBGameState::OnRep_BlueTeamScore()
 {
 
 }
+
+void APBGameState::RedTeamScores()
+{
+	++RedTeamScore;
+}
+
+void APBGameState::BlueTeamScores()
+{
+	++BlueTeamScore;
+}

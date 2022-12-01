@@ -14,6 +14,8 @@ class POLYBLASTER_API APBTeamsGameMode : public APBGameMode
 {
 	GENERATED_BODY()
 
+	APBTeamsGameMode();
+
 public:
 
 	// For players joining mid game
