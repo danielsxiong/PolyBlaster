@@ -481,6 +481,8 @@ void UCombatComponent::SwapWeapon()
 
 void UCombatComponent::SwapAttachedWeapons()
 {
+	if (Character == nullptr || !Character->HasAuthority()) return;
+
 	AWeapon* TempWeapon = EquippedWeapon;
 	EquippedWeapon = SecondaryWeapon;
 	SecondaryWeapon = TempWeapon;
@@ -506,15 +508,14 @@ void UCombatComponent::SwapAttachedWeapons()
 
 void UCombatComponent::SwapFinished()
 {
-	if (Character && Character->HasAuthority())
+	if (!Character) return;
+
+	if (Character->HasAuthority())
 	{
 		CombatState = ECombatState::ECS_Unoccupied;
 	}
 
-	if (Character)
-	{
-		Character->bFinishedSwapping = true;
-	}
+	Character->bFinishedSwapping = true;
 
 	if (SecondaryWeapon) SecondaryWeapon->EnableCustomDepth(true);
 }
