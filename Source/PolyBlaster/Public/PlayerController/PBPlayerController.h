@@ -135,6 +135,10 @@ protected:
 	UFUNCTION()
 	void OnRep_ShowTeamScores();
 
+	FString GetInfoText(const TArray<class APBPlayerState*>& Players);
+
+	FString GetTeamsInfoText(class APBGameState* PBGameState);
+
 private:
 	
 	UPROPERTY()

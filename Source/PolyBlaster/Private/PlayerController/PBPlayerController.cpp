@@ -17,6 +17,7 @@
 #include "GameState/PBGameState.h"
 #include "GameMode/PBGameMode.h"
 #include "PBComponents/CombatComponent.h"
+#include "PBTypes/Announcement.h"
 
 void APBPlayerController::BeginPlay()
 {
@@ -242,40 +243,15 @@ void APBPlayerController::HandleCooldown()
 		bool bHUDValid = PBHUD->Announcement && PBHUD->Announcement->AnnouncementText && PBHUD->Announcement->InfoText;
 		if (bHUDValid)
 		{
-			FString AnnouncementText("New Match starts in:");
+			FString AnnouncementText = Announcement::NewMatchStartsIn;
 			PBHUD->Announcement->AnnouncementText->SetText(FText::FromString(AnnouncementText));
 
 			APBGameState* PBGameState = Cast<APBGameState>(UGameplayStatics::GetGameState(this));
-			APBPlayerState* PBPlayerState = GetPlayerState<APBPlayerState>();
-
-			FString InfoTextString;
+			
 			if (PBGameState)
 			{
 				TArray<APBPlayerState*> TopPlayers = PBGameState->TopScoringPlayers;
-				if (TopPlayers.Num() == 0)
-				{
-					InfoTextString = TEXT("There's no winner");
-				}
-				else if (TopPlayers.Num() == 1)
-				{
-					if (TopPlayers[0] == PBPlayerState)
-					{
-						InfoTextString = TEXT("You Win!");
-					}
-					else
-					{
-						InfoTextString = FString::Printf(TEXT("Winner: %s"), *TopPlayers[0]->GetPlayerName());
-					}
-				}
-				else if (TopPlayers.Num() > 1)
-				{
-					InfoTextString = TEXT("Players tied:\n");
-					for (auto TiedPlayer : TopPlayers)
-					{
-						InfoTextString.Append(FString::Printf(TEXT("%s\n"), *TiedPlayer->GetPlayerName()));
-					}
-				}
-				
+				FString InfoTextString = bShowTeamScores ? GetTeamsInfoText(PBGameState) : GetInfoText(TopPlayers);
 				PBHUD->Announcement->InfoText->SetText(FText::FromString(InfoTextString));
 			}
 
@@ -290,6 +266,69 @@ void APBPlayerController::HandleCooldown()
 		// Disable firing weapon if it's not released yet
 		PBCharacter->GetCombatComponent()->FireButtonPressed(false);
 	}
+}
+
+FString APBPlayerController::GetInfoText(const TArray<class APBPlayerState*>& Players)
+{
+	APBPlayerState* PBPlayerState = GetPlayerState<APBPlayerState>();
+	if (!PBPlayerState) return FString();
+
+	FString InfoTextString;
+
+	if (Players.Num() == 0)
+	{
+		InfoTextString = Announcement::TheresNoWinner;
+	}
+	else if (Players.Num() == 1)
+	{
+		if (Players[0] == PBPlayerState)
+		{
+			InfoTextString = Announcement::YouWin;
+		}
+		else
+		{
+			InfoTextString = FString::Printf(TEXT("Winner: %s"), *Players[0]->GetPlayerName());
+		}
+	}
+	else if (Players.Num() > 1)
+	{
+		InfoTextString = Announcement::PlayersTied;
+		InfoTextString = InfoTextString.Append("\n");
+		for (auto TiedPlayer : Players)
+		{
+			InfoTextString.Append(FString::Printf(TEXT("%s\n"), *TiedPlayer->GetPlayerName()));
+		}
+	}
+
+	return InfoTextString;
+}
+
+FString APBPlayerController::GetTeamsInfoText(class APBGameState* PBGameState)
+{
+	if (!PBGameState) return FString();
+	FString InfoTextString;
+
+	const int32 RedTeamScore = PBGameState->RedTeamScore;
+	const int32 BlueTeamScore = PBGameState->BlueTeamScore;
+
+	if (RedTeamScore == 0 && BlueTeamScore == 0)
+	{
+		InfoTextString = Announcement::TheresNoWinner;
+	}
+	else if (RedTeamScore == BlueTeamScore)
+	{
+		InfoTextString = Announcement::TeamsTied;
+	}
+	else if (RedTeamScore > BlueTeamScore)
+	{
+		InfoTextString = Announcement::RedWins;
+	}
+	else if (BlueTeamScore > RedTeamScore)
+	{
+		InfoTextString = Announcement::BlueWins;
+	}
+
+	return InfoTextString;
 }
 
 void APBPlayerController::SetHUDHealth(float Health, float MaxHealth)
