@@ -268,6 +268,8 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AProjectile> GrenadeClass;
 
+	bool bHoldingTheFlag = false;
+
 public:
 
 	bool bLocallyReloading = false;

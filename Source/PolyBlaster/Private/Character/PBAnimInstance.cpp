@@ -52,6 +52,8 @@ void UPBAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 	bUseFABRIK = PBCharacter->GetCombatState() == ECombatState::ECS_Unoccupied;
 
+	bHoldingTheFlag = PBCharacter->IsHoldingTheFlag();
+
 	if (PBCharacter->IsLocallyControlled() && PBCharacter->GetCombatState() != ECombatState::ECS_ThrowingGrenade && PBCharacter->bFinishedSwapping)
 	{
 		bUseFABRIK = !PBCharacter->IsLocallyReloading();

@@ -1070,6 +1070,13 @@ bool APBCharacter::IsLocallyReloading() const
 	return Combat->bLocallyReloading;
 }
 
+bool APBCharacter::IsHoldingTheFlag() const
+{
+	if (!Combat) return false;
+
+	return Combat->bHoldingTheFlag;
+}
+
 FVector APBCharacter::GetHitTarget() const
 {
 	if (!Combat)

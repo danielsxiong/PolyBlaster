@@ -476,6 +476,8 @@ public:
 
 	FORCEINLINE ULagCompensationComponent* GetLagCompensationComponent() const { return LagCompensation; }
 
+	bool IsHoldingTheFlag() const;
+
 	bool IsLocallyReloading() const;
 
 	FVector GetHitTarget() const;
