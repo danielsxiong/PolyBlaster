@@ -253,6 +253,8 @@ protected:
 
 	void AttachActorToBackpack(AActor* ActorToAttach);
 
+	void AttachFlagToLeftHand(AWeapon* Flag);
+
 	void UpdateCarriedAmmo();
 
 	void ReloadEmptyWeapon();
@@ -268,7 +270,11 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AProjectile> GrenadeClass;
 
+	UPROPERTY(ReplicatedUsing = OnRep_HoldingTheFlag)
 	bool bHoldingTheFlag = false;
+
+	UFUNCTION()
+	void OnRep_HoldingTheFlag();
 
 public:
 

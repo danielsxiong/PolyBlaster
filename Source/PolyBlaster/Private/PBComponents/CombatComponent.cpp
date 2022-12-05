@@ -53,6 +53,7 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(UCombatComponent, SecondaryWeapon);
 	DOREPLIFETIME(UCombatComponent, bAiming);
 	DOREPLIFETIME(UCombatComponent, CombatState);
+	DOREPLIFETIME(UCombatComponent, bHoldingTheFlag);
 	// Just replicate to owning client, since other don't need it
 	DOREPLIFETIME_CONDITION(UCombatComponent, CarriedAmmo, COND_OwnerOnly);
 	DOREPLIFETIME_CONDITION(UCombatComponent, Grenades, COND_OwnerOnly);
@@ -455,17 +456,35 @@ void UCombatComponent::EquipWeapon(AWeapon* InWeapon)
 
 	if (CombatState != ECombatState::ECS_Unoccupied) return;
 
-	if (EquippedWeapon && !SecondaryWeapon)
+	if (InWeapon->GetWeaponType() == EWeaponType::EWT_Flag)
 	{
-		EquipSecondaryWeapon(InWeapon);
+		AttachFlagToLeftHand(InWeapon);
+		InWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
+		bHoldingTheFlag = true;
+		Character->Crouch();
 	}
 	else
 	{
-		EquipPrimaryWeapon(InWeapon);
-	}
+		if (EquippedWeapon && !SecondaryWeapon)
+		{
+			EquipSecondaryWeapon(InWeapon);
+		}
+		else
+		{
+			EquipPrimaryWeapon(InWeapon);
+		}
 
-	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
-	Character->bUseControllerRotationYaw = true;
+		Character->GetCharacterMovement()->bOrientRotationToMovement = false;
+		Character->bUseControllerRotationYaw = true;
+	}
+}
+
+void UCombatComponent::OnRep_HoldingTheFlag()
+{
+	if (bHoldingTheFlag && Character && Character->IsLocallyControlled())
+	{
+		Character->Crouch();
+	}
 }
 
 void UCombatComponent::SwapWeapon()
@@ -598,6 +617,17 @@ void UCombatComponent::AttachActorToBackpack(AActor* ActorToAttach)
 	if (BackpackSocket)
 	{
 		BackpackSocket->AttachActor(ActorToAttach, Character->GetMesh());
+	}
+}
+
+void UCombatComponent::AttachFlagToLeftHand(AWeapon* Flag)
+{
+	if (!Character || !Character->GetMesh() || !Flag) return;
+
+	const USkeletalMeshSocket* FlagSocket = Character->GetMesh()->GetSocketByName(FName("FlagSocket"));
+	if (FlagSocket)
+	{
+		FlagSocket->AttachActor(Flag, Character->GetMesh());
 	}
 }
 
