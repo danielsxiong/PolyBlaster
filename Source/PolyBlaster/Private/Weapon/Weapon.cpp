@@ -222,7 +222,7 @@ void AWeapon::OnEquipped()
 		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	}
 
-	EnableCustomDepth(true);
+	EnableCustomDepth(false);
 
 	OwnerPBCharacter = OwnerPBCharacter == nullptr ? Cast<APBCharacter>(GetOwner()) : OwnerPBCharacter;
 	if (OwnerPBCharacter && bUseServerSideRewind)

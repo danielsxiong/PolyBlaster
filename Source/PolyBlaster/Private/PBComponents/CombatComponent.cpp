@@ -458,8 +458,10 @@ void UCombatComponent::EquipWeapon(AWeapon* InWeapon)
 
 	if (InWeapon->GetWeaponType() == EWeaponType::EWT_Flag)
 	{
-		AttachFlagToLeftHand(InWeapon);
 		InWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
+		AttachFlagToLeftHand(InWeapon);
+		InWeapon->SetOwner(Character);
+		TheFlag = InWeapon;
 		bHoldingTheFlag = true;
 		Character->Crouch();
 	}

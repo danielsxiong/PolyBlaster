@@ -219,7 +219,7 @@ public:
 
 	void SetHUDAmmo();
 
-	void Drop();
+	virtual void Drop();
 
 	bool IsEmpty();
 

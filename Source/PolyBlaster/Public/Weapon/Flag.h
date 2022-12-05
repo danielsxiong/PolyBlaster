@@ -18,9 +18,19 @@ public:
 
 	AFlag();
 
+protected:
+
+	virtual void OnEquipped() override;
+
+	virtual void OnDropped() override;
+
 private:
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* FlagMesh;
+
+public:
+
+	virtual void Drop() override;
 	
 };

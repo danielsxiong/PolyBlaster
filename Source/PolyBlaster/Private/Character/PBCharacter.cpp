@@ -804,8 +804,20 @@ void APBCharacter::Eliminated(bool bPlayerLeftGame)
 
 	if (Combat)
 	{
-		DropOrDestroyWeapon(Combat->EquippedWeapon);
-		DropOrDestroyWeapon(Combat->SecondaryWeapon);
+		if (Combat->EquippedWeapon)
+		{
+			DropOrDestroyWeapon(Combat->EquippedWeapon);
+		}
+		
+		if (Combat->SecondaryWeapon)
+		{
+			DropOrDestroyWeapon(Combat->SecondaryWeapon);
+		}
+
+		if (Combat->TheFlag)
+		{
+			Combat->TheFlag->Drop();
+		}
 	}
 
 	MulticastEliminated(bPlayerLeftGame);
