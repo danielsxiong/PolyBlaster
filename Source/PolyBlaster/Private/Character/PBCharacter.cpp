@@ -342,6 +342,7 @@ void APBCharacter::RotateInPlace(float DeltaTime)
 
 void APBCharacter::Jump()
 {
+	if (Combat && Combat->bHoldingTheFlag) return;
 	if (bDisableGameplay) return;
 
 	if (bIsCrouched)
@@ -402,6 +403,7 @@ void APBCharacter::EquipButtonPressed()
 
 	if (Combat)
 	{
+		if (Combat->bHoldingTheFlag) return;
 		if (Combat->CombatState == ECombatState::ECS_Unoccupied) ServerEquipButtonPressed(); // Must only be done on server (Role Authority)
 		
 		if (Combat->ShouldSwapWeapon() && 
@@ -435,6 +437,7 @@ void APBCharacter::ServerEquipButtonPressed_Implementation()
 void APBCharacter::CrouchButtonPressed()
 {
 	if (bDisableGameplay) return;
+	if (Combat && Combat->bHoldingTheFlag) return;
 
 	if (bIsCrouched)
 	{
@@ -448,6 +451,7 @@ void APBCharacter::CrouchButtonPressed()
 
 void APBCharacter::AimButtonPressed()
 {
+	if (Combat && Combat->bHoldingTheFlag) return;
 	if (bDisableGameplay || !Combat) return;
 
 	Combat->SetAiming(true);
@@ -455,6 +459,7 @@ void APBCharacter::AimButtonPressed()
 
 void APBCharacter::AimButtonReleased()
 {
+	if (Combat && Combat->bHoldingTheFlag) return;
 	if (bDisableGameplay || !Combat) return;
 
 	Combat->SetAiming(false);
@@ -462,6 +467,7 @@ void APBCharacter::AimButtonReleased()
 
 void APBCharacter::FireButtonPressed()
 {
+	if (Combat && Combat->bHoldingTheFlag) return;
 	if (bDisableGameplay || !Combat) return;
 
 	Combat->FireButtonPressed(true);
@@ -469,6 +475,7 @@ void APBCharacter::FireButtonPressed()
 
 void APBCharacter::FireButtonReleased()
 {
+	if (Combat && Combat->bHoldingTheFlag) return;
 	if (bDisableGameplay || !Combat) return;
 
 	Combat->FireButtonPressed(false);
@@ -476,6 +483,7 @@ void APBCharacter::FireButtonReleased()
 
 void APBCharacter::ReloadButtonPressed()
 {
+	if (Combat && Combat->bHoldingTheFlag) return;
 	if (bDisableGameplay || !Combat) return;
 
 	Combat->Reload();
@@ -483,6 +491,7 @@ void APBCharacter::ReloadButtonPressed()
 
 void APBCharacter::ThrowGrenadeButtonPressed()
 {
+	if (Combat && Combat->bHoldingTheFlag) return;
 	if (bDisableGameplay || !Combat) return;
 
 	Combat->ThrowGrenade();
