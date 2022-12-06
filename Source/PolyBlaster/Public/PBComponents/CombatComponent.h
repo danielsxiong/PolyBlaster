@@ -47,7 +47,7 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_SecondaryWeapon)
 	AWeapon* SecondaryWeapon;
 
-	UPROPERTY()
+	UPROPERTY(ReplicatedUsing = OnRep_TheFlag)
 	AWeapon* TheFlag;
 
 	UPROPERTY(ReplicatedUsing = OnRep_Aiming)
@@ -184,6 +184,9 @@ protected:
 
 	UFUNCTION()
 	void OnRep_SecondaryWeapon();
+
+	UFUNCTION()
+	void OnRep_TheFlag();
 
 	void Fire();
 

@@ -816,7 +816,7 @@ void APBCharacter::Eliminated(bool bPlayerLeftGame)
 
 		if (Combat->TheFlag)
 		{
-			Combat->TheFlag->Drop();
+			DropOrDestroyWeapon(Combat->TheFlag);
 		}
 	}
 
