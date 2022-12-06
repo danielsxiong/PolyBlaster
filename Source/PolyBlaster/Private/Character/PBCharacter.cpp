@@ -1126,6 +1126,16 @@ ECombatState APBCharacter::GetCombatState() const
 	return Combat->CombatState;
 }
 
+ETeam APBCharacter::GetTeam()
+{
+	PBPlayerState = PBPlayerState == nullptr ? GetPlayerState<APBPlayerState>() : PBPlayerState;
+	if (PBPlayerState)
+	{
+		return PBPlayerState->GetTeam();
+	}
+	return ETeam::ET_NoTeam;
+}
+
 void APBCharacter::Destroyed()
 {
 	Super::Destroyed();

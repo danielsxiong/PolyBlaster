@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 
 #include "Weapon/WeaponTypes.h"
+#include "PBTypes/Team.h"
 #include "Weapon.generated.h"
 
 UENUM(BlueprintType)
@@ -67,6 +68,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	EWeaponType WeaponType;
 
+	UPROPERTY(EditAnywhere)
+	ETeam Team;
+
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	USkeletalMeshComponent* WeaponMesh;
 
@@ -116,7 +120,6 @@ private:
 
 protected:
 
-	
 	UPROPERTY()
 	class APBCharacter* OwnerPBCharacter;
 

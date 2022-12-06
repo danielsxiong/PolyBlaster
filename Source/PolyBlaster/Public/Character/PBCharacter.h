@@ -484,4 +484,6 @@ public:
 
 	ECombatState GetCombatState() const;
 
+	ETeam GetTeam();
+
 };
