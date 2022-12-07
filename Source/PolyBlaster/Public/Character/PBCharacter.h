@@ -147,6 +147,10 @@ protected:
 
 	void DropOrDestroyWeapon(AWeapon* Weapon);
 
+	void SetSpawnPoint();
+
+	void OnPlayerStateInitialized();
+
 	/**
 	* Hit boxes used for server side rewind
 	*/

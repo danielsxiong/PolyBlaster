@@ -30,6 +30,7 @@
 #include "PlayerState/PBPlayerState.h"
 #include "GameMode/PBGameMode.h"
 #include "GameState/PBGameState.h"
+#include "PlayerStart/TeamPlayerStart.h"
 
 APBCharacter::APBCharacter()
 {
@@ -257,15 +258,47 @@ void APBCharacter::PollInit()
 		PBPlayerState = GetPlayerState<APBPlayerState>();
 		if (PBPlayerState)
 		{
-			PBPlayerState->AddToScore(0.f);
-			PBPlayerState->AddToDefeats(0);
-			SetTeamColor(PBPlayerState->GetTeam());
+			OnPlayerStateInitialized();
 
 			APBGameState* PBGameState = Cast<APBGameState>(UGameplayStatics::GetGameState(this));
 			if (PBGameState && PBGameState->TopScoringPlayers.Contains(PBPlayerState))
 			{
 				MulticastGainedTheLead();
 			}
+		}
+	}
+}
+
+void APBCharacter::OnPlayerStateInitialized()
+{
+	PBPlayerState->AddToScore(0.f);
+	PBPlayerState->AddToDefeats(0);
+	SetTeamColor(PBPlayerState->GetTeam());
+	SetSpawnPoint();
+}
+
+void APBCharacter::SetSpawnPoint()
+{
+	if (HasAuthority() && PBPlayerState->GetTeam() != ETeam::ET_NoTeam)
+	{
+		TArray<AActor*> PlayerStarts;
+		UGameplayStatics::GetAllActorsOfClass(this, ATeamPlayerStart::StaticClass(), PlayerStarts);
+
+		TArray<ATeamPlayerStart*> TeamPlayerStarts;
+		for (auto Start : PlayerStarts)
+		{
+			ATeamPlayerStart* TeamStart = Cast<ATeamPlayerStart>(Start);
+			if (TeamStart && TeamStart->Team == PBPlayerState->GetTeam())
+			{
+				TeamPlayerStarts.Add(TeamStart);
+			}
+		}
+
+		if (TeamPlayerStarts.Num() > 0)
+		{
+			int32 Selection = FMath::RandRange(0, TeamPlayerStarts.Num() - 1);
+			ATeamPlayerStart* SelectedPlayerStart = TeamPlayerStarts[Selection];
+			SetActorLocationAndRotation(SelectedPlayerStart->GetActorLocation(), SelectedPlayerStart->GetActorRotation());
 		}
 	}
 }
