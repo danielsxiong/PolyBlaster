@@ -14,9 +14,9 @@ class POLYBLASTER_API APBTeamsGameMode : public APBGameMode
 {
 	GENERATED_BODY()
 
-	APBTeamsGameMode();
-
 public:
+
+	APBTeamsGameMode();
 
 	// For players joining mid game
 	virtual void PostLogin(APlayerController* NewPlayer) override;

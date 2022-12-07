@@ -351,6 +351,12 @@ void APBCharacter::RotateInPlace(float DeltaTime)
 		return;
 	}
 
+	if (Combat && Combat->EquippedWeapon)
+	{
+		bUseControllerRotationYaw = true;
+		GetCharacterMovement()->bOrientRotationToMovement = false;
+	}
+
 	if (bDisableGameplay)
 	{
 		bUseControllerRotationYaw = false;
@@ -1137,6 +1143,15 @@ bool APBCharacter::IsHoldingTheFlag() const
 	if (!Combat) return false;
 
 	return Combat->bHoldingTheFlag;
+}
+
+void APBCharacter::SetHoldingTheFlag(bool bHolding)
+{
+	if (!Combat) return;
+
+	Combat->bHoldingTheFlag = bHolding;
+	Combat->TheFlag = nullptr;
+	UnCrouch();
 }
 
 FVector APBCharacter::GetHitTarget() const

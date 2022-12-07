@@ -482,6 +482,8 @@ public:
 
 	bool IsHoldingTheFlag() const;
 
+	void SetHoldingTheFlag(bool bHolding);
+
 	bool IsLocallyReloading() const;
 
 	FVector GetHitTarget() const;

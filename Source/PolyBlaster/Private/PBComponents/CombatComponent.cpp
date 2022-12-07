@@ -497,6 +497,10 @@ void UCombatComponent::OnRep_HoldingTheFlag()
 	{
 		Character->Crouch();
 	}
+	else if (!bHoldingTheFlag && Character && Character->IsLocallyControlled())
+	{
+		Character->UnCrouch();
+	}
 }
 
 void UCombatComponent::SwapWeapon()

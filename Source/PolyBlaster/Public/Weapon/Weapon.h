@@ -247,5 +247,7 @@ public:
 	FORCEINLINE float GetHeadShotDamage() const { return HeadShotDamage; }
 
 	FORCEINLINE UWidgetComponent* GetPickupWidget() const { return PickupWidget; }
+
+	FORCEINLINE ETeam GetTeam() const { return Team; }
 		 
 };

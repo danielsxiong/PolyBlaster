@@ -6,6 +6,8 @@
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 
+#include "Character/PBCharacter.h"
+
 AFlag::AFlag()
 {
 	FlagMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FlagMesh"));
@@ -18,6 +20,13 @@ AFlag::AFlag()
 	FlagMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
+void AFlag::BeginPlay()
+{
+	Super::BeginPlay();
+
+	InitialTransform = GetActorTransform();
+}
+
 void AFlag::OnEquipped()
 {
 	if (!GetAreaSphere() || !FlagMesh) return;
@@ -27,7 +36,8 @@ void AFlag::OnEquipped()
 
 	FlagMesh->SetSimulatePhysics(false);
 	FlagMesh->SetEnableGravity(false);
-	FlagMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	FlagMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	FlagMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
 
 	EnableCustomDepth(false);
 }
@@ -39,8 +49,9 @@ void AFlag::OnDropped()
 		GetAreaSphere()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	}
 
-	FlagMesh->SetSimulatePhysics(true);
-	FlagMesh->SetEnableGravity(true);
+	SetActorRotation(InitialTransform.GetRotation());
+	FlagMesh->SetSimulatePhysics(false);
+	FlagMesh->SetEnableGravity(false);
 	FlagMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	FlagMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 	FlagMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
@@ -59,4 +70,16 @@ void AFlag::Drop()
 	SetOwner(nullptr);
 	OwnerPBCharacter = nullptr;
 	OwnerPBPlayerController = nullptr;
+}
+
+void AFlag::ResetFlag()
+{
+	APBCharacter* FlagBearer = Cast<APBCharacter>(GetOwner());
+	if (FlagBearer)
+	{
+		FlagBearer->SetHoldingTheFlag(false);
+		FlagBearer->SetOverlappingWeapon(nullptr);
+	}
+	Drop();
+	SetActorTransform(InitialTransform);
 }

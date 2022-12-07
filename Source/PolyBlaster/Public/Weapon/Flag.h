@@ -20,6 +20,8 @@ public:
 
 protected:
 
+	virtual void BeginPlay() override;
+
 	virtual void OnEquipped() override;
 
 	virtual void OnDropped() override;
@@ -29,8 +31,14 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* FlagMesh;
 
+	FTransform InitialTransform;
+
 public:
 
 	virtual void Drop() override;
+
+	void ResetFlag();
+
+	FORCEINLINE FTransform GetInitialLocation() const { return InitialTransform; }
 	
 };
