@@ -17,5 +17,16 @@ class POLYBLASTER_API APBLobbyGameMode : public AGameMode
 public:
 
 	virtual void PostLogin(APlayerController* NewPlayer) override;
+
+protected:
+
+	UPROPERTY(EditAnywhere)
+	float LobbyTimeout = 30.f;
+
+	virtual void BeginPlay() override;
+
+	void TravelToGame();
+
+	void FinishLobbyTimeout();
 	
 };

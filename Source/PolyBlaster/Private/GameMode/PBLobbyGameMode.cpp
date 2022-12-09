@@ -6,13 +6,20 @@
 
 #include "MultiplayerSessionsSubsystem.h"
 
+void APBLobbyGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+
+	FTimerHandle LobbyTimeoutHandle;
+	GetWorldTimerManager().SetTimer(LobbyTimeoutHandle, this, &APBLobbyGameMode::FinishLobbyTimeout, LobbyTimeout);
+}
+
 void APBLobbyGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 
 	int32 NumOfPlayers = GameState.Get()->PlayerArray.Num();
 	int32 DesiredNumPlayers = 2; // Default 2
-	FString MatchType = "FreeForAll"; // Default FreeForAll
 
 	UGameInstance* GameInstance = GetGameInstance();
 	if (GameInstance)
@@ -21,28 +28,50 @@ void APBLobbyGameMode::PostLogin(APlayerController* NewPlayer)
 		if (Subsystem)
 		{
 			DesiredNumPlayers = Subsystem->DesiredNumPublicConnections;
-			MatchType = Subsystem->DesiredMatchType;
 		}
 	}
 
 	if (NumOfPlayers == DesiredNumPlayers)
 	{
-		UWorld* World = GetWorld();
-		if (World)
+		TravelToGame();
+	}
+}
+
+void APBLobbyGameMode::TravelToGame()
+{
+	FString MatchType = "FreeForAll"; // Default FreeForAll
+
+	UGameInstance* GameInstance = GetGameInstance();
+	if (GameInstance)
+	{
+		UMultiplayerSessionsSubsystem* Subsystem = GameInstance->GetSubsystem<UMultiplayerSessionsSubsystem>();
+		if (Subsystem)
 		{
-			bUseSeamlessTravel = true;
-			if (MatchType == "FreeForAll")
-			{
-				World->ServerTravel(TEXT("/Game/Maps/PolyBlasterMap?listen"));
-			}
-			else if (MatchType == "Teams")
-			{
-				World->ServerTravel(TEXT("/Game/Maps/TeamsMap?listen"));
-			}
-			else if (MatchType == "CaptureTheFlag")
-			{
-				World->ServerTravel(TEXT("/Game/Maps/CaptureTheFlagMap?listen"));
-			}
+			MatchType = Subsystem->DesiredMatchType;
 		}
 	}
+
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		// bUseSeamlessTravel = true;
+		if (MatchType == "FreeForAll")
+		{
+			World->ServerTravel(TEXT("/Game/Maps/PolyBlasterMap?listen"));
+		}
+		else if (MatchType == "Teams")
+		{
+			World->ServerTravel(TEXT("/Game/Maps/TeamsMap?listen"));
+		}
+		else if (MatchType == "CaptureTheFlag")
+		{
+			World->ServerTravel(TEXT("/Game/Maps/CaptureTheFlagMap?listen"));
+		}
+	}
+}
+
+
+void APBLobbyGameMode::FinishLobbyTimeout()
+{
+	TravelToGame();
 }
